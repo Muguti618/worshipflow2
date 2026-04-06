@@ -2,9 +2,16 @@ import type { Metadata } from "next";
 import { MarketingLanding } from "@/components/wf/marketing-landing";
 
 export const metadata: Metadata = {
-  title: "LumenWorship — Worship presentation, reimagined",
+  title: "LumenWorship — Free worship lyric formatter & slide maker",
   description:
-    "Plan setlists, manage multi-slide songs, present with audience view and remote control—all in your browser.",
+    "Free AI lyric splitter on the homepage—no sign-up. Format lyrics for projection, then plan setlists, scripture, Present & Audience. ProPresenter & EasyWorship alternative for teams who want a calm browser workflow.",
+  keywords: [
+    "free worship lyric formatter",
+    "worship slide maker free",
+    "ProPresenter alternative",
+    "EasyWorship alternative free",
+    "lyric splitter",
+  ],
 };
 
 export default function HomePage() {

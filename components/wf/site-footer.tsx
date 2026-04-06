@@ -43,6 +43,16 @@ export function SiteFooter() {
                   Watch demo
                 </Link>
               </li>
+              <li>
+                <Link href="/#lyric-splitter" className={link}>
+                  Free lyric splitter
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className={link}>
+                  Blog
+                </Link>
+              </li>
             </ul>
           </div>
           <div>

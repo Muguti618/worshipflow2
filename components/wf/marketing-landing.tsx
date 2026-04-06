@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { setGuestDashboardAllow } from "@/lib/guest-access";
 import { SiteFooter } from "@/components/wf/site-footer";
+import { PublicLyricSplitter } from "@/components/wf/public-lyric-splitter";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 /** After register/sign-in, open Upgrade page to pick monthly vs yearly. */
@@ -73,6 +74,12 @@ export function MarketingLanding() {
           <span className="text-lg font-bold tracking-tight">LumenWorship</span>
           <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
             <Link
+              href="/blog"
+              className="rounded-[10px] px-3 py-2 text-sm font-medium text-wf-muted transition hover:bg-wf-text/[0.06] hover:text-wf-text"
+            >
+              Blog
+            </Link>
+            <Link
               href="/login"
               className="rounded-[10px] px-3 py-2 text-sm font-medium text-wf-muted transition hover:bg-wf-text/[0.06] hover:text-wf-text"
             >
@@ -134,6 +141,16 @@ export function MarketingLanding() {
               </span>
             </p>
           ) : null}
+        </section>
+
+        <section
+          id="lyric-splitter"
+          className="scroll-mt-24 border-t border-wf-border/60 bg-wf-bg py-14 sm:py-20"
+          aria-labelledby="lyric-splitter-heading"
+        >
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <PublicLyricSplitter />
+          </div>
         </section>
 
         <section
