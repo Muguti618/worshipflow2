@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { setGuestDashboardAllow } from "@/lib/guest-access";
 import { SiteFooter } from "@/components/wf/site-footer";
 import { PublicLyricSplitter } from "@/components/wf/public-lyric-splitter";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { Check, Sparkles, Zap, Crown, ArrowRight } from "lucide-react";
 
 /** After register/sign-in, open Upgrade page to pick monthly vs yearly. */
 const UPGRADE_PAGE_NEXT = encodeURIComponent("/upgrade");
@@ -34,6 +35,148 @@ const features = [
     body: "Look up passages, preview on the dashboard, and use OpenAI-powered verse ideas and slide formatting when you add your API key.",
   },
 ] as const;
+
+const howItWorks = [
+  {
+    step: "01",
+    title: "Plan in one place",
+    body: "Songs, scripture, and service order live together—no copy-paste between apps when the set changes.",
+  },
+  {
+    step: "02",
+    title: "Open Present",
+    body: "Advance slides from the operator screen; Audience stays clean and readable on the projector or stream.",
+  },
+  {
+    step: "03",
+    title: "Pilot from the room",
+    body: "Optional phone or tablet remote keeps volunteers aligned on the same deck and the same moment.",
+  },
+] as const;
+
+const sundayOutcomes = [
+  {
+    title: "Fewer tabs on Saturday night",
+    body: "One URL for planning, rehearsal tweaks, and Sunday morning—less context-switching when time is tight.",
+  },
+  {
+    title: "Readable lyrics, every time",
+    body: "Section-aware splitting and preview mean your congregation sees lines that breathe—not walls of text.",
+  },
+  {
+    title: "Scripture without friction",
+    body: "Look up passages, beam verses to the room when you need them, and stay in flow with the rest of the set.",
+  },
+] as const;
+
+function PricingCard({ 
+  tier, 
+  price, 
+  period, 
+  description, 
+  features, 
+  notIncluded,
+  ctaText, 
+  ctaLink,
+  popular = false,
+  annualPrice,
+  annualSavings
+}: { 
+  tier: string; 
+  price: string; 
+  period: string; 
+  description: string; 
+  features: string[]; 
+  notIncluded?: string[];
+  ctaText: string; 
+  ctaLink: string;
+  popular?: boolean;
+  annualPrice?: string;
+  annualSavings?: string;
+}) {
+  const [isAnnual, setIsAnnual] = useState(false);
+
+  return (
+    <div className={`relative flex flex-col rounded-2xl border ${
+      popular 
+        ? "border-sky-500/30 bg-gradient-to-b from-sky-500/10 via-wf-card/60 to-wf-card/40 shadow-2xl shadow-sky-500/10" 
+        : "border-wf-border bg-wf-card/40"
+    } p-6 backdrop-blur-md transition-all duration-300 hover:shadow-xl hover:shadow-black/25 hover:-translate-y-1`}>
+      {popular && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-sky-500 to-blue-500 px-3 py-1 text-xs font-bold text-white shadow-lg">
+            <Zap className="h-3 w-3" />
+            MOST POPULAR
+          </span>
+        </div>
+      )}
+      
+      <div className="mb-6">
+        <h3 className="text-xl font-bold text-wf-text">{tier}</h3>
+        <div className="mt-4 flex items-baseline gap-1">
+          <span className="text-4xl font-bold text-wf-text">{price}</span>
+          <span className="text-wf-muted">/{period}</span>
+        </div>
+        {annualPrice && (
+          <button
+            onClick={() => setIsAnnual(!isAnnual)}
+            className="mt-2 text-xs text-sky-400 hover:text-sky-300 transition"
+          >
+            {isAnnual ? `Switch to monthly (${price}/${period})` : `Save with annual (${annualPrice}/year)`}
+          </button>
+        )}
+        {isAnnual && annualSavings && (
+          <p className="mt-2 text-xs text-emerald-400/90 font-medium">
+            Save {annualSavings}/year
+          </p>
+        )}
+        <p className="mt-4 text-sm text-wf-muted leading-relaxed">{description}</p>
+      </div>
+
+      <Link
+        href={ctaLink}
+        className={`inline-flex h-11 w-full items-center justify-center rounded-xl font-semibold transition-all duration-200 ${
+          popular
+            ? "bg-gradient-to-r from-sky-500 to-blue-500 text-white shadow-lg shadow-sky-500/25 hover:shadow-xl hover:scale-105"
+            : "border border-wf-border bg-white/5 text-wf-text hover:bg-white/10"
+        }`}
+      >
+        {ctaText}
+        <ArrowRight className="ml-2 h-4 w-4" />
+      </Link>
+
+      <div className="mt-8">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-wf-muted">
+          What&apos;s included
+        </p>
+        <ul className="space-y-3">
+          {features.map((feature, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-sm">
+              <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 ${
+                popular ? "text-sky-400" : "text-emerald-400/70"
+              }`} />
+              <span className="text-wf-muted">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {notIncluded && notIncluded.length > 0 && (
+        <div className="mt-6 pt-6 border-t border-wf-border/50">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-wf-muted/70">Not included</p>
+          <ul className="space-y-2">
+            {notIncluded.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-2 text-sm">
+                <span className="text-wf-muted/40 mt-0.5">—</span>
+                <span className="text-wf-muted/70">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function MarketingLanding() {
   const router = useRouter();
@@ -70,9 +213,20 @@ export function MarketingLanding() {
       </div>
 
       <header className="relative z-10 border-b border-wf-border/80 bg-wf-bg/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
-          <span className="text-lg font-bold tracking-tight">worshipflow2</span>
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          <Link
+            href="/"
+            className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent hover:to-white transition-all"
+          >
+            worshipflow2
+          </Link>
           <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+            <Link
+              href="/#lyric-splitter"
+              className="rounded-[10px] px-3 py-2 text-sm font-medium text-wf-muted transition hover:bg-wf-text/[0.06] hover:text-wf-text"
+            >
+              Lyric formatter
+            </Link>
             <Link
               href="/blog"
               className="rounded-[10px] px-3 py-2 text-sm font-medium text-wf-muted transition hover:bg-wf-text/[0.06] hover:text-wf-text"
@@ -87,7 +241,7 @@ export function MarketingLanding() {
             </Link>
             <Link
               href="/register"
-              className="rounded-[10px] bg-blue-600 hover:bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-black/30 transition hover:brightness-110"
+              className="rounded-[10px] bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-400 hover:to-blue-400 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-black/30 transition-all hover:shadow-xl"
             >
               Create account
             </Link>
@@ -96,489 +250,292 @@ export function MarketingLanding() {
       </header>
 
       <main className="relative z-10">
-        <section className="mx-auto max-w-5xl px-4 pb-16 pt-14 sm:px-6 sm:pt-20">
-          <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-sky-400/90">
-            Worship presentation, reimagined
-          </p>
-          <h1 className="mx-auto mt-4 max-w-3xl text-center text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-            <span className="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-500 bg-clip-text text-transparent">
-              Your songs, setlists, and slides
-            </span>
-            <span className="text-wf-text"> in one calm flow.</span>
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-center text-lg leading-relaxed text-wf-muted">
-            Plan services in the browser, preview scripture and lyrics, then walk through every slide
-            with Present, Audience, and an optional phone remote—without juggling five different tools.
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-            <Link
-              href="/register"
-              className="inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[14px] bg-blue-600 hover:bg-blue-500 px-8 text-sm font-bold text-white shadow-xl shadow-black/35 transition hover:brightness-110 sm:w-auto"
-            >
-              Get started free
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[14px] border border-wf-border bg-wf-card/60 px-8 text-sm font-semibold text-wf-text backdrop-blur transition hover:border-white/18 sm:w-auto"
-            >
-              Sign in
-            </Link>
-          </div>
-          {!isSupabaseConfigured() ? (
-            <p className="mt-6 text-center">
+        <section className="mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 sm:pt-20">
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1 text-xs font-medium text-sky-400 backdrop-blur-sm mb-6">
+              <Sparkles className="h-3 w-3" />
+              Worship presentation, reimagined
+            </div>
+            <h1 className="mx-auto max-w-4xl text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.5rem]">
+              <span className="bg-gradient-to-r from-slate-100 via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                Your songs, setlists, and slides
+              </span>
+              <br />
+              <span className="text-wf-text">in one calm flow.</span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-wf-muted sm:text-xl">
+              Plan in the browser, preview scripture and lyrics, then walk the room with Present, Audience,
+              and an optional phone remote—without tab-hopping across five tools.
+            </p>
+            <ul className="mt-8 flex flex-wrap items-center justify-center gap-2">
+              {["No card to start", "Browser-first", "Present + Audience"].map((label) => (
+                <li
+                  key={label}
+                  className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-wf-muted backdrop-blur-sm"
+                >
+                  {label}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/register"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 to-blue-500 px-8 text-sm font-bold text-white shadow-xl shadow-black/35 transition-all hover:scale-105 hover:shadow-2xl"
+              >
+                Get started free
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex h-12 items-center justify-center rounded-xl border border-wf-border bg-wf-card/60 px-8 text-sm font-semibold text-wf-text backdrop-blur transition hover:border-white/18"
+              >
+                Sign in
+              </Link>
+            </div>
+            <p className="mt-5">
+              <a
+                href="#lyric-splitter"
+                className="text-sm font-medium text-sky-400/95 underline-offset-4 transition hover:text-sky-300 hover:underline"
+              >
+                Try the free lyric formatter first
+              </a>
+              <span className="text-wf-muted"> — no account needed.</span>
+            </p>
+            {!isSupabaseConfigured() && (
               <button
                 type="button"
                 onClick={() => {
                   setGuestDashboardAllow();
                   router.push("/dashboard");
                 }}
-                className="text-sm text-wf-muted underline decoration-wf-muted/40 underline-offset-4 transition hover:text-sky-300 hover:decoration-sky-500/50"
+                className="mt-4 text-sm text-wf-muted underline decoration-wf-muted/40 underline-offset-4 transition hover:text-sky-300"
               >
-                Try the app without an account
+                Try the app without an account (local demo)
               </button>
-              <span className="mt-1 block text-center text-[11px] text-wf-muted/80">
-                Local demo only — data stays in this browser.
-              </span>
-            </p>
-          ) : null}
+            )}
+          </div>
         </section>
 
-        <section
-          id="lyric-splitter"
-          className="scroll-mt-24 border-t border-wf-border/60 bg-wf-bg py-14 sm:py-20"
-          aria-labelledby="lyric-splitter-heading"
-        >
-          <div className="mx-auto max-w-5xl px-4 sm:px-6">
+        <section className="border-t border-wf-border/60 bg-gradient-to-b from-wf-bg to-wf-card/30 py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">How Sunday flows</h2>
+              <p className="mt-2 text-wf-muted">From mid-week planning to the last song—stay in one workspace</p>
+            </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {howItWorks.map((item) => (
+                <div
+                  key={item.step}
+                  className="rounded-xl border border-wf-border/90 bg-wf-card/40 p-6 backdrop-blur-md transition hover:border-sky-500/25 hover:bg-wf-card/55"
+                >
+                  <span className="text-3xl font-bold text-sky-400/40">{item.step}</span>
+                  <h3 className="mt-3 text-lg font-semibold">{item.title}</h3>
+                  <p className="mt-2 text-sm text-wf-muted">{item.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="lyric-splitter" className="scroll-mt-24 border-t border-wf-border/60 py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <PublicLyricSplitter />
           </div>
         </section>
 
-        <section
-          className="border-t border-wf-border/60 bg-wf-card/20 py-16 backdrop-blur-sm"
-          aria-labelledby="mw-features-heading"
-        >
-          <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <h2
-              id="mw-features-heading"
-              className="text-center text-2xl font-bold tracking-tight sm:text-3xl"
-            >
-              Built for worship teams
-            </h2>
-            <p className="mx-auto mt-2 max-w-xl text-center text-sm text-wf-muted">
-              Everything ties back to your library and setlists—so last-minute changes don’t break the
-              flow.
-            </p>
-            <ul className="mt-12 grid gap-6 sm:grid-cols-2">
+        <section className="border-t border-wf-border/60 bg-wf-card/20 py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Built for worship teams</h2>
+              <p className="mt-2 text-wf-muted">Everything ties back to your library and setlists</p>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2">
               {features.map((f) => (
-                <li
+                <div
                   key={f.title}
-                  className="rounded-[18px] border border-wf-border bg-wf-card/50 p-6 shadow-lg shadow-black/20 backdrop-blur-md"
+                  className="rounded-xl border border-wf-border bg-wf-card/50 p-6 backdrop-blur-md transition hover:border-white/[0.12]"
                 >
-                  <span className="text-2xl" aria-hidden>
-                    {f.icon}
-                  </span>
-                  <h3 className="mt-3 text-lg font-semibold text-wf-text">{f.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-wf-muted">{f.body}</p>
-                </li>
+                  <span className="text-3xl">{f.icon}</span>
+                  <h3 className="mt-3 text-lg font-semibold">{f.title}</h3>
+                  <p className="mt-2 text-sm text-wf-muted">{f.body}</p>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         </section>
 
-        <section
-          className="border-t border-wf-border/60 py-16"
-          aria-labelledby="mw-testimonials-heading"
-        >
-          <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <h2
-              id="mw-testimonials-heading"
-              className="text-center text-2xl font-bold tracking-tight sm:text-3xl"
-            >
-              What teams are saying
-            </h2>
-            <p className="mx-auto mt-2 max-w-lg text-center text-sm leading-relaxed text-wf-muted">
-              Video stories from worship leaders and tech teams—first testimonial below; add your embed when
-              the clip is ready.
-            </p>
-            <article className="mx-auto mt-10 max-w-3xl">
-              <div className="overflow-hidden rounded-[20px] border border-wf-border bg-wf-card/50 shadow-xl shadow-black/25 backdrop-blur-md">
+        <section className="border-t border-wf-border/60 py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Built for real Sundays</h2>
+              <p className="mt-2 text-wf-muted">Outcomes your team will actually feel in the room</p>
+            </div>
+            <div className="grid gap-5 md:grid-cols-3">
+              {sundayOutcomes.map((o) => (
                 <div
-                  className="relative aspect-video bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-wf-bg"
-                  role="img"
-                  aria-label="Video testimonial placeholder"
+                  key={o.title}
+                  className="rounded-xl border border-wf-border/80 bg-wf-bg/80 p-6"
                 >
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
-                    <span
-                      className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-2xl text-sky-200/90"
-                      aria-hidden
-                    >
-                      ▶
-                    </span>
-                    <p className="text-sm font-semibold text-white/85">Video testimonial</p>
-                    <p className="max-w-xs text-xs leading-relaxed text-white/50">
-                      Placeholder—replace with iframe (YouTube / Vimeo) or{" "}
-                      <code className="rounded bg-black/30 px-1 py-0.5 font-mono text-[10px] text-sky-200/80">
-                        &lt;video&gt;
-                      </code>
-                    </p>
-                  </div>
+                  <h3 className="font-semibold">{o.title}</h3>
+                  <p className="mt-2 text-sm text-wf-muted">{o.body}</p>
                 </div>
-                <div className="border-t border-wf-border/80 p-6 sm:p-8">
-                  <blockquote className="text-center">
-                    <p className="text-lg font-medium leading-relaxed text-wf-text sm:text-xl">
-                      &ldquo;Placeholder quote—we&apos;ll drop in real words from a worship pastor or tech
-                      director once your first testimonial is recorded.&rdquo;
-                    </p>
-                    <footer className="mt-5 text-sm">
-                      <cite className="not-italic font-semibold text-wf-text">Alex Morgan</cite>
-                      <span className="mt-0.5 block text-wf-muted">Worship director · Sample Church</span>
-                    </footer>
-                  </blockquote>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Improved Pricing Section */}
+        <section className="border-t border-wf-border/60 bg-gradient-to-b from-wf-card/15 to-wf-bg py-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="text-center mb-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-400 mb-4">
+                <Crown className="h-3 w-3" />
+                Simple, transparent pricing
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Choose the plan that fits
+              </h2>
+              <p className="mt-3 text-wf-muted max-w-xl mx-auto">
+                All amounts in <strong className="text-wf-text">GBP (£)</strong>. Start free, upgrade when
+                you&apos;re ready.
+              </p>
+            </div>
+
+            <div className="mt-12 grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
+              <PricingCard
+                tier="Free"
+                price="£0"
+                period="forever"
+                description="Perfect for small teams getting started or trying out the flow."
+                features={[
+                  "Up to 3 songs in your library",
+                  "1 setlist for your order of service",
+                  "Present & Audience on your network",
+                  "5 Bible verse beams to the room",
+                  "Limited slide backgrounds (preset moods)",
+                  "Basic transitions (fade/push)",
+                  "Bible lookup & dashboard preview",
+                  "One-time AI slide splitting per song"
+                ]}
+                notIncluded={[
+                  "No phone or tablet remote",
+                  "No full AI suite (Slide Studio, Assistant chat)",
+                  "No priority support"
+                ]}
+                ctaText="Start free"
+                ctaLink="/register"
+              />
+
+              <PricingCard
+                tier="Pro"
+                price="£25"
+                period="month"
+                annualPrice="£250"
+                annualSavings="£50"
+                description="Full access for weekly services—unlimited everything."
+                features={[
+                  "Unlimited songs & unlimited setlists",
+                  "Phone & tablet remote control",
+                  "Unlimited Bible verse beams",
+                  "Full AI Assistant suite (Slide Studio, chat, etc.)",
+                  "Full slide backgrounds + custom images",
+                  "All slide transitions & presenter polish",
+                  "Library import & export (JSON backup)",
+                  "Priority support"
+                ]}
+                ctaText="Get Pro"
+                ctaLink={`/register?next=${UPGRADE_PAGE_NEXT}`}
+                popular={true}
+              />
+            </div>
+
+            <div className="mt-12 text-center">
+              <p className="text-sm text-wf-muted">
+                <Link href="/login" className="text-sky-400 hover:text-sky-300 transition">
+                  Already have an account? Sign in to upgrade
+                </Link>
+              </p>
+              <p className="mt-2 text-xs text-wf-muted/70">
+                Cancel anytime. Tax and renewal dates shown before payment via Stripe.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-wf-border/60 py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="grid gap-12 items-center lg:grid-cols-2">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">See the flow in action</h2>
+                <p className="mt-3 text-wf-muted">
+                  Build or tweak a setlist, open Present, peek at Audience, and hand someone the remote—so volunteers know exactly what Sunday feels like.
+                </p>
+                <div className="mt-6 space-y-3">
+                  {["Dashboard → setlist order and last-minute swaps", "Operator screen + clean Audience output", "Optional room remote on a second device"].map((item) => (
+                    <div key={item} className="flex items-center gap-2 text-sm text-wf-muted">
+                      <div className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <Link
+                    href="/register"
+                    className="inline-flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 to-blue-500 px-6 text-sm font-bold text-white shadow-lg shadow-black/30 transition hover:scale-105"
+                  >
+                    Explore in the app
+                  </Link>
+                  <a
+                    href="#lyric-splitter"
+                    className="inline-flex h-11 items-center justify-center rounded-xl border border-wf-border px-6 text-sm font-medium text-wf-text transition hover:bg-white/5"
+                  >
+                    Try the free formatter
+                  </a>
                 </div>
               </div>
-            </article>
+              <div className="relative">
+                <div className="overflow-hidden rounded-xl border border-white/[0.1] bg-gradient-to-br from-slate-800/50 to-slate-900/50 p-8 text-center">
+                  <div className="aspect-video rounded-lg bg-gradient-to-br from-sky-500/20 to-blue-500/20 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/10 mb-4">
+                        <span className="text-2xl">▶</span>
+                      </div>
+                      <p className="text-sm font-medium text-white/90">Demo video coming soon</p>
+                      <p className="text-xs text-white/50 mt-1">Until then, try the app yourself</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section
-          className="border-t border-wf-border/60 bg-wf-card/15 py-20 backdrop-blur-sm sm:py-24"
-          aria-labelledby="mw-pricing-heading"
-        >
-          <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <h2
-              id="mw-pricing-heading"
-              className="text-center text-2xl font-bold tracking-tight sm:text-3xl"
-            >
-              Pricing
-            </h2>
-            <p className="mx-auto mt-6 max-w-md text-center text-base leading-[1.65] text-wf-muted">
-              All amounts are in <strong className="font-semibold text-wf-text">GBP (£)</strong>. Start free
-              with no card; Pro is billed through <strong className="font-semibold text-wf-text">Stripe</strong>{" "}
-              when you&apos;re ready.
-            </p>
-            <div className="mx-auto mt-16 grid max-w-4xl gap-10 md:grid-cols-2 md:gap-12 lg:gap-14">
-              <div className="flex flex-col rounded-[20px] border border-wf-border bg-wf-card/40 p-8 shadow-lg shadow-black/15 backdrop-blur-md sm:p-9">
-                <h3 className="text-lg font-semibold text-wf-text">Free</h3>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-wf-text">
-                  £0
-                  <span className="text-base font-normal text-wf-muted"> forever</span>
-                </p>
-                <p className="mt-5 text-sm leading-relaxed text-wf-muted">
-                  Core worship flow with clear limits—ideal for a single room laptop and a small library.
-                </p>
-                <p className="mt-10 text-[11px] font-semibold uppercase tracking-[0.14em] text-wf-muted/90">
-                  What&apos;s included
-                </p>
-                <ul className="mt-4 flex-1 space-y-3.5 text-sm leading-relaxed text-wf-muted">
-                  <li className="flex gap-2">
-                    <span className="text-emerald-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Up to 3 songs</strong> saved in your
-                      library
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-emerald-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">1 setlist</strong> for your order of
-                      service
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-emerald-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Present &amp; Audience</strong> on your
-                      network (operator + projector views)
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-emerald-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">5 Bible verse beams</strong> to the
-                      room (quick scripture on screen), then you&apos;ll need Pro for more
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-emerald-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Limited slide backgrounds</strong>—a
-                      small preset set (e.g. core moods / colours), not the full background library or
-                      custom image freedom
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-emerald-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Basic transitions</strong> (standard
-                      fade / push—no full transition catalogue)
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-emerald-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Bible lookup &amp; dashboard preview</strong>{" "}
-                      for planning
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-emerald-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">AI slide splitting once</strong> when you
-                      create a new song (paste lyrics → AI layout → save). Further songs use manual splitting
-                      unless you upgrade
-                    </span>
-                  </li>
-                </ul>
-                <p className="mt-10 text-[11px] font-semibold uppercase tracking-[0.14em] text-wf-muted/90">
-                  Not included on Free
-                </p>
-                <ul className="mt-4 space-y-3 text-sm leading-relaxed text-wf-muted/85">
-                  <li className="flex gap-2">
-                    <span className="text-white/35" aria-hidden>
-                      —
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/75">No phone or tablet remote</strong>{" "}
-                      (Pro unlocks room pilot from another device)
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-white/35" aria-hidden>
-                      —
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/75">No full AI suite</strong>—after your one
-                      free new-song AI split: no Slide Studio AI, Assistant chat, unlimited song AI, or smart
-                      suggestions elsewhere
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-white/35" aria-hidden>
-                      —
-                    </span>
-                    <span>
-                      No priority support—self-serve via tutorial &amp; in-app copy only
-                    </span>
-                  </li>
-                </ul>
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <div className="relative overflow-hidden rounded-2xl border border-white/[0.1] bg-gradient-to-br from-sky-500/10 via-wf-card/90 to-blue-500/5 p-8 text-center sm:p-12">
+            <div className="relative">
+              <h2 className="text-2xl font-bold sm:text-3xl">Ready when you are</h2>
+              <p className="mx-auto mt-3 max-w-md text-wf-muted">
+                Create an account to sync with your team, or sign in to jump straight to your dashboard.
+              </p>
+              <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row">
                 <Link
                   href="/register"
-                  className="mt-10 inline-flex h-11 items-center justify-center rounded-[12px] border border-wf-border px-5 text-sm font-semibold text-wf-text transition hover:border-white/20 hover:bg-white/[0.05]"
+                  className="inline-flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 to-blue-500 px-7 text-sm font-bold text-white shadow-lg transition hover:scale-105"
                 >
-                  Get started free
+                  Create account
                 </Link>
-              </div>
-              <div className="relative flex flex-col rounded-[20px] border border-white/[0.12] bg-gradient-to-b from-slate-500/[0.08] to-wf-card/60 p-8 shadow-xl shadow-black/40 backdrop-blur-md sm:p-9 sm:pr-10">
-                <span className="absolute right-5 top-5 rounded-full bg-slate-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-200/95 ring-1 ring-sky-500/25">
-                  Pro
-                </span>
-                <h3 className="text-lg font-semibold text-wf-text">Pro</h3>
-                <p className="mt-5 text-sm leading-relaxed text-wf-muted">
-                  Full access for weekly services—unlimited library, remote, AI, and priority support.
-                </p>
-
-                <div className="mt-10 rounded-2xl border border-white/15 bg-white/[0.04] px-6 py-10 text-center sm:px-8">
-                  <div className="flex flex-wrap items-end justify-center gap-x-1 gap-y-0">
-                    <span
-                      className="pb-1 text-3xl font-bold leading-none text-white/90 sm:text-4xl"
-                      aria-hidden
-                    >
-                      £
-                    </span>
-                    <span className="bg-gradient-to-b from-white via-white to-slate-200 bg-clip-text text-6xl font-extrabold leading-none tracking-tight text-transparent sm:text-7xl">
-                      25
-                    </span>
-                    <span className="mb-1.5 text-lg font-medium text-wf-muted sm:text-xl">/month</span>
-                  </div>
-                  <p className="mt-8 text-sm leading-relaxed text-wf-muted">
-                    <span className="text-wf-text/90">£250/year</span> if you prefer annual billing —{" "}
-                    <span className="text-emerald-200/90">save £50</span> vs paying monthly for a year.
-                  </p>
-                </div>
-
-                <p className="mx-auto mt-6 max-w-xs text-center text-xs leading-relaxed text-wf-muted/85">
-                  Pick monthly or yearly at checkout. Cancel or switch anytime in the billing portal; tax and
-                  renewal dates show in Stripe before you pay.
-                </p>
-
-                <ul className="mt-12 flex-1 space-y-3.5 border-t border-white/[0.08] pt-10 text-sm leading-relaxed text-wf-muted">
-                  <li className="flex gap-2">
-                    <span className="text-sky-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Unlimited songs</strong> and{" "}
-                      <strong className="font-medium text-wf-text/90">unlimited setlists</strong>
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-sky-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Phone &amp; tablet remote</strong>—same
-                      Wi‑Fi, same room id, full deck sync for pilots and volunteers
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-sky-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Unlimited Bible verse beams</strong> to
-                      Audience (scripture moments without a cap)
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-sky-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Full AI Assistant</strong>—chat,
-                      Slide Studio, lyrics splitter, scripture ideas, and related tools (where you connect
-                      your OpenAI key or your plan includes usage—see account settings)
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-sky-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Full slide backgrounds</strong>—full
-                      mood library, custom image URLs, full-bleed graphics, Ken Burns motion where supported
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-sky-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">All slide transitions</strong> and
-                      presenter polish options
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-sky-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Present, Audience &amp; dashboard</strong>{" "}
-                      without Free-tier caps
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-sky-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Library import &amp; export</strong>{" "}
-                      (JSON backup) for peace of mind and device moves
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-sky-400/90" aria-hidden>
-                      ✓
-                    </span>
-                    <span>
-                      <strong className="font-medium text-wf-text/90">Priority support</strong>—faster
-                      responses from the team when something blocks Sunday
-                    </span>
-                  </li>
-                </ul>
                 <Link
-                  href={`/register?next=${UPGRADE_PAGE_NEXT}`}
-                  className="mt-10 inline-flex h-11 w-full items-center justify-center rounded-[12px] bg-blue-600 hover:bg-blue-500 px-4 text-sm font-bold text-white shadow-lg shadow-black/35 transition hover:brightness-110"
+                  href="/login"
+                  className="inline-flex h-11 items-center justify-center rounded-xl border border-white/25 bg-white/[0.03] px-7 text-sm font-semibold text-wf-text backdrop-blur-sm transition hover:bg-white/10"
                 >
-                  Get Pro
+                  Sign in
                 </Link>
-                <p className="mt-5 text-center text-xs leading-relaxed text-wf-muted">
-                  New here? We&apos;ll open Upgrade after sign-up.{" "}
-                  <Link
-                    href={`/login?next=${UPGRADE_PAGE_NEXT}`}
-                    className="font-medium text-sky-400 underline-offset-2 hover:underline"
-                  >
-                    Sign in to upgrade
-                  </Link>
-                </p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section
-          className="border-t border-wf-border/60 py-16"
-          aria-labelledby="mw-demo-video-heading"
-        >
-          <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <h2
-              id="mw-demo-video-heading"
-              className="text-center text-2xl font-bold tracking-tight sm:text-3xl"
-            >
-              See worshipflow2 in action
-            </h2>
-            <p className="mx-auto mt-2 max-w-2xl text-center text-sm leading-relaxed text-wf-muted">
-              A short walkthrough: dashboard, setlist → Present, Audience view, and phone remote—placeholder
-              until you record a screen capture.
-            </p>
-            <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-[20px] border border-wf-border bg-wf-card/50 shadow-2xl shadow-black/30 backdrop-blur-md">
-              <div
-                className="relative aspect-video bg-gradient-to-br from-slate-950/90 via-wf-card to-slate-950/90"
-                role="img"
-                aria-label="Product demo video placeholder"
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
-                  <span
-                    className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-2xl text-white/75"
-                    aria-hidden
-                  >
-                    ▶
-                  </span>
-                  <p className="text-sm font-semibold text-white/85">Product demo video</p>
-                  <p className="max-w-sm text-xs leading-relaxed text-white/50">
-                    Placeholder—drop in a 60–90s screen recording (setlists, Present, Audience, remote).
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
-          <div className="rounded-[22px] border border-white/[0.1] bg-gradient-to-br from-slate-500/[0.08] via-wf-card/80 to-slate-600/[0.06] p-8 text-center sm:p-10">
-            <h2 className="text-xl font-bold sm:text-2xl">Ready when you are</h2>
-            <p className="mx-auto mt-2 max-w-md text-sm text-wf-muted">
-              Create an account to sync with your team (with Supabase), or sign in to open your
-              dashboard.
-            </p>
-            <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-              <Link
-                href="/register"
-                className="inline-flex h-11 items-center justify-center rounded-[12px] bg-white px-6 text-sm font-bold text-slate-900 transition hover:bg-slate-100"
-              >
-                Create account
-              </Link>
-              <Link
-                href="/login"
-                className="inline-flex h-11 items-center justify-center rounded-[12px] border border-white/25 px-6 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
-                Sign in
-              </Link>
+              <p className="mt-6 text-sm text-wf-muted">
+                <a href="#lyric-splitter" className="text-sky-400 hover:text-sky-300 transition">
+                  Try the lyric formatter
+                </a>{" "}
+                first—no sign-up required.
+              </p>
             </div>
           </div>
         </section>
