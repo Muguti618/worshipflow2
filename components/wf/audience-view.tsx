@@ -9,6 +9,7 @@ import type { DeckSlide } from "@/lib/setlists-catalog";
 import { SlideTransitionShell } from "@/components/wf/slide-transition-shell";
 import { SlideStage } from "@/components/wf/slide-stage";
 import { useSlideTransition } from "@/hooks/use-slide-transition";
+import { FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
 
 /** Lyric slide section labels (must not use the amber “Scripture” footer). */
 const SONG_SECTION_TITLE_RE =
@@ -46,8 +47,6 @@ function enterFullscreen() {
   const req = el.requestFullscreen?.();
   return req ?? Promise.reject(new Error("Unsupported"));
 }
-
-const FREE_TIER_SLIDE_BRANDING = "Powered by LumenWorship";
 
 export function AudienceView({ room }: { room: string }) {
   const { limitsApply, ready } = usePlanEntitlements();

@@ -167,10 +167,10 @@ export function SlideStage({
 
         {showTierWatermark ? (
           <div
-            className="relative z-[2] shrink-0 border-t border-white/[0.08] bg-black/55 px-3 py-2 backdrop-blur-sm md:px-6 md:py-2.5"
+            className="relative z-[2] shrink-0 border-t border-violet-400/20 bg-gradient-to-t from-black/85 via-black/72 to-black/60 px-3 py-2.5 shadow-[inset_0_1px_0_rgba(167,139,250,0.12)] backdrop-blur-sm md:px-6 md:py-3"
             aria-label="Plan branding"
           >
-            <p className="text-center text-[10px] font-medium tracking-[0.2em] text-white/45 md:text-[11px] md:tracking-[0.24em]">
+            <p className="text-center text-[11px] font-semibold uppercase tracking-[0.26em] text-white/72 md:text-xs md:tracking-[0.3em]">
               {watermarkText}
             </p>
           </div>

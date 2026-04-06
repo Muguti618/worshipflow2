@@ -6,6 +6,7 @@ import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
 import { BACKGROUND_PRESETS } from "@/lib/background-presets";
 import { fetchLyricsSplitAi } from "@/lib/fetch-lyrics-split-ai";
 import { lyricsToSlideCards, type SlideCard } from "@/lib/slide-engine";
+import { FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
 import { SlideStage } from "@/components/wf/slide-stage";
 
 const SAMPLE = `[Verse 1]
@@ -332,6 +333,9 @@ export function StudioPage() {
             backgroundUrl={bg}
             motion
             typography="editorial"
+            tierWatermark={
+              planReady && limitsApply ? FREE_TIER_SLIDE_BRANDING : undefined
+            }
           />
           <div className="rounded-[16px] border border-white/[0.06] bg-wf-card/30 p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-wf-muted">

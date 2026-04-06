@@ -1,5 +1,8 @@
 import type { SlideTransitionId } from "@/lib/slide-transition";
 
+/** Footer strip on slides for logged-in Free plan (Present, Audience, previews). */
+export const FREE_TIER_SLIDE_BRANDING = "Powered by LumenWorship";
+
 export const FREE_MAX_SONGS = 3;
 export const FREE_MAX_SETLISTS = 1;
 export const FREE_MAX_VERSE_BEAMS = 5;

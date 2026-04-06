@@ -17,7 +17,7 @@ import type { VerseSuggestion } from "@/lib/bible-topic-suggestions";
 import { SlideTransitionShell } from "@/components/wf/slide-transition-shell";
 import { SlideStage } from "@/components/wf/slide-stage";
 import { useSlideTransition } from "@/hooks/use-slide-transition";
-import { FREE_MAX_VERSE_BEAMS } from "@/lib/plan-limits";
+import { FREE_MAX_VERSE_BEAMS, FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
 import {
   incrementVerseBeamUsage,
   readVerseBeamUsageCount,
@@ -28,8 +28,6 @@ function keyTargetIsFormField(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   return !!target.closest("input, textarea, select, [contenteditable='true']");
 }
-
-const FREE_TIER_SLIDE_BRANDING = "Powered by LumenWorship";
 
 export function PresentMode({ room }: { room: string }) {
   const { limitsApply, ready } = usePlanEntitlements();
@@ -277,6 +275,7 @@ export function PresentMode({ room }: { room: string }) {
             backgroundFullBleed={onScreenNext.backgroundFullBleed}
             motion={!onScreenNext.backgroundColor?.trim() && !onScreenNext.backgroundFullBleed}
             typography={onScreenNext.typography ?? "editorial"}
+            tierWatermark={ready && limitsApply ? FREE_TIER_SLIDE_BRANDING : undefined}
           />
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
 import {
   BIBLE_TRANSLATION_LABELS,
   BIBLE_TRANSLATION_ORDER,
@@ -10,9 +11,11 @@ import {
 } from "@/lib/bible-lookup";
 import type { VerseSuggestion } from "@/lib/bible-topic-suggestions";
 import { scriptureToSlideCards } from "@/lib/slide-engine";
+import { FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
 import { SlideStage } from "@/components/wf/slide-stage";
 
 export function BiblePage() {
+  const { limitsApply, ready: planReady } = usePlanEntitlements();
   const [query, setQuery] = useState("John 3:16");
   const [translation, setTranslation] = useState<BibleTranslationKey>("NIV");
   const [topicForAi, setTopicForAi] = useState("");
@@ -252,6 +255,9 @@ export function BiblePage() {
                 motion
                 typography="editorial"
                 className="min-h-[200px]"
+                tierWatermark={
+                  planReady && limitsApply ? FREE_TIER_SLIDE_BRANDING : undefined
+                }
               />
             </div>
           ))}

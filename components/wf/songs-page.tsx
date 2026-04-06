@@ -16,6 +16,7 @@ import {
   FREE_BACKGROUND_PRESET_IDS,
   FREE_MAX_SONGS,
   FREE_SOLID_SWATCH_COUNT,
+  FREE_TIER_SLIDE_BRANDING,
 } from "@/lib/plan-limits";
 import { isDataUrlImage } from "@/lib/read-image-data-url";
 import { SlideStage } from "@/components/wf/slide-stage";
@@ -384,6 +385,9 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
           backgroundColor={previewStageBg.backgroundColor}
           backgroundFullBleed={previewStageBg.backgroundFullBleed}
           motion={!previewStageBg.backgroundColor?.trim() && !previewStageBg.backgroundFullBleed}
+          tierWatermark={
+            planReady && planLimited ? FREE_TIER_SLIDE_BRANDING : undefined
+          }
         />
 
         <div className="rounded-[16px] border border-white/[0.06] bg-wf-card/40 p-4 backdrop-blur-md">

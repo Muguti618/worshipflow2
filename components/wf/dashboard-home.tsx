@@ -20,7 +20,11 @@ import { scriptureToSlideCards } from "@/lib/slide-engine";
 import { kindLabel } from "@/lib/setlists-catalog";
 import { getDashboardGreeting } from "@/lib/dashboard-greeting";
 import { flattenSetlistToDeck, itemRangesInDeck } from "@/lib/setlist-flatten";
-import { FREE_MAX_SETLISTS, FREE_TRANSITION_IDS } from "@/lib/plan-limits";
+import {
+  FREE_MAX_SETLISTS,
+  FREE_TIER_SLIDE_BRANDING,
+  FREE_TRANSITION_IDS,
+} from "@/lib/plan-limits";
 import {
   SLIDE_TRANSITION_OPTIONS,
   type SlideTransitionId,
@@ -444,6 +448,9 @@ export function DashboardHome() {
                       verseOverride
                         ? "editorial"
                         : (slide.typography ?? "editorial")
+                    }
+                    tierWatermark={
+                      planReady && limitsApply ? FREE_TIER_SLIDE_BRANDING : undefined
                     }
                   />
                 </SlideTransitionShell>
