@@ -201,46 +201,33 @@ export function DashboardHome() {
               </Link>
             </p>
           </div>
-          <div className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:max-w-[17rem]">
-            <div
-              id="wf-dash-setlist"
-              data-wf-tour="tour-dash-setlist"
-              role="group"
-              aria-label="Setlist for presenter"
-              className="flex min-w-0 flex-col gap-1.5"
+          <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-auto sm:min-w-[min(100%,16rem)] sm:max-w-[20rem]">
+            <label
+              htmlFor="wf-dash-setlist"
+              className="text-[10px] font-semibold uppercase tracking-[0.14em] text-wf-muted/90"
             >
-              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-wf-muted/80">
-                Presenter setlist
-              </span>
-              {allSetlists.length === 0 ? (
-                <p className="rounded-lg border border-dashed border-white/[0.1] bg-wf-card/30 px-3 py-2.5 text-xs leading-snug text-wf-muted">
-                  No setlists yet — use <strong className="font-medium text-wf-text/80">+ New</strong> to create
-                  one.
-                </p>
-              ) : (
-                <ul className="max-h-[min(40vh,220px)] space-y-0.5 overflow-y-auto rounded-lg border border-white/[0.08] bg-wf-card/45 p-1 shadow-inner shadow-black/20">
-                  {allSetlists.map((s) => {
-                    const active = s.id === activeListId;
-                    return (
-                      <li key={s.id}>
-                        <button
-                          type="button"
-                          onClick={() => selectSetlist(s.id)}
-                          aria-current={active ? "true" : undefined}
-                          className={`flex w-full rounded-md px-2.5 py-2 text-left text-xs font-medium transition ${
-                            active
-                              ? "bg-violet-500/20 text-wf-text ring-1 ring-violet-500/35"
-                              : "text-wf-text/85 hover:bg-white/[0.06] hover:text-wf-text"
-                          }`}
-                        >
-                          <span className="min-w-0 flex-1 truncate">{s.name}</span>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
+              Presenter setlist
+            </label>
+            {allSetlists.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-white/[0.12] bg-wf-card/40 px-3 py-2.5 text-xs leading-snug text-wf-muted">
+                No setlists yet — use <strong className="font-medium text-wf-text/85">+ New</strong> to create one.
+              </p>
+            ) : (
+              <select
+                id="wf-dash-setlist"
+                data-wf-tour="tour-dash-setlist"
+                value={activeListId || ""}
+                onChange={(e) => selectSetlist(e.target.value)}
+                className="h-11 w-full cursor-pointer rounded-xl border border-white/[0.12] bg-wf-card/80 px-3.5 py-2 text-sm font-medium text-wf-text shadow-sm shadow-black/20 outline-none ring-0 transition hover:border-white/20 focus:border-violet-500/45 focus:ring-2 focus:ring-violet-500/25"
+                aria-label="Choose setlist for presenter"
+              >
+                {allSetlists.map((s) => (
+                  <option key={s.id} value={s.id} className="bg-zinc-900 text-wf-text">
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Link
@@ -511,7 +498,7 @@ export function DashboardHome() {
                 </ul>
               </>
             ) : (
-              <p className="mt-2 text-[11px] text-wf-muted">Pick a setlist from the list above.</p>
+              <p className="mt-2 text-[11px] text-wf-muted">Choose a setlist in the dropdown above.</p>
             )}
           </div>
 
