@@ -31,6 +31,8 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
   const beamRef = useRef<PresentBeamState | null>(null);
   const bcRef = useRef<BroadcastChannel | null>(null);
   const lastRemoteUpdateAtRef = useRef<number>(0);
+  /** While a deck slide POST is in flight, ignore polled slideIndex that still shows the old server value (avoids flicker). */
+  const pendingMasterSlideRef = useRef<number | null>(null);
 
   const clamp = useCallback(
     (n: number) => Math.max(0, Math.min(Math.max(0, slideCount - 1), n)),
@@ -44,17 +46,36 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
       indexRef.current = c;
       writePersistedSlideIndex(room, c);
       bcRef.current?.postMessage({ type: "slide", index: c });
+      const mySlide = c;
+      if (role === "master") pendingMasterSlideRef.current = mySlide;
       try {
-        await fetch("/api/present/state", {
+        const res = await fetch("/api/present/state", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ room, slideIndex: c }),
         });
+        if (res.ok && role === "master") {
+          try {
+            const j = (await res.json()) as { updatedAt?: number };
+            if (typeof j.updatedAt === "number" && Number.isFinite(j.updatedAt)) {
+              lastRemoteUpdateAtRef.current = Math.max(
+                lastRemoteUpdateAtRef.current,
+                j.updatedAt,
+              );
+            }
+          } catch {
+            /* ignore body parse */
+          }
+        }
       } catch {
         /* offline — localStorage + BroadcastChannel still work */
+      } finally {
+        if (role === "master" && pendingMasterSlideRef.current === mySlide) {
+          pendingMasterSlideRef.current = null;
+        }
       }
     },
-    [room, clamp],
+    [room, clamp, role],
   );
 
   const publishBeam = useCallback(
@@ -150,11 +171,16 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
         if (remoteUpdatedAt !== null) lastRemoteUpdateAtRef.current = remoteUpdatedAt;
         if (typeof j.slideIndex === "number") {
           const c = clamp(j.slideIndex);
-          if (c !== indexRef.current) {
+          const pend = pendingMasterSlideRef.current;
+          if (role === "master" && pend !== null && c !== pend) {
+            /* Stale read while our slide POST is still in flight or racing GET */
+          } else if (c !== indexRef.current) {
             setIndex(c);
             indexRef.current = c;
+            writePersistedSlideIndex(room, c);
+          } else {
+            writePersistedSlideIndex(room, c);
           }
-          writePersistedSlideIndex(room, c);
         }
         if ("beam" in j) {
           const parsed =
@@ -177,12 +203,13 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
         cancelled = true;
       };
     }
-    const id = window.setInterval(pull, 650);
+    const pollMs = role === "master" ? 1100 : 700;
+    const id = window.setInterval(pull, pollMs);
     return () => {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [room, clamp, netOnline]);
+  }, [room, clamp, netOnline, role]);
 
   const go = useCallback(
     (delta: number) => {

@@ -38,6 +38,7 @@ export function RemoteControl({ room }: { room: string }) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.repeat) return;
       if (e.key === "ArrowRight") {
         e.preventDefault();
         go(1);

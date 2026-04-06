@@ -84,6 +84,7 @@ export function PresentMode({ room }: { room: string }) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.repeat) return;
       if (keyTargetIsFormField(e.target)) return;
       if (e.key === "ArrowRight" || e.key === " ") {
         e.preventDefault();
