@@ -71,22 +71,22 @@ export function SettingsPage() {
         </section>
 
         <section className="rounded-[18px] border border-wf-border bg-wf-card/40 p-6 backdrop-blur-md">
-          <h2 className="text-sm font-semibold text-wf-text">AI (OpenAI)</h2>
-          <p className="mt-2 text-xs leading-relaxed text-wf-muted">
-            Add <code className="font-mono text-[10px] text-wf-text/80">OPENAI_API_KEY</code> and optional{" "}
-            <code className="font-mono text-[10px] text-wf-text/80">OPENAI_MODEL</code> to{" "}
-            <code className="font-mono text-[10px] text-wf-text/80">.env.local</code>, then restart{" "}
-            <code className="font-mono text-[10px] text-wf-text/80">npm run dev</code>. The Assistant,{" "}
-            <strong className="font-medium text-wf-text">Slide Studio</strong> (bridge +{" "}
-            <strong className="font-medium text-wf-text">AI lyrics splitter</strong>{" "}
-            <code className="font-mono text-[10px] text-wf-text/80">/api/ai/split-lyrics</code>), Bible
-            suggestions, new-song layout, setlist scripture (topic queries), and custom blocks call ChatGPT on
-            the server (your key is never sent to the browser).
+          <h2 className="text-sm font-semibold text-wf-text">Smart features</h2>
+          <p className="mt-2 text-sm leading-relaxed text-wf-muted">
+            The <strong className="font-medium text-wf-text">Assistant</strong>,{" "}
+            <strong className="font-medium text-wf-text">Slide Studio</strong> (bridge and lyric splitting),
+            Bible suggestions, new-song layout, scripture-by-topic in setlists, and custom blocks use{" "}
+            <strong className="font-medium text-wf-text">cloud AI on the server</strong>. Your API key stays on
+            the server — it is never sent to the browser.
+          </p>
+          <p className="mt-3 text-xs leading-relaxed text-wf-muted">
+            <span className="font-medium text-wf-text/90">Hosting this app?</span> Add your AI provider API key
+            and optional model name to your environment file (e.g. <code className="font-mono text-[10px]">.env.local</code>
+            ), then restart the dev server or redeploy. For demos without a key, you can allow built-in preview
+            replies with <code className="font-mono text-[10px]">AI_ALLOW_DUMMY=1</code> (development only).
           </p>
           <p className="mt-2 text-xs leading-relaxed text-wf-muted">
-            Without a key, those endpoints return an error unless you set{" "}
-            <code className="font-mono text-[10px] text-wf-text/80">AI_ALLOW_DUMMY=1</code> for offline
-            preview data. Reference-style scripture lookup still uses bundled sample text (not OpenAI).
+            Reference-style scripture lookup uses bundled sample text in the app and does not call cloud AI.
           </p>
         </section>
 

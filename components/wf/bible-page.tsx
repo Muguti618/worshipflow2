@@ -43,10 +43,10 @@ export function BiblePage() {
 
   const result = passageOverride ?? lookupResult;
 
-  const scriptureSlides = useMemo(
-    () => scriptureToSlideCards(result.ref, result.text),
-    [result.ref, result.text],
-  );
+  const scriptureSlides = useMemo(() => {
+    if (!result) return [];
+    return scriptureToSlideCards(result.ref, result.text);
+  }, [result]);
 
   const fetchAiSuggestions = useCallback(async () => {
     const topic = topicForAi.trim() || query.trim();
@@ -199,33 +199,45 @@ export function BiblePage() {
         </section>
       ) : null}
 
-      <article className="mt-8 rounded-[20px] border border-white/[0.06] bg-wf-card/40 p-8 backdrop-blur-md transition hover:border-violet-500/15">
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.25em] text-wf-muted">
-          {result.ref}
-        </p>
-        {passageOverride ? (
-          <p className="mt-2 text-center text-[11px] text-violet-300/90">
-            Showing a verse you chose from AI options (change the reference above to reset).
+      {result ? (
+        <article className="mt-8 rounded-[20px] border border-white/[0.06] bg-wf-card/40 p-8 backdrop-blur-md transition hover:border-violet-500/15">
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.25em] text-wf-muted">
+            {result.ref}
           </p>
-        ) : null}
-        <p className="mt-6 text-balance text-center text-xl font-medium leading-relaxed text-wf-text md:text-2xl">
-          {result.text}
-        </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <button
-            type="button"
-            className="rounded-[12px] bg-gradient-to-r from-blue-600/90 to-violet-600/90 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-900/20"
-          >
-            Add to presentation
-          </button>
-          <Link
-            href="/ai"
-            className="rounded-[12px] border border-white/[0.1] px-5 py-2.5 text-sm font-medium text-wf-text hover:border-violet-500/30"
-          >
-            Open in AI Assistant
-          </Link>
+          {passageOverride ? (
+            <p className="mt-2 text-center text-[11px] text-violet-300/90">
+              Showing a verse you chose from AI options (change the reference above to reset).
+            </p>
+          ) : null}
+          <p className="mt-6 text-balance text-center text-xl font-medium leading-relaxed text-wf-text md:text-2xl">
+            {result.text}
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <button
+              type="button"
+              className="rounded-[12px] bg-gradient-to-r from-blue-600/90 to-violet-600/90 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-900/20"
+            >
+              Add to presentation
+            </button>
+            <Link
+              href="/ai"
+              className="rounded-[12px] border border-white/[0.1] px-5 py-2.5 text-sm font-medium text-wf-text hover:border-violet-500/30"
+            >
+              Open Assistant
+            </Link>
+          </div>
+        </article>
+      ) : (
+        <div className="mt-8 rounded-[20px] border border-dashed border-white/[0.12] bg-wf-card/25 p-8 text-center backdrop-blur-md">
+          <p className="text-sm font-medium text-wf-text">No built-in sample for that reference</p>
+          <p className="mt-2 text-sm leading-relaxed text-wf-muted">
+            Try a passage we include (e.g. <strong className="font-medium text-wf-text/90">John 3:16</strong>,{" "}
+            <strong className="font-medium text-wf-text/90">Romans 8:28</strong>,{" "}
+            <strong className="font-medium text-wf-text/90">Psalm 23</strong>), or use{" "}
+            <strong className="font-medium text-wf-text/90">Get AI verse ideas</strong> above.
+          </p>
         </div>
-      </article>
+      )}
 
       <section className="mt-8">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-wf-muted">

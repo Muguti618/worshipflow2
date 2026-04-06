@@ -78,53 +78,53 @@ export function getDummyAiChatReply(userMessage: string): { text: string; tag: s
   if (/verse|bible|scripture|passage/.test(q)) {
     return {
       tag: "bible",
-      text: `Here are a few **test suggestions** (dummy data):\n\n• Philippians 4:6–7 — peace instead of anxiety\n• Romans 15:13 — God fills you with hope\n• Psalm 46:1 — God our refuge and strength\n\nOpen **Bible**, use **Get AI verse options** for full text, then add to your flow. In **Setlists**, **+ Scripture** runs **dummy AI** (reference or topic → slides → review) via \`/api/ai/scripture-setlist\`.`,
+      text: `Here are some **passages to explore**:\n\n• Philippians 4:6–7 — peace instead of anxiety\n• Romans 15:13 — God fills you with hope\n• Psalm 46:1 — God our refuge and strength\n\nOpen **Bible** for full text and formatting. In **Setlists**, tap **+ Scripture** to turn a reference or topic into slides you can review before adding.`,
     };
   }
 
   if (/slide|line|readab|format|split|break/.test(q)) {
     return {
       tag: "slides",
-      text: `**Multi-slide rule:** one **song** holds many **slides** (verse slide, chorus slide, etc.).\n\n• **Songs** — edit each slide’s title + lines; use ↑↓ to reorder.\n• **Slide Studio** — paste lyrics; adjust “max lines per slide” to control how many slides you get.\n• **Setlists** — each **row** is one item; linked songs pull **all** their slides into Present in order.\n\n*(Dummy AI reply — wire a model to automate splitting.)*`,
+      text: `**One song, many slides:** each **song** can have several **slides** (verse, chorus, bridge, etc.).\n\n• **Songs** — edit each slide’s title and lines; use the arrows to reorder.\n• **Slide Studio** — paste lyrics and adjust how many lines go on each slide.\n• **Setlists** — each row is one item; songs expand to **all** their slides in order in Present.`,
     };
   }
 
   if (/background|image|colour|color|visual|look/.test(q)) {
     return {
       tag: "visual",
-      text: `**Backgrounds (test tips):**\n\n• In **Songs**, pick presets, a solid colour, or a custom image URL — applies across that song’s slides (each slide can override later).\n• **Slide Studio** picks a preview background only; save the song in **Songs** for Present.\n\n*(Dummy data — your request was: "${userMessage.slice(0, 80)}…")*`,
+      text: `**Backgrounds:**\n\n• In **Songs**, choose a preset image, a solid colour, or paste an image link — it applies across that song’s slides (you can still override per slide).\n• **Slide Studio** is for trying ideas; save in **Songs** when you want it in Present.`,
     };
   }
 
   if (/setlist|order|service|run ?sheet/.test(q)) {
     return {
       tag: "setlist",
-      text: `**Setlist flow (dummy walkthrough):**\n\n1. **Setlists** → edit yours → drag the **grip** to reorder items.\n2. **Dashboard** → choose setlist → preview shows **each slide** in order.\n3. **Present** / **Audience** / **Remote** stay in sync.\n\nSongs with 5 slides = 5 presenter slides in that slot.`,
+      text: `**Setlist flow:**\n\n1. **Setlists** — open yours and drag the handle to reorder items.\n2. **Dashboard** — pick a setlist; the preview walks through **every slide** in order.\n3. **Present**, **Audience**, and **Remote** stay in sync for the same room.\n\nA song with five slides becomes five steps in Present for that spot.`,
     };
   }
 
   if (/present|projector|audience|remote|room/.test(q)) {
     return {
       tag: "present",
-      text: `**Presenting (test summary):**\n\n• **Present** — operator view + next slide.\n• **Audience** — clean output (optional fullscreen).\n• **Remote** — phone control for the same **room** id.\n\nDeck = flattened slides from your setlist (every slide from every song, in order).`,
+      text: `**Presenting:**\n\n• **Present** — your control screen with what’s next.\n• **Audience** — what the room sees (you can go fullscreen).\n• **Remote** — control from a phone or tablet using the same **room** name.\n\nThe deck is your setlist flattened: every slide from every song, in order.`,
     };
   }
 
   if (/new song|add song|create song|first song|song presentation|polish.*slide/.test(q)) {
     return {
       tag: "song",
-      text: `**When you create a new song**, LumenWorship runs **presentation prep** (test AI): a **stock background** is chosen from the mood of your title and lyrics, and lines are packed **two per slide** for clearer projection. That runs when you tap **Add to library** (Songs) or **Save song and add** (setlist editor). Wire \`POST /api/ai/song-present\` to your model later.`,
+      text: `**New songs:** when you add a song with **AI**, LumenWorship can suggest a **background** from the feel of your title and lyrics and pack lines **about two per slide** for easier reading on screen. That happens when you tap **Add to library** in **Songs** or **Save song and add** from a setlist.`,
     };
   }
 
   return {
     tag: "general",
-    text: `Thanks — here’s a **dummy** response so you can test the UI.\n\nI can help with **slides** (multi-slide songs), **setlists**, **Bible / verse ideas**, and **presenting**. Try asking about “splitting slides”, “backgrounds”, or “verse about hope”.\n\n**Tutorial:** sidebar → **Tutorial** anytime.\n\n_(Echo: ${userMessage.slice(0, 100)}${userMessage.length > 100 ? "…" : ""})_`,
+    text: `Thanks for your message.\n\nTry asking about **splitting slides**, **setlists**, **a verse about hope**, or **how Present works**. The sidebar **Tutorial** is a great place to start too.`,
   };
 }
 
 export const AI_ASSISTANT_SEED =
-  "Hi — ask about **slides** (multiple slides per song), **setlists**, **Bible ideas**, **backgrounds**, or **presenting**. With **OPENAI_API_KEY** set on the server, I use ChatGPT; otherwise this chat uses short preview replies. **New songs:** pick **AI** (review slides) or **Manual** (paste lyrics). Open **Tutorial** anytime.";
+  "Hi — I’m here to help with **slides** (several slides per song), **setlists**, **scripture ideas**, **backgrounds**, and **presenting**. Tap a suggestion below or type your own question. **New songs:** use **AI** to draft slides for review, or **Manual** if you prefer to paste lyrics yourself. You can open **Tutorial** from the sidebar anytime.";
 
 export type SongPresentSlide = { title: string; lines: string[] };
 

@@ -3,11 +3,21 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
-import { AI_ASSISTANT_SEED, AI_DUMMY_META } from "@/lib/ai-dummy-data";
+import { AI_ASSISTANT_SEED } from "@/lib/ai-dummy-data";
 
 type Msg = { role: "user" | "assistant"; text: string; tag?: string };
 
-type AiMeta = { mode: string; modelLabel: string; latencyMsSimulated: number };
+type ConnectionKind = "live" | "preview" | "setup";
+
+const TAG_CHIPS: Record<string, string> = {
+  bible: "Scripture",
+  slides: "Slides & layout",
+  visual: "Backgrounds",
+  setlist: "Setlists",
+  present: "Presenting",
+  song: "New songs",
+  general: "Ideas",
+};
 
 function formatAiText(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -32,38 +42,29 @@ const TRY_PROMPTS = [
   "How do setlists connect to Present?",
 ];
 
+function chipLabel(tag?: string): string | null {
+  if (!tag || tag === "error" || tag === "assistant" || tag === "openai") return null;
+  return TAG_CHIPS[tag] ?? null;
+}
+
 export function AiAssistantPage() {
   const { limitsApply, ready: planReady } = usePlanEntitlements();
   const [messages, setMessages] = useState<Msg[]>(SEED);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
-  const [lastMeta, setLastMeta] = useState<AiMeta>({
-    mode: AI_DUMMY_META.mode,
-    modelLabel: AI_DUMMY_META.modelLabel,
-    latencyMsSimulated: AI_DUMMY_META.latencyMsSimulated,
-  });
+  const [connection, setConnection] = useState<ConnectionKind>("setup");
 
   useEffect(() => {
     void fetch("/api/ai/status")
       .then((r) => r.json())
       .then(
-        (j: { openaiConfigured?: boolean; model?: string | null; dummyFallbackAllowed?: boolean }) => {
-          if (j.openaiConfigured && j.model) {
-            setLastMeta({ mode: "openai", modelLabel: j.model, latencyMsSimulated: 0 });
-          } else if (j.openaiConfigured) {
-            setLastMeta({ mode: "openai", modelLabel: "OpenAI (default model)", latencyMsSimulated: 0 });
-          } else if (j.dummyFallbackAllowed) {
-            setLastMeta({ ...AI_DUMMY_META, mode: "preview-fallback (AI_ALLOW_DUMMY)" });
-          } else {
-            setLastMeta({
-              mode: "not-configured",
-              modelLabel: "Add OPENAI_API_KEY to .env.local",
-              latencyMsSimulated: 0,
-            });
-          }
+        (j: { openaiConfigured?: boolean; dummyFallbackAllowed?: boolean }) => {
+          if (j.openaiConfigured) setConnection("live");
+          else if (j.dummyFallbackAllowed) setConnection("preview");
+          else setConnection("setup");
         },
       )
-      .catch(() => {});
+      .catch(() => setConnection("setup"));
   }, []);
 
   const send = useCallback(async () => {
@@ -85,23 +86,18 @@ export function AiAssistantPage() {
       const j = (await r.json()) as {
         text?: string;
         tag?: string;
-        meta?: AiMeta;
         error?: string;
         details?: string;
-        httpStatus?: number;
       };
       if (!r.ok) {
         let err =
-          typeof j.error === "string"
-            ? j.error
+          typeof j.error === "string" && j.error.trim()
+            ? j.error.trim()
             : r.status === 503
-              ? "AI is not configured on the server (missing OPENAI_API_KEY)."
-              : `Request failed (${r.status}).`;
-        if (typeof j.details === "string" && j.details.trim() && j.details !== j.error) {
-          err = `${err}\n\nTechnical details:\n${j.details.trim()}`;
-        }
-        if (typeof j.httpStatus === "number" && j.httpStatus > 0) {
-          err = `${err}\n\n(OpenAI HTTP ${j.httpStatus})`;
+              ? "Smart replies aren’t available on this server right now. You can still use the rest of the app — try the Tutorial from the sidebar."
+              : "Something went wrong. Please try again in a moment.";
+        if (process.env.NODE_ENV === "development" && typeof j.details === "string" && j.details.trim()) {
+          err = `${err}\n\nDetails (dev only):\n${j.details.trim().slice(0, 800)}`;
         }
         setMessages((m) => [...m, { role: "assistant", text: err, tag: "error" }]);
         return;
@@ -110,19 +106,12 @@ export function AiAssistantPage() {
         const reply = j.text;
         const tag = typeof j.tag === "string" ? j.tag : undefined;
         setMessages((m) => [...m, { role: "assistant", text: reply, tag }]);
-        if (j.meta?.modelLabel && j.meta.mode) {
-          setLastMeta({
-            mode: j.meta.mode,
-            modelLabel: j.meta.modelLabel,
-            latencyMsSimulated: j.meta.latencyMsSimulated ?? 0,
-          });
-        }
       } else {
         setMessages((m) => [
           ...m,
           {
             role: "assistant",
-            text: j.error ?? "Something went wrong. Try again.",
+            text: j.error ?? "Something went wrong. Try again with a shorter question.",
             tag: "error",
           },
         ]);
@@ -132,7 +121,7 @@ export function AiAssistantPage() {
         ...m,
         {
           role: "assistant",
-          text: "Could not reach the server (offline?). Check your connection.",
+          text: "We couldn’t reach the server. Check your connection and try again.",
           tag: "error",
         },
       ]);
@@ -143,97 +132,148 @@ export function AiAssistantPage() {
 
   if (planReady && limitsApply) {
     return (
-      <div className="mx-auto max-w-lg p-6 lg:p-8">
-        <h1 className="text-2xl font-bold tracking-tight">AI Assistant</h1>
-        <p className="mt-3 text-sm leading-relaxed text-wf-muted">
-          The in-app AI chat is not included on the Free plan. Upgrade to Pro to ask questions about slides,
-          setlists, and workflow with ChatGPT-backed replies (when your server has{" "}
-          <code className="rounded bg-white/[0.06] px-1 font-mono text-[11px]">OPENAI_API_KEY</code>
-          ).
-        </p>
-        <Link
-          href="/upgrade"
-          className="mt-6 inline-flex h-11 items-center justify-center rounded-[14px] bg-gradient-to-r from-blue-600 to-violet-600 px-6 text-sm font-semibold text-white shadow-lg shadow-violet-900/25"
-        >
-          Upgrade to Pro
-        </Link>
+      <div className="mx-auto max-w-lg px-6 py-10 lg:px-8">
+        <div className="rounded-[22px] border border-white/[0.08] bg-gradient-to-b from-violet-500/10 to-transparent p-8 text-center">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-200/80">
+            Pro feature
+          </p>
+          <h1 className="mt-3 text-2xl font-bold tracking-tight text-wf-text">Assistant chat</h1>
+          <p className="mt-4 text-sm leading-relaxed text-wf-muted">
+            Ask questions about slides, setlists, presenting, and scripture ideas — included with Pro.
+          </p>
+          <Link
+            href="/upgrade"
+            className="mt-8 inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[14px] bg-gradient-to-r from-blue-600 to-violet-600 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 transition hover:brightness-110"
+          >
+            View plans
+          </Link>
+          <Link
+            href="/dashboard"
+            className="mt-4 block text-sm text-violet-300/90 hover:text-violet-200 hover:underline"
+          >
+            Back to dashboard
+          </Link>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="mx-auto flex h-[calc(100vh-3.5rem)] max-w-3xl flex-col p-6 lg:p-8">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">AI Assistant</h1>
-        <p className="mt-1 text-sm text-wf-muted">
-          Replies use <strong className="font-medium text-wf-text">ChatGPT</strong> when the server has{" "}
-          <code className="rounded bg-white/[0.06] px-1 font-mono text-[11px]">OPENAI_API_KEY</code>. Without
-          it, requests fail unless{" "}
-          <code className="font-mono text-[11px]">AI_ALLOW_DUMMY=1</code> enables short preview replies. See{" "}
-          <Link href="/tutorial" className="text-violet-300 hover:underline">
-            Tutorial
-          </Link>
-          .
-        </p>
-        <p className="mt-2 rounded-[12px] border border-white/[0.06] bg-wf-bg/40 px-3 py-2 text-[11px] text-wf-muted">
-          <span className="font-mono text-wf-text/90">{lastMeta.modelLabel}</span>
-          <span className="mx-2 text-wf-muted/50">·</span>
-          mode: <span className="font-mono text-wf-text/80">{lastMeta.mode}</span>
-        </p>
+  const statusBanner =
+    connection === "live" ? (
+      <div className="flex items-center gap-3 rounded-[14px] border border-emerald-500/25 bg-emerald-500/10 px-4 py-3">
+        <span className="flex h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.6)]" />
+        <div>
+          <p className="text-sm font-medium text-emerald-100/95">Full smart replies</p>
+          <p className="text-[11px] text-emerald-200/70">You’ll get detailed, conversational answers.</p>
+        </div>
       </div>
+    ) : connection === "preview" ? (
+      <div className="flex items-center gap-3 rounded-[14px] border border-amber-500/25 bg-amber-500/10 px-4 py-3">
+        <span className="flex h-2 w-2 shrink-0 rounded-full bg-amber-400" />
+        <div>
+          <p className="text-sm font-medium text-amber-100/95">Preview mode</p>
+          <p className="text-[11px] text-amber-200/75">
+            Short sample answers help you explore the app. Your host can turn on full replies anytime.
+          </p>
+        </div>
+      </div>
+    ) : (
+      <div className="flex items-center gap-3 rounded-[14px] border border-white/[0.08] bg-wf-bg/50 px-4 py-3">
+        <span className="flex h-2 w-2 shrink-0 rounded-full bg-white/35" />
+        <div>
+          <p className="text-sm font-medium text-wf-text">Smart replies not configured</p>
+          <p className="text-[11px] text-wf-muted">
+            Chat may not work until the server is set up. Open{" "}
+            <Link href="/settings" className="text-violet-300 hover:underline">
+              Settings
+            </Link>{" "}
+            for hosting notes, or try the{" "}
+            <Link href="/tutorial" className="text-violet-300 hover:underline">
+              Tutorial
+            </Link>
+            .
+          </p>
+        </div>
+      </div>
+    );
 
-      <div className="flex flex-1 flex-col overflow-hidden rounded-[20px] border border-white/[0.08] bg-wf-card/40 backdrop-blur-xl">
-        <div className="flex-1 space-y-4 overflow-auto p-5">
-          {messages.map((msg, i) => (
-            <div
-              key={`${i}-${msg.text.slice(0, 12)}`}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
+  return (
+    <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-3xl flex-col px-5 py-8 lg:px-8">
+      <header className="mb-6 shrink-0 space-y-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-wf-text">Assistant</h1>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-wf-muted">
+            Quick answers about <strong className="font-medium text-wf-text/90">slides</strong>,{" "}
+            <strong className="font-medium text-wf-text/90">setlists</strong>,{" "}
+            <strong className="font-medium text-wf-text/90">scripture</strong>, and{" "}
+            <strong className="font-medium text-wf-text/90">presenting</strong>. Use the suggestions below or
+            type your own question.
+          </p>
+        </div>
+        {statusBanner}
+      </header>
+
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[22px] border border-white/[0.08] bg-wf-card/35 shadow-[0_24px_80px_-32px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5 lg:p-6">
+          {messages.map((msg, i) => {
+            const chip = chipLabel(msg.tag);
+            return (
               <div
-                className={`max-w-[90%] rounded-[16px] px-4 py-3 text-sm leading-relaxed ${
-                  msg.role === "user"
-                    ? "bg-gradient-to-br from-blue-600/35 to-violet-600/35 text-wf-text"
-                    : "flex flex-col gap-2 border border-white/[0.06] bg-wf-bg/50 text-wf-muted"
-                }`}
+                key={`${i}-${msg.text.slice(0, 12)}`}
+                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
-                {msg.role === "assistant" && msg.tag ? (
-                  <span className="inline-flex w-fit rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-200/90">
-                    {msg.tag === "openai"
-                      ? "ChatGPT"
+                <div
+                  className={`max-w-[min(100%,520px)] rounded-[18px] px-4 py-3.5 ${
+                    msg.role === "user"
+                      ? "bg-gradient-to-br from-blue-600/30 to-violet-600/25 text-wf-text ring-1 ring-inset ring-white/[0.06]"
                       : msg.tag === "error"
-                        ? "Error"
-                        : `Preview · ${msg.tag}`}
-                  </span>
-                ) : null}
-                <div className="whitespace-pre-line">{formatAiText(msg.text)}</div>
+                        ? "border border-red-500/25 bg-red-500/10 text-red-100/95"
+                        : "border border-white/[0.06] bg-wf-bg/45 text-wf-muted"
+                  }`}
+                >
+                  <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                    {msg.role === "user" ? "You" : "Assistant"}
+                  </p>
+                  {chip ? (
+                    <span className="mb-2 inline-flex rounded-full bg-violet-500/15 px-2.5 py-0.5 text-[10px] font-semibold text-violet-200/90">
+                      {chip}
+                    </span>
+                  ) : null}
+                  <div className="text-sm leading-relaxed whitespace-pre-line">{formatAiText(msg.text)}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {loading ? (
             <div className="flex justify-start">
-              <div className="rounded-[16px] border border-white/[0.06] bg-wf-bg/50 px-4 py-3 text-sm text-wf-muted">
-                Thinking…
+              <div className="rounded-[18px] border border-white/[0.06] bg-wf-bg/45 px-4 py-3.5">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-white/35">Assistant</p>
+                <p className="mt-1 flex items-center gap-2 text-sm text-wf-muted">
+                  <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-violet-400" />
+                  Thinking…
+                </p>
               </div>
             </div>
           ) : null}
         </div>
-        <div className="border-t border-white/[0.06] p-4">
-          <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-wf-muted">
-            Try (fills the box — then Send)
+
+        <div className="shrink-0 border-t border-white/[0.06] bg-wf-bg/20 p-4 lg:p-5">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-wf-muted/90">
+            Try asking
           </p>
-          <div className="mb-3 flex flex-wrap gap-2">
+          <div className="mb-4 flex flex-wrap gap-2">
             {TRY_PROMPTS.map((ex) => (
               <button
                 key={ex}
                 type="button"
                 onClick={() => setDraft(ex)}
-                className="rounded-full border border-white/[0.08] bg-wf-bg/40 px-3 py-1 text-left text-xs text-wf-muted hover:border-violet-500/30 hover:text-wf-text"
+                className="rounded-full border border-white/[0.1] bg-wf-card/50 px-3.5 py-1.5 text-left text-xs text-wf-text/90 transition hover:border-violet-400/35 hover:bg-violet-500/10"
               >
                 {ex}
               </button>
             ))}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -243,17 +283,17 @@ export function AiAssistantPage() {
                   void send();
                 }
               }}
-              rows={2}
-              placeholder="Ask about slides (multi-slide songs), setlists, Bible, backgrounds…"
-              className="min-h-[48px] flex-1 resize-none rounded-[14px] border border-white/[0.08] bg-wf-bg/60 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet-500/25"
-              aria-label="Message to AI"
+              rows={3}
+              placeholder="Type your question… (Shift+Enter for a new line)"
+              className="min-h-[88px] flex-1 resize-y rounded-[16px] border border-white/[0.1] bg-wf-bg/55 px-4 py-3 text-sm text-wf-text placeholder:text-wf-muted/60 outline-none transition focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/20"
+              aria-label="Message to assistant"
               disabled={loading}
             />
             <button
               type="button"
               onClick={() => void send()}
-              disabled={loading}
-              className="shrink-0 self-end rounded-[14px] bg-gradient-to-br from-blue-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              disabled={loading || !draft.trim()}
+              className="h-11 shrink-0 rounded-[14px] bg-gradient-to-br from-blue-600 to-violet-600 px-6 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 transition hover:brightness-110 disabled:pointer-events-none disabled:opacity-40 sm:h-[88px] sm:px-8"
             >
               Send
             </button>

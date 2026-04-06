@@ -58,14 +58,17 @@ export async function POST(req: Request) {
 
   if (looksLikeReferenceQuery(query)) {
     const r = lookupScripture(query, translation);
-    const cards = scriptureToSlideCards(r.ref, r.text);
-    const slides = cards.map((c) => ({ title: c.title, lines: [...c.lines] }));
-    return Response.json({
-      ref: r.ref,
-      slides,
-      note: "Sample wording from bundled passages — replace with your licensed translation for services.",
-      meta: LOCAL_SCRIPTURE_SAMPLE_META,
-    });
+    if (r) {
+      const cards = scriptureToSlideCards(r.ref, r.text);
+      const slides = cards.map((c) => ({ title: c.title, lines: [...c.lines] }));
+      return Response.json({
+        ref: r.ref,
+        slides,
+        note: "Sample wording from bundled passages — replace with your licensed translation for services.",
+        meta: LOCAL_SCRIPTURE_SAMPLE_META,
+      });
+    }
+    /* Reference-shaped but not in bundled set — continue to AI / topic flow below. */
   }
 
   if (!(await sessionMayUseProAiApis())) return proRequiredForFeatureResponse();

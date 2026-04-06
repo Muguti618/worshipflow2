@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   if (!out.ok) return openAiHttpFailedResponse(out.status, out.error);
   return Response.json({
     text: out.content,
-    tag: "openai",
+    tag: "assistant",
     meta: aiMetaForRequest(cfg),
   });
 }

@@ -4,7 +4,7 @@ import { getOpenAIConfig } from "@/lib/openai-server";
 /** Pull a short message out of OpenAI’s JSON error body (or return a trimmed raw snippet). */
 export function summarizeOpenAiErrorBody(raw: string): string {
   const t = raw.trim();
-  if (!t) return "OpenAI returned an empty error body.";
+  if (!t) return "The AI service returned an empty error.";
   try {
     const j = JSON.parse(t) as {
       error?: { message?: string; code?: string; type?: string };
@@ -39,7 +39,7 @@ export function aiNotConfiguredResponse(): Response {
   return Response.json(
     {
       error:
-        "AI is not configured. Add OPENAI_API_KEY to .env.local in the project root, save the file, then restart the dev server (npm run dev). For deployment, set the same variable in your host’s environment.",
+        "Smart replies aren’t enabled on this server yet. If you’re trying the app locally or self-hosting, add your AI API key in environment settings and restart the app. Use Settings in the sidebar for a short guide.",
       code: "AI_NOT_CONFIGURED",
     },
     { status: 503 },
@@ -52,7 +52,7 @@ export function openAiFailedResponse(hint?: string): Response {
     {
       error:
         hint ??
-        "OpenAI did not return a usable result. Check your API key, billing/credits, and OPENAI_MODEL (use a JSON-capable model such as gpt-4o-mini).",
+        "The AI service didn’t return a usable answer. Check your API key and billing, or try again with a shorter question.",
       code: "AI_OPENAI_FAILED",
       ...(dev && hint ? { details: hint.slice(0, 600) } : {}),
     },

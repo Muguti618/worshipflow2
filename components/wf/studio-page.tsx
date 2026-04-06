@@ -166,17 +166,20 @@ export function StudioPage() {
           <Link href="/songs" className="text-violet-300 hover:underline">
             Songs
           </Link>{" "}
-          for Present. API:{" "}
+          for Present.{" "}
           {aiStatus?.openaiConfigured ? (
-            <span className="font-mono text-xs text-wf-text/80">
-              OpenAI ({aiStatus.model ?? "default"})
-            </span>
+            <span className="text-xs text-emerald-200/90">Smart split is on.</span>
           ) : aiStatus?.dummyFallbackAllowed ? (
-            <span className="font-mono text-xs text-wf-text/80">preview (AI_ALLOW_DUMMY)</span>
+            <span className="text-xs text-amber-200/85">Preview mode — sample splits only.</span>
           ) : (
-            <span className="font-mono text-xs text-amber-200/80">set OPENAI_API_KEY</span>
+            <span className="text-xs text-amber-200/85">
+              Smart split needs server setup — see{" "}
+              <Link href="/settings" className="text-violet-300 hover:underline">
+                Settings
+              </Link>
+              .
+            </span>
           )}
-          .
         </p>
         <p className="mt-2 text-xs text-wf-muted">
           <Link href="/tutorial" className="text-violet-300 hover:underline">

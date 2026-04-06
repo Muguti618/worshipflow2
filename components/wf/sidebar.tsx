@@ -26,7 +26,7 @@ const nav = [
   { href: "/studio", label: "Slide Studio", icon: "⚡" },
   { href: "/bible", label: "Bible", icon: "✝️" },
   { href: "/setlists", label: "Setlists", icon: "📅" },
-  { href: "/ai", label: "AI Assistant", icon: "🤖" },
+  { href: "/ai", label: "Assistant", icon: "✨" },
   { href: "/tutorial", label: "Tutorial", icon: "📖" },
   { href: "/upgrade", label: "Upgrade", icon: "✨" },
   { href: "/settings", label: "Settings", icon: "⚙️" },

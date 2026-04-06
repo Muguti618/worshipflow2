@@ -133,6 +133,12 @@ export function DashboardHome() {
 
   const applyBibleToPreview = useCallback(() => {
     const r = lookupScripture(bibleInput, "NIV");
+    if (!r) {
+      window.alert(
+        "That reference is not in our built-in sample set. Try John 3:16, Romans 8:28, Psalm 23, or use the Bible page for AI verse ideas.",
+      );
+      return;
+    }
     const cards = scriptureToSlideCards(r.ref, r.text);
     const first = cards[0];
     setVerseOverride({

@@ -60,11 +60,13 @@ export function PresentMode({ room }: { room: string }) {
   const next = deck[Math.min(i + 1, deck.length - 1)]!;
 
   const qvLookup = useMemo(() => lookupScripture(qvQuery, qvTranslation), [qvQuery, qvTranslation]);
-  const qvEffective = qvPick ?? qvLookup;
-  const qvSlides = useMemo(
-    () => scriptureToSlideCards(qvEffective.ref, qvEffective.text),
-    [qvEffective.ref, qvEffective.text],
-  );
+  const qvEffective = qvPick
+    ? { ref: qvPick.ref, text: qvPick.text }
+    : qvLookup;
+  const qvSlides = useMemo(() => {
+    if (!qvEffective) return [];
+    return scriptureToSlideCards(qvEffective.ref, qvEffective.text);
+  }, [qvEffective]);
 
   const beamSlides = beam?.slides;
   const beamIdx = beam?.index ?? 0;
@@ -118,6 +120,7 @@ export function PresentMode({ room }: { room: string }) {
   }, [limitsApply, beamUsageTick]);
 
   const beamToAudience = useCallback(() => {
+    if (!qvEffective) return;
     const cards = scriptureToSlideCards(qvEffective.ref, qvEffective.text);
     if (cards.length === 0) return;
     if (limitsApply) {
@@ -142,7 +145,7 @@ export function PresentMode({ room }: { room: string }) {
       setBeamUsageTick((x) => x + 1);
     }
     setQuickVerseOpen(false);
-  }, [limitsApply, publishBeam, qvEffective.ref, qvEffective.text]);
+  }, [limitsApply, publishBeam, qvEffective]);
 
   const fetchVerseIdeas = useCallback(async () => {
     const topic = qvQuery.trim();
@@ -485,10 +488,20 @@ export function PresentMode({ room }: { room: string }) {
               <p className="text-center text-[11px] uppercase tracking-widest text-white/35">
                 Preview{qvPick ? " (selected verse)" : " (reference lookup)"}
               </p>
-              <p className="mt-2 text-center text-xs font-semibold text-white/70">{qvEffective.ref}</p>
-              <p className="mt-2 text-pretty text-center text-sm leading-relaxed text-white/88">
-                {qvEffective.text}
-              </p>
+              {qvEffective ? (
+                <>
+                  <p className="mt-2 text-center text-xs font-semibold text-white/70">{qvEffective.ref}</p>
+                  <p className="mt-2 text-pretty text-center text-sm leading-relaxed text-white/88">
+                    {qvEffective.text}
+                  </p>
+                </>
+              ) : (
+                <p className="mt-3 text-center text-sm leading-relaxed text-white/55">
+                  No built-in sample for that reference. Tap{" "}
+                  <strong className="font-medium text-white/75">Get verse ideas (AI)</strong> (Pro) or pick a
+                  suggested verse below.
+                </p>
+              )}
               <p className="mt-3 text-center text-[11px] text-white/40">
                 {qvSlides.length} slide{qvSlides.length === 1 ? "" : "s"} on output
               </p>
