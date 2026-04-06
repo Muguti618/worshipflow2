@@ -133,8 +133,8 @@ export function AiAssistantPage() {
   if (planReady && limitsApply) {
     return (
       <div className="mx-auto max-w-lg px-6 py-10 lg:px-8">
-        <div className="rounded-[22px] border border-white/[0.08] bg-gradient-to-b from-violet-500/10 to-transparent p-8 text-center">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-200/80">
+        <div className="rounded-[22px] border border-white/[0.08] bg-gradient-to-b from-slate-500/[0.06] to-transparent p-8 text-center">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-200/80">
             Pro feature
           </p>
           <h1 className="mt-3 text-2xl font-bold tracking-tight text-wf-text">Assistant chat</h1>
@@ -143,13 +143,13 @@ export function AiAssistantPage() {
           </p>
           <Link
             href="/upgrade"
-            className="mt-8 inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[14px] bg-gradient-to-r from-blue-600 to-violet-600 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 transition hover:brightness-110"
+            className="mt-8 inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[14px] bg-blue-600 hover:bg-blue-500 text-sm font-semibold text-white shadow-lg shadow-black/30 transition hover:brightness-110"
           >
             View plans
           </Link>
           <Link
             href="/dashboard"
-            className="mt-4 block text-sm text-violet-300/90 hover:text-violet-200 hover:underline"
+            className="mt-4 block text-sm text-sky-400/90 hover:text-sky-200 hover:underline"
           >
             Back to dashboard
           </Link>
@@ -184,11 +184,11 @@ export function AiAssistantPage() {
           <p className="text-sm font-medium text-wf-text">Smart replies not configured</p>
           <p className="text-[11px] text-wf-muted">
             Chat may not work until the server is set up. Open{" "}
-            <Link href="/settings" className="text-violet-300 hover:underline">
+            <Link href="/settings" className="text-sky-400 hover:underline">
               Settings
             </Link>{" "}
             for hosting notes, or try the{" "}
-            <Link href="/tutorial" className="text-violet-300 hover:underline">
+            <Link href="/tutorial" className="text-sky-400 hover:underline">
               Tutorial
             </Link>
             .
@@ -225,7 +225,7 @@ export function AiAssistantPage() {
                 <div
                   className={`max-w-[min(100%,520px)] rounded-[18px] px-4 py-3.5 ${
                     msg.role === "user"
-                      ? "bg-gradient-to-br from-blue-600/30 to-violet-600/25 text-wf-text ring-1 ring-inset ring-white/[0.06]"
+                      ? "bg-gradient-to-br from-blue-600/30 to-slate-600/20 text-wf-text ring-1 ring-inset ring-white/[0.06]"
                       : msg.tag === "error"
                         ? "border border-red-500/25 bg-red-500/10 text-red-100/95"
                         : "border border-white/[0.06] bg-wf-bg/45 text-wf-muted"
@@ -235,7 +235,7 @@ export function AiAssistantPage() {
                     {msg.role === "user" ? "You" : "Assistant"}
                   </p>
                   {chip ? (
-                    <span className="mb-2 inline-flex rounded-full bg-violet-500/15 px-2.5 py-0.5 text-[10px] font-semibold text-violet-200/90">
+                    <span className="mb-2 inline-flex rounded-full bg-sky-500/12 px-2.5 py-0.5 text-[10px] font-semibold text-sky-200/90">
                       {chip}
                     </span>
                   ) : null}
@@ -249,7 +249,7 @@ export function AiAssistantPage() {
               <div className="rounded-[18px] border border-white/[0.06] bg-wf-bg/45 px-4 py-3.5">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-white/35">Assistant</p>
                 <p className="mt-1 flex items-center gap-2 text-sm text-wf-muted">
-                  <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-violet-400" />
+                  <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-sky-400" />
                   Thinking…
                 </p>
               </div>
@@ -267,7 +267,7 @@ export function AiAssistantPage() {
                 key={ex}
                 type="button"
                 onClick={() => setDraft(ex)}
-                className="rounded-full border border-white/[0.1] bg-wf-card/50 px-3.5 py-1.5 text-left text-xs text-wf-text/90 transition hover:border-violet-400/35 hover:bg-violet-500/10"
+                className="rounded-full border border-white/[0.1] bg-wf-card/50 px-3.5 py-1.5 text-left text-xs text-wf-text/90 transition hover:border-white/15 hover:bg-white/[0.05]"
               >
                 {ex}
               </button>
@@ -285,7 +285,7 @@ export function AiAssistantPage() {
               }}
               rows={3}
               placeholder="Type your question… (Shift+Enter for a new line)"
-              className="min-h-[88px] flex-1 resize-y rounded-[16px] border border-white/[0.1] bg-wf-bg/55 px-4 py-3 text-sm text-wf-text placeholder:text-wf-muted/60 outline-none transition focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/20"
+              className="min-h-[88px] flex-1 resize-y rounded-[16px] border border-white/[0.1] bg-wf-bg/55 px-4 py-3 text-sm text-wf-text placeholder:text-wf-muted/60 outline-none transition focus:border-sky-500/40 focus:ring-2 focus:ring-sky-500/20"
               aria-label="Message to assistant"
               disabled={loading}
             />
@@ -293,7 +293,7 @@ export function AiAssistantPage() {
               type="button"
               onClick={() => void send()}
               disabled={loading || !draft.trim()}
-              className="h-11 shrink-0 rounded-[14px] bg-gradient-to-br from-blue-600 to-violet-600 px-6 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 transition hover:brightness-110 disabled:pointer-events-none disabled:opacity-40 sm:h-[88px] sm:px-8"
+              className="h-11 shrink-0 rounded-[14px] bg-gradient-to-br from-blue-600 to-blue-700 px-6 text-sm font-semibold text-white shadow-lg shadow-black/35 transition hover:brightness-110 disabled:pointer-events-none disabled:opacity-40 sm:h-[88px] sm:px-8"
             >
               Send
             </button>

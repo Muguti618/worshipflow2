@@ -12,7 +12,7 @@ export function SettingsPage() {
       <h1 className="text-2xl font-bold tracking-tight text-wf-text">Settings</h1>
       <p className="mt-1 text-sm text-wf-muted">
         Appearance, your library, and presentation preferences.{" "}
-        <Link href="/tutorial" className="font-medium text-violet-500 underline-offset-2 hover:underline">
+        <Link href="/tutorial" className="font-medium text-sky-500 underline-offset-2 hover:underline">
           Tutorial
         </Link>{" "}
         for a full walkthrough.
@@ -66,7 +66,7 @@ export function SettingsPage() {
           <PresentationTransitionSettings />
           <label className="mt-4 flex items-center justify-between gap-4">
             <span className="text-sm text-wf-muted">Lower third safe area</span>
-            <input type="checkbox" defaultChecked className="h-4 w-4 rounded accent-violet-500" />
+            <input type="checkbox" defaultChecked className="h-4 w-4 rounded accent-sky-600" />
           </label>
         </section>
 

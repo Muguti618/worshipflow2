@@ -86,7 +86,7 @@ export function SetlistItemStylePanel(props: {
                 })
               }
               className={`h-10 w-10 overflow-hidden rounded-lg border-2 transition ${
-                on ? "border-violet-400 ring-2 ring-violet-500/30" : "border-white/10"
+                on ? "border-sky-500/40 ring-2 ring-sky-500/30" : "border-white/10"
               }`}
             >
               <span
@@ -124,7 +124,7 @@ export function SetlistItemStylePanel(props: {
                 })
               }
               className={`h-8 w-8 rounded-lg border-2 ${
-                on ? "border-violet-400 ring-2 ring-violet-500/30" : "border-white/15"
+                on ? "border-sky-500/40 ring-2 ring-sky-500/30" : "border-white/15"
               }`}
               style={{ backgroundColor: hex }}
               title={hex}

@@ -67,8 +67,8 @@ export function BackgroundUploadControl({
           onClick={openPicker}
           className={`flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-lg border-2 text-[9px] font-bold uppercase leading-none tracking-tight transition disabled:opacity-40 ${
             isActive
-              ? "border-violet-400 bg-violet-500/15 text-violet-100 ring-2 ring-violet-500/30"
-              : "border-dashed border-white/25 bg-white/[0.04] text-white/55 hover:border-violet-400/50 hover:bg-violet-500/10 hover:text-violet-100"
+              ? "border-sky-500/40 bg-sky-500/12 text-slate-100 ring-2 ring-sky-500/30"
+              : "border-dashed border-white/25 bg-white/[0.04] text-white/55 hover:border-sky-400/45 hover:bg-white/[0.05] hover:text-slate-100"
           } ${tileClassName}`}
         >
           <span className="text-base font-light leading-none" aria-hidden>
@@ -90,7 +90,7 @@ export function BackgroundUploadControl({
         type="button"
         disabled={disabled}
         onClick={openPicker}
-        className="rounded-lg border border-dashed border-white/20 bg-white/[0.04] px-3 py-2 text-xs font-medium text-wf-muted transition hover:border-violet-400/40 hover:bg-violet-500/10 hover:text-wf-text disabled:opacity-40"
+        className="rounded-lg border border-dashed border-white/20 bg-white/[0.04] px-3 py-2 text-xs font-medium text-wf-muted transition hover:border-white/18 hover:bg-white/[0.05] hover:text-wf-text disabled:opacity-40"
       >
         Upload from device
       </button>

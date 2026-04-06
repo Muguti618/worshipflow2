@@ -57,7 +57,7 @@ export default function NewSetlistPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Easter Sunday"
               disabled={atFreeSetlistLimit}
-              className="mt-1 h-11 w-full rounded-[12px] border border-white/[0.08] bg-wf-card/60 px-3 text-sm text-wf-text outline-none focus:ring-2 focus:ring-violet-500/25 disabled:cursor-not-allowed"
+              className="mt-1 h-11 w-full rounded-[12px] border border-white/[0.08] bg-wf-card/60 px-3 text-sm text-wf-text outline-none focus:ring-2 focus:ring-sky-500/25 disabled:cursor-not-allowed"
             />
           </label>
           <label className="block">
@@ -69,13 +69,13 @@ export default function NewSetlistPage() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Short note for your team"
               disabled={atFreeSetlistLimit}
-              className="mt-1 h-11 w-full rounded-[12px] border border-white/[0.08] bg-wf-card/60 px-3 text-sm text-wf-text outline-none focus:ring-2 focus:ring-violet-500/25 disabled:cursor-not-allowed"
+              className="mt-1 h-11 w-full rounded-[12px] border border-white/[0.08] bg-wf-card/60 px-3 text-sm text-wf-text outline-none focus:ring-2 focus:ring-sky-500/25 disabled:cursor-not-allowed"
             />
           </label>
           <button
             type="submit"
             disabled={atFreeSetlistLimit}
-            className="w-full rounded-[12px] bg-gradient-to-r from-blue-600/90 to-violet-600/90 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-[12px] bg-blue-600 py-3 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Create and edit
           </button>

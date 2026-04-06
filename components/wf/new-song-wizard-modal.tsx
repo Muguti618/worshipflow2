@@ -19,6 +19,8 @@ import type { LibrarySong } from "@/lib/songs-catalog";
 import { googleLyricsSearchUrl } from "@/lib/google-lyrics-search";
 import { MIN_LYRICS_CHARS_FOR_AI_SLIDES, LYRICS_REQUIRED_MESSAGE } from "@/lib/song-ai-policy";
 import { addUserSongAsync, createNewUserSong } from "@/lib/user-songs-storage";
+import { SlideGenProgressHairline } from "@/components/wf/slide-gen-progress-hairline";
+import { flushPaint, useSlideGenStatus } from "@/hooks/use-slide-gen-status";
 
 type Step = "choose" | "ai-meta" | "ai-review" | "manual";
 
@@ -74,7 +76,7 @@ function WizardBackgroundPicker(props: {
                 onImageUrlChange(p.url);
               }}
               className={`h-11 w-11 overflow-hidden rounded-lg border-2 transition ${
-                active ? "border-violet-400 ring-2 ring-violet-500/30" : "border-white/10"
+                active ? "border-sky-500/40 ring-2 ring-sky-500/30" : "border-white/10"
               }`}
             >
               <span
@@ -108,7 +110,7 @@ function WizardBackgroundPicker(props: {
                 onSolidColorChange(hex);
               }}
               className={`h-8 w-8 rounded-lg border-2 ${
-                active ? "border-violet-400 ring-2 ring-violet-500/30" : "border-white/15"
+                active ? "border-sky-500/40 ring-2 ring-sky-500/30" : "border-white/15"
               }`}
               style={{ backgroundColor: hex }}
               title={hex}
@@ -190,6 +192,7 @@ export function NewSongWizardModal(props: {
   }, [open]);
 
   const showAiNewSongOption = !limitsApply || !freeAiSongUsed;
+  const aiGenStatusLine = useSlideGenStatus(aiLoading);
 
   const updateReviewSlide = useCallback((si: number, field: "title" | "lines", value: string | string[]) => {
     setReviewSlides((slides) => {
@@ -233,7 +236,18 @@ export function NewSongWizardModal(props: {
       );
       return;
     }
+    const optimistic = lyricsToSlideCards(lyrics.trim(), 3).map((c) => ({
+      title: c.title,
+      lines: [...c.lines],
+    }));
+    setReviewSlides(optimistic);
+    setReviewStructure("Custom");
+    setReviewBackgroundUrl(undefined);
+    setReviewBackgroundColor(undefined);
+    setReviewNote("");
+    setStep("ai-review");
     setAiLoading(true);
+    await flushPaint();
     try {
       const outcome = await fetchSongPresentStyling(title.trim(), lyrics.trim(), artist.trim());
       if (outcome.ok) {
@@ -255,7 +269,6 @@ export function NewSongWizardModal(props: {
         setReviewBackgroundColor(undefined);
         setReviewNote(outcome.error);
       }
-      setStep("ai-review");
     } finally {
       setAiLoading(false);
     }
@@ -359,9 +372,9 @@ export function NewSongWizardModal(props: {
                 <button
                   type="button"
                   onClick={() => setStep("ai-meta")}
-                  className="rounded-xl border border-violet-500/35 bg-violet-500/10 px-4 py-4 text-left transition hover:border-violet-400/50 hover:bg-violet-500/[0.14]"
+                  className="rounded-xl border border-white/15 bg-white/[0.04] px-4 py-4 text-left transition hover:border-sky-400/45 hover:bg-slate-1000/[0.14]"
                 >
-                  <span className="text-sm font-semibold text-violet-100">Use AI</span>
+                  <span className="text-sm font-semibold text-slate-100">Use AI</span>
                   <span className="mt-1 block text-[11px] text-wf-muted">
                     Paste licensed lyrics → AI splits into slides → you edit → add to library
                   </span>
@@ -443,7 +456,7 @@ export function NewSongWizardModal(props: {
                 href={googleLyricsSearchUrl(googleSongQuery)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-violet-300 underline-offset-2 hover:underline"
+                className="font-medium text-sky-400 underline-offset-2 hover:underline"
                 title={
                   googleSongQuery
                     ? `Google: ${googleSongQuery} lyrics`
@@ -458,7 +471,7 @@ export function NewSongWizardModal(props: {
                 href={`https://songselect.ccli.com/search?SearchText=${encodeURIComponent(`${title} ${artist}`.trim() || title)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-violet-300/90 underline-offset-2 hover:underline"
+                className="font-medium text-sky-400/90 underline-offset-2 hover:underline"
               >
                 SongSelect (CCLI)
               </a>
@@ -488,7 +501,7 @@ export function NewSongWizardModal(props: {
                   lyrics.trim().length < MIN_LYRICS_CHARS_FOR_AI_SLIDES ||
                   aiLoading
                 }
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
                 title={
                   lyrics.trim().length < MIN_LYRICS_CHARS_FOR_AI_SLIDES
                     ? `Paste at least ${MIN_LYRICS_CHARS_FOR_AI_SLIDES} characters of lyrics`
@@ -503,6 +516,12 @@ export function NewSongWizardModal(props: {
 
         {step === "ai-review" ? (
           <>
+            <div className="mt-3">
+              <SlideGenProgressHairline active={aiLoading} />
+            </div>
+            {aiLoading && aiGenStatusLine ? (
+              <p className="mt-2 text-[11px] text-sky-200/85">{aiGenStatusLine}</p>
+            ) : null}
             {reviewNote ? (
               <p className="mt-2 rounded-lg border border-white/[0.06] bg-wf-bg/30 px-3 py-2 text-[11px] text-wf-muted">
                 {reviewNote}
@@ -526,7 +545,10 @@ export function NewSongWizardModal(props: {
             <p className="mt-3 text-[10px] font-semibold uppercase tracking-wider text-wf-muted">
               Review slides
             </p>
-            <div className="mt-2 space-y-3">
+            <div
+              className={`mt-2 space-y-3 transition-opacity duration-200 ${aiLoading ? "pointer-events-none opacity-[0.88]" : ""}`}
+              aria-busy={aiLoading}
+            >
               {reviewSlides.map((slide, si) => (
                 <div key={si} className="rounded-xl border border-white/[0.06] bg-wf-bg/30 p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -576,7 +598,7 @@ export function NewSongWizardModal(props: {
               <button
                 type="button"
                 onClick={addReviewSlide}
-                className="text-[11px] font-medium text-violet-300 hover:text-violet-200"
+                className="text-[11px] font-medium text-sky-400 hover:text-sky-200"
               >
                 + Add slide
               </button>
@@ -585,7 +607,8 @@ export function NewSongWizardModal(props: {
               <button
                 type="button"
                 onClick={() => setStep("ai-meta")}
-                className="rounded-lg border border-white/[0.1] px-4 py-2 text-sm text-wf-muted"
+                disabled={aiLoading}
+                className="rounded-lg border border-white/[0.1] px-4 py-2 text-sm text-wf-muted disabled:opacity-40"
               >
                 Back
               </button>
@@ -595,8 +618,8 @@ export function NewSongWizardModal(props: {
               <button
                 type="button"
                 onClick={() => void confirmAiAdd()}
-                disabled={!title.trim()}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+                disabled={!title.trim() || aiLoading}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
               >
                 {confirmPrimaryLabel}
               </button>
@@ -657,7 +680,7 @@ export function NewSongWizardModal(props: {
                 type="button"
                 onClick={() => void confirmManualAdd()}
                 disabled={!title.trim()}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
               >
                 {confirmPrimaryLabel}
               </button>

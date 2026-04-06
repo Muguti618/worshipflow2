@@ -13,8 +13,8 @@ export default function BlogPostProPresenterAlternative() {
   return (
     <>
       <BlogShell>
-        <article className="prose prose-invert max-w-none prose-p:text-wf-muted prose-headings:text-wf-text prose-a:text-violet-300">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300/90">Blog</p>
+        <article className="prose prose-invert max-w-none prose-p:text-wf-muted prose-headings:text-wf-text prose-a:text-sky-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-400/90">Blog</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-wf-text sm:text-[2rem]">
             ProPresenter alternative when you want less rigging
           </h1>
@@ -46,11 +46,11 @@ export default function BlogPostProPresenterAlternative() {
 
           <p className="mt-8 rounded-xl border border-wf-border bg-wf-card/50 p-4 text-sm">
             <strong className="text-wf-text">Try first:</strong>{" "}
-            <Link href="/#lyric-splitter" className="font-medium text-violet-300 hover:underline">
+            <Link href="/#lyric-splitter" className="font-medium text-sky-400 hover:underline">
               No-sign-up lyric formatter
             </Link>{" "}
             ·{" "}
-            <Link href="/" className="font-medium text-violet-300 hover:underline">
+            <Link href="/" className="font-medium text-sky-400 hover:underline">
               Product home
             </Link>
           </p>

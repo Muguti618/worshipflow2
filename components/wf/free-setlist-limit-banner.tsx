@@ -11,7 +11,7 @@ export const FreeSetlistLimitBanner = forwardRef<HTMLDivElement>(function FreeSe
   return (
     <div
       ref={ref}
-      className="shrink-0 border-b border-amber-500/35 bg-gradient-to-br from-amber-500/[0.18] via-orange-600/[0.12] to-violet-600/[0.14] px-4 py-6 shadow-lg shadow-black/20 sm:px-6 sm:py-8"
+      className="shrink-0 border-b border-amber-500/35 bg-gradient-to-br from-amber-500/[0.18] via-orange-600/[0.12] to-blue-700/[0.14] px-4 py-6 shadow-lg shadow-black/20 sm:px-6 sm:py-8"
       role="region"
       aria-label="Setlist limit"
     >

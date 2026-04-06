@@ -213,7 +213,7 @@ export function PresentMode({ room }: { room: string }) {
             href={audienceHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-lg px-2 py-1 font-medium text-violet-300 hover:bg-white/10 hover:text-violet-200"
+            className="rounded-lg px-2 py-1 font-medium text-sky-400 hover:bg-white/10 hover:text-sky-200"
           >
             Audience →
           </Link>
@@ -292,7 +292,7 @@ export function PresentMode({ room }: { room: string }) {
           <button
             type="button"
             onClick={() => go(1)}
-            className="rounded-[12px] bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-2.5 text-sm font-semibold shadow-lg shadow-violet-900/40"
+            className="rounded-[12px] bg-blue-600 hover:bg-blue-500 px-5 py-2.5 text-sm font-semibold shadow-lg shadow-black/40"
           >
             Next
           </button>
@@ -394,7 +394,7 @@ export function PresentMode({ room }: { room: string }) {
                 setQvPick(null);
               }}
               rows={3}
-              className="mt-1 w-full resize-y rounded-xl border border-white/15 bg-black/50 px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2 focus:ring-violet-500/30"
+              className="mt-1 w-full resize-y rounded-xl border border-white/15 bg-black/50 px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2 focus:ring-sky-500/30"
               placeholder='e.g. John 3:16 — or — bible verse on the armour of God'
               autoComplete="off"
             />
@@ -405,7 +405,7 @@ export function PresentMode({ room }: { room: string }) {
                   onClick={() => void fetchVerseIdeas()}
                   disabled={qvAiLoading}
                   aria-busy={qvAiLoading}
-                  className="rounded-xl bg-gradient-to-r from-violet-600/90 to-indigo-600/90 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 disabled:opacity-50"
+                  className="rounded-xl bg-slate-600 hover:bg-slate-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-black/30 disabled:opacity-50"
                 >
                   {qvAiLoading ? "Finding verses…" : "Get verse ideas (AI)"}
                 </button>
@@ -443,7 +443,7 @@ export function PresentMode({ room }: { room: string }) {
                   setQvSuggestions(null);
                   setQvAiNote(null);
                 }}
-                className="mt-2 h-10 w-full rounded-xl border border-white/15 bg-white/5 px-3 text-sm text-white outline-none focus:ring-2 focus:ring-violet-500/35"
+                className="mt-2 h-10 w-full rounded-xl border border-white/15 bg-white/5 px-3 text-sm text-white outline-none focus:ring-2 focus:ring-sky-500/35"
               >
                 {BIBLE_TRANSLATION_ORDER.map((t) => (
                   <option key={t} value={t} className="bg-zinc-900 text-white">
@@ -467,10 +467,10 @@ export function PresentMode({ room }: { room: string }) {
                         className={`flex h-full w-full flex-col rounded-xl border p-3 text-left text-sm transition ${
                           qvPick?.ref === s.ref && qvPick?.text === s.text
                             ? "border-amber-500/50 bg-amber-500/10"
-                            : "border-white/10 bg-white/[0.03] hover:border-violet-500/35 hover:bg-violet-500/[0.06]"
+                            : "border-white/10 bg-white/[0.03] hover:border-white/18 hover:bg-white/[0.05]"
                         }`}
                       >
-                        <span className="text-[11px] font-bold uppercase tracking-wide text-violet-200/90">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-sky-200/90">
                           {s.ref}
                         </span>
                         <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-white/85">

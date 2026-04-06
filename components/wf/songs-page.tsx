@@ -230,7 +230,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
       <>
         <div className="p-8 text-sm text-wf-muted">
           No songs yet.{" "}
-          <button type="button" onClick={() => void openNewSongModal()} className="text-violet-300 underline">
+          <button type="button" onClick={() => void openNewSongModal()} className="text-sky-400 underline">
             Add one
           </button>
           .
@@ -245,7 +245,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
       {atFreeSongLimit ? (
         <div
           ref={songLimitBannerRef}
-          className="shrink-0 border-b border-amber-500/35 bg-gradient-to-br from-amber-500/[0.18] via-orange-600/[0.12] to-violet-600/[0.14] px-4 py-6 shadow-lg shadow-black/20 sm:px-6 sm:py-8"
+          className="shrink-0 border-b border-amber-500/35 bg-gradient-to-br from-amber-500/[0.18] via-orange-600/[0.12] to-blue-700/[0.14] px-4 py-6 shadow-lg shadow-black/20 sm:px-6 sm:py-8"
           role="region"
           aria-label="Song library limit"
         >
@@ -288,7 +288,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
               className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${
                 atFreeSongLimit
                   ? "border-amber-500/40 bg-amber-500/10 text-amber-100/90 hover:bg-amber-500/15"
-                  : "border-violet-500/35 bg-violet-500/10 text-violet-200"
+                  : "border-white/15 bg-white/[0.04] text-sky-200"
               }`}
             >
               + New
@@ -297,7 +297,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
           <p className="mt-0.5 text-xs text-wf-muted">
             Each song = <strong className="font-medium text-wf-text">many slides</strong> (verse, chorus,
             …). Per-slide backgrounds and uploads live under each slide. Used in setlists.{" "}
-            <Link href="/tutorial" className="text-violet-300 hover:underline">
+            <Link href="/tutorial" className="text-sky-400 hover:underline">
               Tutorial
             </Link>
           </p>
@@ -307,7 +307,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search songs or tags…"
-            className="mt-3 h-10 w-full rounded-[12px] border border-white/[0.08] bg-wf-card/80 px-3 text-sm outline-none focus:ring-2 focus:ring-violet-500/25"
+            className="mt-3 h-10 w-full rounded-[12px] border border-white/[0.08] bg-wf-card/80 px-3 text-sm outline-none focus:ring-2 focus:ring-sky-500/25"
             aria-label="Search songs"
           />
         </div>
@@ -319,7 +319,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
                 onClick={() => setActiveId(s.id)}
                 className={`mb-1 w-full rounded-[14px] border px-3 py-3 text-left transition ${
                   s.id === activeId
-                    ? "border-violet-500/35 bg-white/[0.08]"
+                    ? "border-white/15 bg-white/[0.08]"
                     : "border-transparent hover:bg-white/[0.04]"
                 }`}
               >
@@ -351,7 +351,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
             <button
               type="button"
               onClick={saveEdits}
-              className="inline-flex h-10 items-center gap-2 rounded-[12px] bg-gradient-to-r from-blue-600/90 to-violet-600/90 px-4 text-sm font-semibold text-white"
+              className="inline-flex h-10 items-center gap-2 rounded-[12px] bg-blue-600 hover:bg-blue-500 px-4 text-sm font-semibold text-white"
             >
               Save changes
             </button>
@@ -423,7 +423,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
                     })
                   }
                   className={`h-11 w-11 overflow-hidden rounded-lg border-2 transition ${
-                    active ? "border-violet-400 ring-2 ring-violet-500/30" : "border-white/10"
+                    active ? "border-sky-500/40 ring-2 ring-sky-500/30" : "border-white/10"
                   }`}
                 >
                   <span
@@ -469,7 +469,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
                     })
                   }
                   className={`h-8 w-8 rounded-lg border-2 ${
-                    active ? "border-violet-400 ring-2 ring-violet-500/30" : "border-white/15"
+                    active ? "border-sky-500/40 ring-2 ring-sky-500/30" : "border-white/15"
                   }`}
                   style={{ backgroundColor: hex }}
                   title={hex}
@@ -613,7 +613,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
             <button
               type="button"
               onClick={addSlide}
-              className="text-[11px] font-medium text-violet-300 hover:text-violet-200"
+              className="text-[11px] font-medium text-sky-400 hover:text-sky-200"
             >
               + Add slide
             </button>

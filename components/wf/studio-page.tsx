@@ -7,7 +7,9 @@ import { BACKGROUND_PRESETS } from "@/lib/background-presets";
 import { fetchLyricsSplitAi } from "@/lib/fetch-lyrics-split-ai";
 import { lyricsToSlideCards, type SlideCard } from "@/lib/slide-engine";
 import { FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
+import { SlideGenProgressHairline } from "@/components/wf/slide-gen-progress-hairline";
 import { SlideStage } from "@/components/wf/slide-stage";
+import { flushPaint, useSlideGenStatus } from "@/hooks/use-slide-gen-status";
 
 const SAMPLE = `[Verse 1]
 You call me out upon the waters
@@ -61,13 +63,17 @@ export function StudioPage() {
   const localCards = useMemo(() => lyricsToSlideCards(raw, linesPerSlide), [raw, linesPerSlide]);
   const cards = aiSplitCards ?? localCards;
   const splitStale = Boolean(aiSplitCards && lyricsAtSplitRef.current !== null && lyricsAtSplitRef.current !== raw);
+  const splitStatusLine = useSlideGenStatus(splitLoading);
 
   const preview = cards[0] ?? { title: "Preview", lines: ["Paste lyrics to begin"] };
 
   async function runAiSplit() {
     if (!raw.trim()) return;
-    setSplitLoading(true);
     setSplitError(null);
+    setAiSplitCards(lyricsToSlideCards(raw, linesPerSlide));
+    setSplitNote("Quick layout shown — refining with AI…");
+    setSplitLoading(true);
+    await flushPaint();
     try {
       const out = await fetchLyricsSplitAi(raw, {
         title: splitTitle.trim(),
@@ -80,6 +86,7 @@ export function StudioPage() {
       } else {
         setSplitError(out.error);
         setAiSplitCards(null);
+        setSplitNote(null);
         lyricsAtSplitRef.current = null;
       }
     } finally {
@@ -139,7 +146,7 @@ export function StudioPage() {
         <h1 className="text-2xl font-bold tracking-tight">Slide Studio</h1>
         <p className="mt-3 text-sm leading-relaxed text-wf-muted">
           AI lyrics splitting and the spontaneous bridge lab are Pro features. On Free, open{" "}
-          <Link href="/songs" className="font-medium text-violet-300 hover:underline">
+          <Link href="/songs" className="font-medium text-sky-400 hover:underline">
             Songs
           </Link>{" "}
           and use <strong className="font-medium text-wf-text">Enter manually</strong> — slides still split
@@ -147,7 +154,7 @@ export function StudioPage() {
         </p>
         <Link
           href="/upgrade"
-          className="mt-6 inline-flex h-11 items-center justify-center rounded-[14px] bg-gradient-to-r from-blue-600 to-violet-600 px-6 text-sm font-semibold text-white shadow-lg shadow-violet-900/25"
+          className="mt-6 inline-flex h-11 items-center justify-center rounded-[14px] bg-blue-600 hover:bg-blue-500 px-6 text-sm font-semibold text-white shadow-lg shadow-black/30"
         >
           Upgrade to Pro
         </Link>
@@ -164,7 +171,7 @@ export function StudioPage() {
           Use <strong className="font-medium text-wf-text/90">Split with AI</strong> for section-aware
           layout, or the <strong className="font-medium text-wf-text/90">rule-based</strong> preview below.
           Save songs in{" "}
-          <Link href="/songs" className="text-violet-300 hover:underline">
+          <Link href="/songs" className="text-sky-400 hover:underline">
             Songs
           </Link>{" "}
           for Present.{" "}
@@ -175,7 +182,7 @@ export function StudioPage() {
           ) : (
             <span className="text-xs text-amber-200/85">
               Smart split needs server setup — see{" "}
-              <Link href="/settings" className="text-violet-300 hover:underline">
+              <Link href="/settings" className="text-sky-400 hover:underline">
                 Settings
               </Link>
               .
@@ -183,7 +190,7 @@ export function StudioPage() {
           )}
         </p>
         <p className="mt-2 text-xs text-wf-muted">
-          <Link href="/tutorial" className="text-violet-300 hover:underline">
+          <Link href="/tutorial" className="text-sky-400 hover:underline">
             Tutorial
           </Link>{" "}
           · Spontaneous bridge uses the same API.
@@ -202,7 +209,7 @@ export function StudioPage() {
               value={raw}
               onChange={(e) => setRaw(e.target.value)}
               rows={14}
-              className="mt-2 w-full resize-y rounded-[14px] border border-white/[0.08] bg-wf-bg/60 px-3 py-2 font-mono text-sm leading-relaxed text-wf-text outline-none focus:ring-2 focus:ring-violet-500/25"
+              className="mt-2 w-full resize-y rounded-[14px] border border-white/[0.08] bg-wf-bg/60 px-3 py-2 font-mono text-sm leading-relaxed text-wf-text outline-none focus:ring-2 focus:ring-sky-500/25"
               placeholder="Paste lyrics… Use [Verse], [Chorus], [Bridge] or blank lines between sections."
             />
             <label htmlFor="split-title" className="mt-3 block text-[10px] font-semibold uppercase tracking-wider text-wf-muted">
@@ -213,7 +220,7 @@ export function StudioPage() {
               value={splitTitle}
               onChange={(e) => setSplitTitle(e.target.value)}
               placeholder="e.g. Oceans (Where Feet May Fail)"
-              className="mt-1 h-10 w-full rounded-[12px] border border-white/[0.08] bg-wf-bg/60 px-3 text-sm outline-none focus:ring-2 focus:ring-violet-500/25"
+              className="mt-1 h-10 w-full rounded-[12px] border border-white/[0.08] bg-wf-bg/60 px-3 text-sm outline-none focus:ring-2 focus:ring-sky-500/25"
             />
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <label className="flex items-center gap-2 text-xs text-wf-muted">
@@ -240,12 +247,19 @@ export function StudioPage() {
                 <button
                   type="button"
                   onClick={clearAiSplit}
-                  className="rounded-[12px] border border-white/[0.12] px-3 py-2 text-xs font-medium text-wf-muted hover:text-wf-text"
+                  disabled={splitLoading}
+                  className="rounded-[12px] border border-white/[0.12] px-3 py-2 text-xs font-medium text-wf-muted hover:text-wf-text disabled:opacity-35"
                 >
                   Use rule-based only
                 </button>
               ) : null}
             </div>
+            <div className="mt-2">
+              <SlideGenProgressHairline active={splitLoading} />
+            </div>
+            {splitLoading && splitStatusLine ? (
+              <p className="mt-2 text-[11px] text-sky-200/85">{splitStatusLine}</p>
+            ) : null}
             {splitStale ? (
               <p className="mt-2 text-[11px] text-amber-200/90">
                 Lyrics changed since the last AI split — click <strong>Split with AI</strong> again to refresh.
@@ -254,7 +268,7 @@ export function StudioPage() {
             {splitError ? (
               <p className="mt-2 text-[11px] leading-snug text-red-300/90 whitespace-pre-wrap">{splitError}</p>
             ) : null}
-            {splitNote && aiSplitCards ? (
+            {!splitLoading && splitNote && aiSplitCards ? (
               <p className="mt-2 text-[11px] leading-snug text-wf-muted">{splitNote}</p>
             ) : null}
           </div>
@@ -267,13 +281,13 @@ export function StudioPage() {
               value={bridgePrompt}
               onChange={(e) => setBridgePrompt(e.target.value)}
               placeholder='e.g. "Write a 4-line bridge about God’s peace"'
-              className="mt-2 h-11 w-full rounded-[12px] border border-white/[0.08] bg-wf-bg/60 px-3 text-sm outline-none focus:ring-2 focus:ring-violet-500/25"
+              className="mt-2 h-11 w-full rounded-[12px] border border-white/[0.08] bg-wf-bg/60 px-3 text-sm outline-none focus:ring-2 focus:ring-sky-500/25"
             />
             <button
               type="button"
               onClick={() => void generateBridge()}
               disabled={bridgeLoading || !bridgePrompt.trim()}
-              className="mt-3 rounded-[12px] bg-gradient-to-r from-blue-600/90 to-violet-600/90 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+              className="mt-3 rounded-[12px] bg-blue-600 hover:bg-blue-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
             >
               {bridgeLoading ? "Generating…" : "Generate & format"}
             </button>
@@ -288,8 +302,8 @@ export function StudioPage() {
               </ul>
             ) : null}
             {bridgeSlides && bridgeSlides.length > 0 ? (
-              <div className="mt-4 rounded-[12px] border border-violet-500/20 bg-violet-500/[0.06] p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-200/90">
+              <div className="mt-4 rounded-[12px] border border-sky-500/15 bg-sky-500/[0.06] p-3">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-sky-200/90">
                   Suggested slide pairs ({bridgeSlides.length} slides)
                 </p>
                 <ul className="mt-2 space-y-2 text-xs text-wf-muted">
@@ -318,7 +332,7 @@ export function StudioPage() {
                   onClick={() => setBg(p.url)}
                   className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                     bg === p.url
-                      ? "border-violet-500/50 bg-violet-500/15 text-wf-text"
+                      ? "border-sky-500/35 bg-sky-500/12 text-wf-text"
                       : "border-white/[0.08] text-wf-muted hover:border-white/20"
                   }`}
                 >

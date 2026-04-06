@@ -184,7 +184,7 @@ export function DashboardHome() {
               Dashboard
             </p>
             <h1 className="mt-2 text-3xl font-semibold leading-[1.15] tracking-tight md:text-[2.125rem]">
-              <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-500 bg-clip-text text-transparent">
                 {greeting.title}
               </span>
             </h1>
@@ -195,7 +195,7 @@ export function DashboardHome() {
               {greeting.detailLine}{" "}
               <Link
                 href="/tutorial"
-                className="font-medium text-violet-400/90 hover:text-violet-300 hover:underline"
+                className="font-medium text-sky-400/90 hover:text-sky-300 hover:underline"
               >
                 Tutorial
               </Link>
@@ -218,7 +218,7 @@ export function DashboardHome() {
                 data-wf-tour="tour-dash-setlist"
                 value={activeListId || ""}
                 onChange={(e) => selectSetlist(e.target.value)}
-                className="h-11 w-full cursor-pointer rounded-xl border border-white/[0.12] bg-wf-card/80 px-3.5 py-2 text-sm font-medium text-wf-text shadow-sm shadow-black/20 outline-none ring-0 transition hover:border-white/20 focus:border-violet-500/45 focus:ring-2 focus:ring-violet-500/25"
+                className="h-11 w-full cursor-pointer rounded-xl border border-white/[0.12] bg-wf-card/80 px-3.5 py-2 text-sm font-medium text-wf-text shadow-sm shadow-black/20 outline-none ring-0 transition hover:border-white/20 focus:border-sky-500/45 focus:ring-2 focus:ring-sky-500/25"
                 aria-label="Choose setlist for presenter"
               >
                 {allSetlists.map((s) => (
@@ -243,7 +243,7 @@ export function DashboardHome() {
               className={`inline-flex h-8 items-center rounded-lg border px-2.5 text-xs font-medium transition ${
                 atFreeSetlistLimit
                   ? "border-amber-500/40 bg-amber-500/10 text-amber-100/90 hover:bg-amber-500/15"
-                  : "border-dashed border-white/[0.12] text-wf-muted hover:border-violet-500/35 hover:text-wf-text"
+                  : "border-dashed border-white/[0.12] text-wf-muted hover:border-white/18 hover:text-wf-text"
               }`}
             >
               + New
@@ -253,7 +253,7 @@ export function DashboardHome() {
               data-wf-tour="tour-dash-present"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-2 rounded-[12px] bg-gradient-to-r from-blue-600/90 to-violet-600/90 px-4 text-sm font-semibold text-white shadow-lg shadow-violet-900/25"
+              className="inline-flex h-10 items-center gap-2 rounded-[12px] bg-blue-600 hover:bg-blue-500 px-4 text-sm font-semibold text-white shadow-lg shadow-black/30"
             >
               Open Presenter
             </Link>
@@ -261,7 +261,7 @@ export function DashboardHome() {
               href={audienceHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-white/[0.12] bg-wf-card/60 px-4 text-sm font-semibold text-wf-text hover:border-violet-500/35"
+              className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-white/[0.12] bg-wf-card/60 px-4 text-sm font-semibold text-wf-text hover:border-white/18"
             >
               Audience
             </Link>
@@ -288,12 +288,12 @@ export function DashboardHome() {
               value={bibleInput}
               onChange={(e) => setBibleInput(e.target.value)}
               placeholder="John 3:16, armor of God…"
-              className="mt-2 h-9 w-full rounded-lg border border-white/[0.08] bg-wf-bg/60 px-2.5 text-xs text-wf-text outline-none focus:ring-1 focus:ring-violet-500/25"
+              className="mt-2 h-9 w-full rounded-lg border border-white/[0.08] bg-wf-bg/60 px-2.5 text-xs text-wf-text outline-none focus:ring-1 focus:ring-sky-500/25"
             />
             <button
               type="button"
               onClick={applyBibleToPreview}
-              className="mt-2 w-full rounded-lg bg-gradient-to-r from-blue-600/90 to-violet-600/90 py-2 text-xs font-semibold text-white"
+              className="mt-2 w-full rounded-lg bg-blue-600 hover:bg-blue-500 py-2 text-xs font-semibold text-white"
             >
               Show on preview
             </button>
@@ -308,7 +308,7 @@ export function DashboardHome() {
             ) : null}
             <Link
               href="/bible"
-              className="mt-2 flex w-full items-center justify-center rounded-lg border border-white/[0.1] py-2 text-xs font-medium text-wf-text transition hover:border-violet-500/35"
+              className="mt-2 flex w-full items-center justify-center rounded-lg border border-white/[0.1] py-2 text-xs font-medium text-wf-text transition hover:border-white/18"
             >
               Full Bible tool →
             </Link>
@@ -384,7 +384,7 @@ export function DashboardHome() {
                 <button
                   type="button"
                   onClick={() => setPreviewIdx((p) => Math.max(0, p - 1))}
-                  className="rounded-[10px] border border-white/[0.12] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-wf-text transition hover:border-violet-500/25 hover:bg-white/[0.06]"
+                  className="rounded-[10px] border border-white/[0.12] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-wf-text transition hover:border-white/15 hover:bg-white/[0.06]"
                 >
                   ← Prev
                 </button>
@@ -393,7 +393,7 @@ export function DashboardHome() {
                   onClick={() =>
                     setPreviewIdx((p) => Math.min(deck.length - 1, p + 1))
                   }
-                  className="rounded-[10px] border border-white/[0.12] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-wf-text transition hover:border-violet-500/25 hover:bg-white/[0.06]"
+                  className="rounded-[10px] border border-white/[0.12] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-wf-text transition hover:border-white/15 hover:bg-white/[0.06]"
                 >
                   Next →
                 </button>
@@ -403,7 +403,7 @@ export function DashboardHome() {
 
           <div className="relative flex min-h-0 flex-1 flex-col">
             <div
-              className="pointer-events-none absolute left-1/2 top-[6%] z-0 h-[min(48%,400px)] w-[min(98%,960px)] -translate-x-1/2 rounded-[50%] bg-gradient-to-b from-violet-500/[0.22] via-fuchsia-500/10 to-transparent blur-3xl"
+              className="pointer-events-none absolute left-1/2 top-[6%] z-0 h-[min(48%,400px)] w-[min(98%,960px)] -translate-x-1/2 rounded-[50%] bg-gradient-to-b from-sky-500/[0.12] via-slate-500/8 to-transparent blur-3xl"
               aria-hidden
             />
             <div className="relative z-[1] flex min-h-0 flex-1 flex-col rounded-[22px] border border-white/[0.1] bg-gradient-to-b from-white/[0.07] via-white/[0.02] to-transparent p-[5px] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_32px_120px_-36px_rgba(99,102,241,0.42),0_16px_56px_-28px_rgba(167,139,250,0.2)]">
@@ -468,7 +468,7 @@ export function DashboardHome() {
                           {kindLabel(item.kind)} · {count} slide{count === 1 ? "" : "s"}
                         </span>
                       </div>
-                      <ul className="mt-1.5 space-y-0.5 border-l border-violet-500/20 pl-2.5">
+                      <ul className="mt-1.5 space-y-0.5 border-l border-sky-500/15 pl-2.5">
                         {item.slides.map((sl, j) => {
                           const globalIdx = startIndex + j;
                           const isHere =
@@ -483,7 +483,7 @@ export function DashboardHome() {
                                 }}
                                 className={`w-full rounded-md px-1 py-1 text-left text-[11px] leading-snug transition ${
                                   isHere
-                                    ? "bg-violet-500/15 font-medium text-violet-200"
+                                    ? "bg-sky-500/12 font-medium text-sky-200"
                                     : "text-wf-muted hover:bg-white/[0.04] hover:text-wf-text"
                                 }`}
                               >
@@ -510,7 +510,7 @@ export function DashboardHome() {
               onClick={() => setBgMode("ai")}
               className={`rounded-[10px] px-3 py-1.5 text-xs font-medium transition ${
                 bgMode === "ai"
-                  ? "bg-violet-600/40 text-white"
+                  ? "bg-sky-600/45 text-white"
                   : "bg-white/[0.05] text-wf-muted hover:text-wf-text"
               }`}
             >
@@ -521,7 +521,7 @@ export function DashboardHome() {
               onClick={() => setBgMode("stock")}
               className={`rounded-[10px] px-3 py-1.5 text-xs font-medium transition ${
                 bgMode === "stock"
-                  ? "bg-violet-600/40 text-white"
+                  ? "bg-sky-600/45 text-white"
                   : "bg-white/[0.05] text-wf-muted hover:text-wf-text"
               }`}
             >
@@ -540,7 +540,7 @@ export function DashboardHome() {
                   : transitionOptions[0]!.id
               }
               onChange={(e) => setTransition(e.target.value as SlideTransitionId)}
-              className="mt-1 w-full rounded-[10px] border border-white/[0.08] bg-wf-bg/80 px-3 py-2 text-sm text-wf-text outline-none focus:ring-2 focus:ring-violet-500/30"
+              className="mt-1 w-full rounded-[10px] border border-white/[0.08] bg-wf-bg/80 px-3 py-2 text-sm text-wf-text outline-none focus:ring-2 focus:ring-sky-500/30"
             >
               {transitionOptions.map((o) => (
                 <option key={o.id} value={o.id}>
@@ -555,7 +555,7 @@ export function DashboardHome() {
               type="checkbox"
               checked={autoFormat}
               onChange={(e) => setAutoFormat(e.target.checked)}
-              className="h-4 w-4 rounded border-white/20 bg-wf-card text-violet-500 focus:ring-violet-500/40"
+              className="h-4 w-4 rounded border-white/20 bg-wf-card text-sky-500 focus:ring-sky-500/40"
             />
           </label>
           </div>

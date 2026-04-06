@@ -51,23 +51,23 @@ export function AppearanceSettings() {
       <fieldset className="mt-4">
         <legend className="sr-only">Colour theme</legend>
         <div className="flex flex-wrap gap-3">
-          <label className="flex cursor-pointer items-center gap-2 rounded-[12px] border border-wf-border bg-wf-bg/50 px-4 py-3 has-[:checked]:border-violet-500/50 has-[:checked]:bg-violet-500/10">
+          <label className="flex cursor-pointer items-center gap-2 rounded-[12px] border border-wf-border bg-wf-bg/50 px-4 py-3 has-[:checked]:border-sky-500/35 has-[:checked]:bg-white/[0.04]">
             <input
               type="radio"
               name="wf-theme"
               checked={theme === "dark"}
               onChange={() => choose("dark")}
-              className="h-4 w-4 accent-violet-500"
+              className="h-4 w-4 accent-sky-600"
             />
             <span className="text-sm font-medium text-wf-text">Dark</span>
           </label>
-          <label className="flex cursor-pointer items-center gap-2 rounded-[12px] border border-wf-border bg-wf-bg/50 px-4 py-3 has-[:checked]:border-violet-500/50 has-[:checked]:bg-violet-500/10">
+          <label className="flex cursor-pointer items-center gap-2 rounded-[12px] border border-wf-border bg-wf-bg/50 px-4 py-3 has-[:checked]:border-sky-500/35 has-[:checked]:bg-white/[0.04]">
             <input
               type="radio"
               name="wf-theme"
               checked={theme === "light"}
               onChange={() => choose("light")}
-              className="h-4 w-4 accent-violet-500"
+              className="h-4 w-4 accent-sky-600"
             />
             <span className="text-sm font-medium text-wf-text">Light</span>
           </label>

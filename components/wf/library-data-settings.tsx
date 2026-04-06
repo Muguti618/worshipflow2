@@ -163,11 +163,11 @@ export function LibraryDataSettings() {
         <button
           type="button"
           onClick={exportJson}
-          className="rounded-[10px] border border-wf-input-border bg-wf-bg/80 px-4 py-2 text-sm font-medium text-wf-text transition hover:border-violet-500/40 hover:bg-violet-500/10"
+          className="rounded-[10px] border border-wf-input-border bg-wf-bg/80 px-4 py-2 text-sm font-medium text-wf-text transition hover:border-white/20 hover:bg-white/[0.05]"
         >
           Export library (JSON)
         </button>
-        <label className="inline-flex cursor-pointer items-center rounded-[10px] border border-wf-input-border bg-wf-bg/80 px-4 py-2 text-sm font-medium text-wf-text transition hover:border-violet-500/40 hover:bg-violet-500/10 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50">
+        <label className="inline-flex cursor-pointer items-center rounded-[10px] border border-wf-input-border bg-wf-bg/80 px-4 py-2 text-sm font-medium text-wf-text transition hover:border-white/20 hover:bg-white/[0.05] has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50">
           <input
             type="file"
             accept="application/json,.json"

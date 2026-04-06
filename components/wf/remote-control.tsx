@@ -55,7 +55,7 @@ export function RemoteControl({ room }: { room: string }) {
   if (!remotePolicyReady) {
     return (
       <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-3 bg-zinc-950 px-6 text-center text-white">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-500/30 border-t-violet-400" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/[0.12] border-t-sky-500" />
         <p className="text-sm text-white/50">Checking your plan…</p>
       </div>
     );
@@ -74,11 +74,11 @@ export function RemoteControl({ room }: { room: string }) {
         </p>
         <Link
           href="/upgrade"
-          className="rounded-full bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-900/40"
+          className="rounded-full bg-blue-600 hover:bg-blue-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-black/40"
         >
           View plans
         </Link>
-        <Link href="/dashboard" className="text-xs text-violet-300/90 hover:underline">
+        <Link href="/dashboard" className="text-xs text-sky-400/90 hover:underline">
           Back to dashboard
         </Link>
       </div>
@@ -93,7 +93,7 @@ export function RemoteControl({ room }: { room: string }) {
         </p>
         <h1 className="mt-2 text-xl font-bold tracking-tight">Control</h1>
         <p className="mt-1 text-sm text-white/50">
-          Room <span className="font-mono text-violet-300">{room}</span>
+          Room <span className="font-mono text-sky-400">{room}</span>
         </p>
         <button
           type="button"
@@ -139,7 +139,7 @@ export function RemoteControl({ room }: { room: string }) {
           <button
             type="button"
             onClick={() => go(1)}
-            className="rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 py-8 text-lg font-bold shadow-lg shadow-violet-900/40 active:scale-[0.98]"
+            className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 py-8 text-lg font-bold shadow-lg shadow-black/40 active:scale-[0.98]"
           >
             Next →
           </button>

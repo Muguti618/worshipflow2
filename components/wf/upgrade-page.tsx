@@ -43,7 +43,7 @@ function UpgradePageBody() {
           <p className="mt-1 text-sm text-wf-muted">
             Upgrade checkout is hidden while your subscription is active. When it ends or is canceled, you can
             subscribe again here. Manage payment method and invoices below or in{" "}
-            <Link href="/settings" className="font-medium text-violet-500 underline-offset-2 hover:underline">
+            <Link href="/settings" className="font-medium text-sky-500 underline-offset-2 hover:underline">
               Settings
             </Link>
             .
@@ -55,7 +55,7 @@ function UpgradePageBody() {
           <p className="mt-1 text-sm text-wf-muted">
             Choose Pro monthly or yearly. You&apos;ll complete payment on Stripe Checkout, then return here.
             Billing is also under{" "}
-            <Link href="/settings" className="font-medium text-violet-500 underline-offset-2 hover:underline">
+            <Link href="/settings" className="font-medium text-sky-500 underline-offset-2 hover:underline">
               Settings
             </Link>
             .

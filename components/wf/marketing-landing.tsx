@@ -47,7 +47,7 @@ export function MarketingLanding() {
   if (!hydrated) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-wf-bg px-4">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-500/30 border-t-violet-400" />
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-white/[0.12] border-t-sky-500" />
         <p className="text-sm text-wf-muted">Loading…</p>
       </div>
     );
@@ -65,8 +65,8 @@ export function MarketingLanding() {
     <div className="min-h-dvh bg-wf-bg text-wf-text">
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
         <div className="absolute -left-32 top-0 h-[min(520px,90vw)] w-[min(520px,90vw)] rounded-full bg-blue-500/[0.14] blur-[120px]" />
-        <div className="absolute -right-24 top-1/4 h-[min(440px,80vw)] w-[min(440px,80vw)] rounded-full bg-violet-500/[0.12] blur-[100px]" />
-        <div className="absolute bottom-0 left-1/3 h-[min(380px,70vw)] w-[min(380px,70vw)] rounded-full bg-fuchsia-500/[0.1] blur-[90px]" />
+        <div className="absolute -right-24 top-1/4 h-[min(440px,80vw)] w-[min(440px,80vw)] rounded-full bg-white/[0.04] blur-[100px]" />
+        <div className="absolute bottom-0 left-1/3 h-[min(380px,70vw)] w-[min(380px,70vw)] rounded-full bg-slate-600/[0.05] blur-[90px]" />
       </div>
 
       <header className="relative z-10 border-b border-wf-border/80 bg-wf-bg/70 backdrop-blur-xl">
@@ -87,7 +87,7 @@ export function MarketingLanding() {
             </Link>
             <Link
               href="/register"
-              className="rounded-[10px] bg-gradient-to-r from-blue-600/95 to-violet-600/95 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-900/25 transition hover:brightness-110"
+              className="rounded-[10px] bg-blue-600 hover:bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-black/30 transition hover:brightness-110"
             >
               Create account
             </Link>
@@ -97,11 +97,11 @@ export function MarketingLanding() {
 
       <main className="relative z-10">
         <section className="mx-auto max-w-5xl px-4 pb-16 pt-14 sm:px-6 sm:pt-20">
-          <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-violet-300/90">
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-sky-400/90">
             Worship presentation, reimagined
           </p>
           <h1 className="mx-auto mt-4 max-w-3xl text-center text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-            <span className="bg-gradient-to-r from-blue-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-500 bg-clip-text text-transparent">
               Your songs, setlists, and slides
             </span>
             <span className="text-wf-text"> in one calm flow.</span>
@@ -113,13 +113,13 @@ export function MarketingLanding() {
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
             <Link
               href="/register"
-              className="inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[14px] bg-gradient-to-r from-blue-600 to-violet-600 px-8 text-sm font-bold text-white shadow-xl shadow-violet-900/30 transition hover:brightness-110 sm:w-auto"
+              className="inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[14px] bg-blue-600 hover:bg-blue-500 px-8 text-sm font-bold text-white shadow-xl shadow-black/35 transition hover:brightness-110 sm:w-auto"
             >
               Get started free
             </Link>
             <Link
               href="/login"
-              className="inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[14px] border border-wf-border bg-wf-card/60 px-8 text-sm font-semibold text-wf-text backdrop-blur transition hover:border-violet-500/35 sm:w-auto"
+              className="inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[14px] border border-wf-border bg-wf-card/60 px-8 text-sm font-semibold text-wf-text backdrop-blur transition hover:border-white/18 sm:w-auto"
             >
               Sign in
             </Link>
@@ -132,7 +132,7 @@ export function MarketingLanding() {
                   setGuestDashboardAllow();
                   router.push("/dashboard");
                 }}
-                className="text-sm text-wf-muted underline decoration-wf-muted/40 underline-offset-4 transition hover:text-violet-300 hover:decoration-violet-400/60"
+                className="text-sm text-wf-muted underline decoration-wf-muted/40 underline-offset-4 transition hover:text-sky-300 hover:decoration-sky-500/50"
               >
                 Try the app without an account
               </button>
@@ -203,13 +203,13 @@ export function MarketingLanding() {
             <article className="mx-auto mt-10 max-w-3xl">
               <div className="overflow-hidden rounded-[20px] border border-wf-border bg-wf-card/50 shadow-xl shadow-black/25 backdrop-blur-md">
                 <div
-                  className="relative aspect-video bg-gradient-to-br from-slate-900/90 via-violet-950/50 to-wf-bg"
+                  className="relative aspect-video bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-wf-bg"
                   role="img"
                   aria-label="Video testimonial placeholder"
                 >
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
                     <span
-                      className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-2xl text-violet-200/90"
+                      className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-2xl text-sky-200/90"
                       aria-hidden
                     >
                       ▶
@@ -217,7 +217,7 @@ export function MarketingLanding() {
                     <p className="text-sm font-semibold text-white/85">Video testimonial</p>
                     <p className="max-w-xs text-xs leading-relaxed text-white/50">
                       Placeholder—replace with iframe (YouTube / Vimeo) or{" "}
-                      <code className="rounded bg-black/30 px-1 py-0.5 font-mono text-[10px] text-violet-200/80">
+                      <code className="rounded bg-black/30 px-1 py-0.5 font-mono text-[10px] text-sky-200/80">
                         &lt;video&gt;
                       </code>
                     </p>
@@ -379,13 +379,13 @@ export function MarketingLanding() {
                 </ul>
                 <Link
                   href="/register"
-                  className="mt-10 inline-flex h-11 items-center justify-center rounded-[12px] border border-wf-border px-5 text-sm font-semibold text-wf-text transition hover:border-violet-500/40 hover:bg-violet-500/10"
+                  className="mt-10 inline-flex h-11 items-center justify-center rounded-[12px] border border-wf-border px-5 text-sm font-semibold text-wf-text transition hover:border-white/20 hover:bg-white/[0.05]"
                 >
                   Get started free
                 </Link>
               </div>
-              <div className="relative flex flex-col rounded-[20px] border border-violet-500/30 bg-gradient-to-b from-violet-500/[0.1] to-wf-card/60 p-8 shadow-xl shadow-violet-950/25 backdrop-blur-md sm:p-9 sm:pr-10">
-                <span className="absolute right-5 top-5 rounded-full bg-violet-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-violet-200/95 ring-1 ring-violet-500/25">
+              <div className="relative flex flex-col rounded-[20px] border border-white/[0.12] bg-gradient-to-b from-slate-500/[0.08] to-wf-card/60 p-8 shadow-xl shadow-black/40 backdrop-blur-md sm:p-9 sm:pr-10">
+                <span className="absolute right-5 top-5 rounded-full bg-slate-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-200/95 ring-1 ring-sky-500/25">
                   Pro
                 </span>
                 <h3 className="text-lg font-semibold text-wf-text">Pro</h3>
@@ -393,15 +393,15 @@ export function MarketingLanding() {
                   Full access for weekly services—unlimited library, remote, AI, and priority support.
                 </p>
 
-                <div className="mt-10 rounded-2xl border border-violet-400/35 bg-violet-500/[0.12] px-6 py-10 text-center sm:px-8">
+                <div className="mt-10 rounded-2xl border border-white/15 bg-white/[0.04] px-6 py-10 text-center sm:px-8">
                   <div className="flex flex-wrap items-end justify-center gap-x-1 gap-y-0">
                     <span
-                      className="pb-1 text-3xl font-bold leading-none text-violet-100/90 sm:text-4xl"
+                      className="pb-1 text-3xl font-bold leading-none text-white/90 sm:text-4xl"
                       aria-hidden
                     >
                       £
                     </span>
-                    <span className="bg-gradient-to-b from-white via-violet-50 to-fuchsia-200 bg-clip-text text-6xl font-extrabold leading-none tracking-tight text-transparent sm:text-7xl">
+                    <span className="bg-gradient-to-b from-white via-white to-slate-200 bg-clip-text text-6xl font-extrabold leading-none tracking-tight text-transparent sm:text-7xl">
                       25
                     </span>
                     <span className="mb-1.5 text-lg font-medium text-wf-muted sm:text-xl">/month</span>
@@ -419,7 +419,7 @@ export function MarketingLanding() {
 
                 <ul className="mt-12 flex-1 space-y-3.5 border-t border-white/[0.08] pt-10 text-sm leading-relaxed text-wf-muted">
                   <li className="flex gap-2">
-                    <span className="text-violet-300/90" aria-hidden>
+                    <span className="text-sky-400/90" aria-hidden>
                       ✓
                     </span>
                     <span>
@@ -428,7 +428,7 @@ export function MarketingLanding() {
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-violet-300/90" aria-hidden>
+                    <span className="text-sky-400/90" aria-hidden>
                       ✓
                     </span>
                     <span>
@@ -437,7 +437,7 @@ export function MarketingLanding() {
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-violet-300/90" aria-hidden>
+                    <span className="text-sky-400/90" aria-hidden>
                       ✓
                     </span>
                     <span>
@@ -446,7 +446,7 @@ export function MarketingLanding() {
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-violet-300/90" aria-hidden>
+                    <span className="text-sky-400/90" aria-hidden>
                       ✓
                     </span>
                     <span>
@@ -456,7 +456,7 @@ export function MarketingLanding() {
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-violet-300/90" aria-hidden>
+                    <span className="text-sky-400/90" aria-hidden>
                       ✓
                     </span>
                     <span>
@@ -465,7 +465,7 @@ export function MarketingLanding() {
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-violet-300/90" aria-hidden>
+                    <span className="text-sky-400/90" aria-hidden>
                       ✓
                     </span>
                     <span>
@@ -474,7 +474,7 @@ export function MarketingLanding() {
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-violet-300/90" aria-hidden>
+                    <span className="text-sky-400/90" aria-hidden>
                       ✓
                     </span>
                     <span>
@@ -483,7 +483,7 @@ export function MarketingLanding() {
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-violet-300/90" aria-hidden>
+                    <span className="text-sky-400/90" aria-hidden>
                       ✓
                     </span>
                     <span>
@@ -492,7 +492,7 @@ export function MarketingLanding() {
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-violet-300/90" aria-hidden>
+                    <span className="text-sky-400/90" aria-hidden>
                       ✓
                     </span>
                     <span>
@@ -503,7 +503,7 @@ export function MarketingLanding() {
                 </ul>
                 <Link
                   href={`/register?next=${UPGRADE_PAGE_NEXT}`}
-                  className="mt-10 inline-flex h-11 w-full items-center justify-center rounded-[12px] bg-gradient-to-r from-blue-600 to-violet-600 px-4 text-sm font-bold text-white shadow-lg shadow-violet-900/30 transition hover:brightness-110"
+                  className="mt-10 inline-flex h-11 w-full items-center justify-center rounded-[12px] bg-blue-600 hover:bg-blue-500 px-4 text-sm font-bold text-white shadow-lg shadow-black/35 transition hover:brightness-110"
                 >
                   Get Pro
                 </Link>
@@ -511,7 +511,7 @@ export function MarketingLanding() {
                   New here? We&apos;ll open Upgrade after sign-up.{" "}
                   <Link
                     href={`/login?next=${UPGRADE_PAGE_NEXT}`}
-                    className="font-medium text-violet-400 underline-offset-2 hover:underline"
+                    className="font-medium text-sky-400 underline-offset-2 hover:underline"
                   >
                     Sign in to upgrade
                   </Link>
@@ -538,13 +538,13 @@ export function MarketingLanding() {
             </p>
             <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-[20px] border border-wf-border bg-wf-card/50 shadow-2xl shadow-black/30 backdrop-blur-md">
               <div
-                className="relative aspect-video bg-gradient-to-br from-indigo-950/80 via-wf-card to-slate-950/90"
+                className="relative aspect-video bg-gradient-to-br from-slate-950/90 via-wf-card to-slate-950/90"
                 role="img"
                 aria-label="Product demo video placeholder"
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
                   <span
-                    className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-2xl text-fuchsia-200/90"
+                    className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-2xl text-white/75"
                     aria-hidden
                   >
                     ▶
@@ -560,7 +560,7 @@ export function MarketingLanding() {
         </section>
 
         <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
-          <div className="rounded-[22px] border border-violet-500/25 bg-gradient-to-br from-violet-500/[0.12] via-wf-card/80 to-indigo-500/[0.08] p-8 text-center sm:p-10">
+          <div className="rounded-[22px] border border-white/[0.1] bg-gradient-to-br from-slate-500/[0.08] via-wf-card/80 to-slate-600/[0.06] p-8 text-center sm:p-10">
             <h2 className="text-xl font-bold sm:text-2xl">Ready when you are</h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-wf-muted">
               Create an account to sync with your team (with Supabase), or sign in to open your
@@ -569,7 +569,7 @@ export function MarketingLanding() {
             <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/register"
-                className="inline-flex h-11 items-center justify-center rounded-[12px] bg-white px-6 text-sm font-bold text-violet-950 transition hover:bg-violet-50"
+                className="inline-flex h-11 items-center justify-center rounded-[12px] bg-white px-6 text-sm font-bold text-slate-900 transition hover:bg-slate-100"
               >
                 Create account
               </Link>

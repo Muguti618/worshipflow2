@@ -41,7 +41,7 @@ export function PublicLyricSplitter() {
   };
 
   return (
-    <div className="rounded-[22px] border border-violet-500/25 bg-gradient-to-b from-violet-500/[0.08] to-wf-card/60 p-5 shadow-xl shadow-violet-950/20 backdrop-blur-md sm:p-8">
+    <div className="rounded-[22px] border border-white/[0.1] bg-gradient-to-b from-slate-500/[0.06] to-wf-card/60 p-5 shadow-xl shadow-black/35 backdrop-blur-md sm:p-8">
       <div className="text-center">
         <h2
           id="lyric-splitter-heading"
@@ -51,7 +51,7 @@ export function PublicLyricSplitter() {
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-wf-muted">
           Paste lyrics and get readable, projection-ready slides in seconds. Section markers like{" "}
-          <span className="font-mono text-[0.85em] text-violet-200/90">[Chorus]</span> and blank lines between
+          <span className="font-mono text-[0.85em] text-sky-200/90">[Chorus]</span> and blank lines between
           blocks are understood—everything runs in your browser (no account, no upload).
         </p>
         <p className="mx-auto mt-2 max-w-2xl text-[11px] leading-relaxed text-wf-muted/75">
@@ -72,7 +72,7 @@ export function PublicLyricSplitter() {
             onChange={(e) => setRaw(e.target.value)}
             rows={12}
             placeholder="Paste lyrics here…"
-            className="mt-2 min-h-[220px] flex-1 resize-y rounded-[14px] border border-wf-border bg-wf-bg/80 px-4 py-3 text-sm leading-relaxed text-wf-text outline-none ring-violet-500/0 transition focus:border-violet-500/35 focus:ring-2 focus:ring-violet-500/20"
+            className="mt-2 min-h-[220px] flex-1 resize-y rounded-[14px] border border-wf-border bg-wf-bg/80 px-4 py-3 text-sm leading-relaxed text-wf-text outline-none ring-sky-500/0 transition focus:border-sky-500/35 focus:ring-2 focus:ring-sky-500/20"
           />
           <div className="mt-4 flex flex-wrap items-center gap-4">
             <label className="flex items-center gap-2 text-xs text-wf-muted">
@@ -80,7 +80,7 @@ export function PublicLyricSplitter() {
               <select
                 value={maxLines}
                 onChange={(e) => setMaxLines(Number(e.target.value))}
-                className="rounded-lg border border-wf-border bg-wf-card px-2 py-1.5 text-xs text-wf-text outline-none focus:border-violet-500/35"
+                className="rounded-lg border border-wf-border bg-wf-card px-2 py-1.5 text-xs text-wf-text outline-none focus:border-sky-500/35"
               >
                 <option value={2}>2</option>
                 <option value={3}>3</option>
@@ -90,7 +90,7 @@ export function PublicLyricSplitter() {
             <button
               type="button"
               onClick={() => void copyPlain()}
-              className="rounded-[10px] border border-wf-border bg-wf-card/80 px-4 py-2 text-xs font-semibold text-wf-text transition hover:border-violet-500/40 hover:bg-violet-500/10"
+              className="rounded-[10px] border border-wf-border bg-wf-card/80 px-4 py-2 text-xs font-semibold text-wf-text transition hover:border-white/20 hover:bg-white/[0.05]"
             >
               {copied ? "Copied" : "Copy slides as text"}
             </button>
@@ -108,7 +108,7 @@ export function PublicLyricSplitter() {
                   key={`${idx}-${c.title}-${c.lines[0]?.slice(0, 8)}`}
                   className="rounded-xl border border-white/[0.08] bg-wf-card/40 p-4 text-left shadow-inner shadow-black/20"
                 >
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-violet-200/85">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sky-200/85">
                     {c.title} · {idx + 1}/{cards.length}
                   </p>
                   <div className="mt-2 space-y-1.5 text-sm leading-relaxed text-wf-text">
@@ -129,13 +129,13 @@ export function PublicLyricSplitter() {
         </p>
         <Link
           href="/register"
-          className="inline-flex h-11 shrink-0 items-center justify-center rounded-[12px] bg-gradient-to-r from-blue-600 to-violet-600 px-6 text-sm font-bold text-white shadow-lg shadow-violet-900/30 transition hover:brightness-110"
+          className="inline-flex h-11 shrink-0 items-center justify-center rounded-[12px] bg-blue-600 hover:bg-blue-500 px-6 text-sm font-bold text-white shadow-lg shadow-black/35 transition hover:brightness-110"
         >
           Create a free account
         </Link>
         <Link
           href="/login"
-          className="text-sm font-medium text-violet-300/90 underline decoration-violet-500/40 underline-offset-4 hover:text-violet-200"
+          className="text-sm font-medium text-sky-400/90 underline decoration-sky-500/40 underline-offset-4 hover:text-sky-200"
         >
           Sign in
         </Link>

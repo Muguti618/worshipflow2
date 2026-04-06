@@ -231,7 +231,7 @@ function BillingSettingsInner({ autoStartPlan = null }: BillingSettingsInnerProp
       )}
 
       {autoStartPlan && status && !status.isPro && (
-        <p className="mt-2 text-xs text-violet-200/85">
+        <p className="mt-2 text-xs text-sky-200/85">
           Starting secure checkout for your{" "}
           {autoStartPlan === "yearly" ? "yearly" : "monthly"} plan… If nothing happens, use the buttons below.
         </p>
@@ -253,11 +253,11 @@ function BillingSettingsInner({ autoStartPlan = null }: BillingSettingsInnerProp
       {!status && !statusError && (
         <p className="mt-4 text-sm text-wf-muted">
           You need an account to see your plan.{" "}
-          <Link href="/login" className="font-medium text-violet-500 underline-offset-2 hover:underline">
+          <Link href="/login" className="font-medium text-sky-500 underline-offset-2 hover:underline">
             Sign in
           </Link>{" "}
           or{" "}
-          <Link href="/register" className="font-medium text-violet-500 underline-offset-2 hover:underline">
+          <Link href="/register" className="font-medium text-sky-500 underline-offset-2 hover:underline">
             create one
           </Link>
           , then return here to upgrade.
@@ -323,7 +323,7 @@ function BillingSettingsInner({ autoStartPlan = null }: BillingSettingsInnerProp
                 type="button"
                 disabled={checkoutLoading !== null}
                 onClick={() => void startCheckout("monthly")}
-                className="rounded-[12px] bg-violet-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-violet-500 disabled:opacity-50"
+                className="rounded-[12px] bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-1000 disabled:opacity-50"
               >
                 {checkoutLoading === "monthly" ? "Redirecting…" : "Upgrade — monthly"}
               </button>
@@ -331,7 +331,7 @@ function BillingSettingsInner({ autoStartPlan = null }: BillingSettingsInnerProp
                 type="button"
                 disabled={checkoutLoading !== null}
                 onClick={() => void startCheckout("yearly")}
-                className="rounded-[12px] border border-violet-500/40 bg-violet-500/10 px-4 py-2.5 text-sm font-medium text-violet-200 transition hover:bg-violet-500/20 disabled:opacity-50"
+                className="rounded-[12px] border border-white/18 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-sky-200 transition hover:bg-slate-1000/20 disabled:opacity-50"
               >
                 {checkoutLoading === "yearly" ? "Redirecting…" : "Upgrade — yearly"}
               </button>

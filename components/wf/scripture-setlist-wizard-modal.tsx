@@ -184,9 +184,9 @@ export function ScriptureSetlistWizardModal(props: {
               <button
                 type="button"
                 onClick={() => setStep("ai-input")}
-                className="rounded-xl border border-violet-500/35 bg-violet-500/10 px-4 py-4 text-left transition hover:border-violet-400/50 hover:bg-violet-500/[0.14]"
+                className="rounded-xl border border-white/15 bg-white/[0.04] px-4 py-4 text-left transition hover:border-sky-400/45 hover:bg-slate-1000/[0.14]"
               >
-                <span className="text-sm font-semibold text-violet-100">Use AI</span>
+                <span className="text-sm font-semibold text-slate-100">Use AI</span>
                 <span className="mt-1 block text-[11px] text-wf-muted">
                   Reference (e.g. John 3:16) or topic (e.g. hope, anxiety) → slides to review
                 </span>
@@ -263,7 +263,7 @@ export function ScriptureSetlistWizardModal(props: {
                 type="button"
                 onClick={() => void runAiGenerate()}
                 disabled={!query.trim() || aiLoading}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
               >
                 {aiLoading ? "Generating slides…" : "Generate slides"}
               </button>
@@ -292,7 +292,7 @@ export function ScriptureSetlistWizardModal(props: {
                   key={o.ref}
                   type="button"
                   onClick={() => pickAiOption(o)}
-                  className="w-full rounded-xl border border-white/[0.08] bg-wf-bg/40 px-4 py-3 text-left transition hover:border-violet-400/40 hover:bg-violet-500/10"
+                  className="w-full rounded-xl border border-white/[0.08] bg-wf-bg/40 px-4 py-3 text-left transition hover:border-white/18 hover:bg-white/[0.05]"
                 >
                   <p className="text-sm font-semibold text-wf-text">{o.ref}</p>
                   {o.blurb ? (
@@ -389,7 +389,7 @@ export function ScriptureSetlistWizardModal(props: {
               <button
                 type="button"
                 onClick={addReviewSlide}
-                className="text-[11px] font-medium text-violet-300 hover:text-violet-200"
+                className="text-[11px] font-medium text-sky-400 hover:text-sky-200"
               >
                 + Add slide
               </button>
@@ -413,7 +413,7 @@ export function ScriptureSetlistWizardModal(props: {
                 type="button"
                 onClick={confirmAiAdd}
                 disabled={!reviewSlides.length}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
               >
                 Add to setlist
               </button>
@@ -452,7 +452,7 @@ export function ScriptureSetlistWizardModal(props: {
               <button
                 type="button"
                 onClick={confirmManualAdd}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
               >
                 Add to setlist
               </button>

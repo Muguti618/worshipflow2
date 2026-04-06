@@ -18,14 +18,14 @@ const SECTIONS = [
           <strong className="font-medium text-wf-text">setlists</strong> that order those songs and
           other moments, and a <strong className="font-medium text-wf-text">presenter</strong> that
           walks through every slide in order. AI features in this build use{" "}
-          <strong className="font-medium text-violet-200/90">dummy test data</strong> so you can
+          <strong className="font-medium text-sky-200/90">dummy test data</strong> so you can
           click through the whole product without API keys.
         </p>
         <p>
-          Typical Sunday flow: build or import songs in <Link href="/songs" className="text-violet-300 hover:underline">Songs</Link>
-          , arrange them in <Link href="/setlists" className="text-violet-300 hover:underline">Setlists</Link>
+          Typical Sunday flow: build or import songs in <Link href="/songs" className="text-sky-400 hover:underline">Songs</Link>
+          , arrange them in <Link href="/setlists" className="text-sky-400 hover:underline">Setlists</Link>
           , pick the setlist on the{" "}
-          <Link href="/dashboard" className="text-violet-300 hover:underline">
+          <Link href="/dashboard" className="text-sky-400 hover:underline">
             Dashboard
           </Link>
           , then open <strong className="font-medium text-wf-text">Present</strong> for the operator
@@ -44,9 +44,9 @@ const SECTIONS = [
           stack of slides: verse 1, chorus, bridge, etc. The presenter advances slide by slide across
           the whole service.
         </p>
-        <ul className="list-inside list-disc space-y-2 border-l border-violet-500/25 pl-4">
+        <ul className="list-inside list-disc space-y-2 border-l border-white/[0.1] pl-4">
           <li>
-            In <Link href="/songs" className="text-violet-300 hover:underline">Songs</Link>, each
+            In <Link href="/songs" className="text-sky-400 hover:underline">Songs</Link>, each
             block is one slide (title + lines). Use <strong className="text-wf-text">↑ ↓</strong> to
             reorder slides inside that song.
           </li>
@@ -68,7 +68,7 @@ const SECTIONS = [
     body: (
       <div className="space-y-3 text-sm leading-relaxed text-wf-muted">
         <p>
-          <Link href="/studio" className="text-violet-300 hover:underline">Slide Studio</Link> is
+          <Link href="/studio" className="text-sky-400 hover:underline">Slide Studio</Link> is
           for experimenting: paste raw lyrics, set{" "}
           <strong className="font-medium text-wf-text">max lines per slide</strong>, and watch the
           breakdown list. Changing lines per slide directly changes{" "}
@@ -94,7 +94,7 @@ const SECTIONS = [
           Each row can be a <strong className="font-medium text-wf-text">linked song</strong> (slides
           come from your library) or a custom block (prayer, scripture, etc.) with its own slides.
         </p>
-        <ul className="list-inside list-disc space-y-2 border-l border-violet-500/25 pl-4">
+        <ul className="list-inside list-disc space-y-2 border-l border-white/[0.1] pl-4">
           <li>
             In the editor, <strong className="text-wf-text">drag the grip</strong> to reorder items.
           </li>
@@ -115,13 +115,13 @@ const SECTIONS = [
     body: (
       <div className="space-y-3 text-sm leading-relaxed text-wf-muted">
         <p>
-          <Link href="/bible" className="text-violet-300 hover:underline">Bible</Link> supports
+          <Link href="/bible" className="text-sky-400 hover:underline">Bible</Link> supports
           reference lookup plus <strong className="font-medium text-wf-text">Get AI verse options</strong>
           — curated dummy matches for common themes (anxiety, hope, love, …). Each option shows
           reference, full text, and a short blurb. Pick one to load the preview and slide strip.
         </p>
         <p>
-          The <Link href="/ai" className="text-violet-300 hover:underline">AI Assistant</Link> chat
+          The <Link href="/ai" className="text-sky-400 hover:underline">AI Assistant</Link> chat
           uses keyword-based <strong className="text-wf-text">dummy replies</strong> so you can test
           the conversation UI. Replace with a hosted model when you are ready.
         </p>
@@ -163,7 +163,7 @@ const SECTIONS = [
         <p>
           Your songs and setlists live in <strong className="font-medium text-wf-text">browser
           storage</strong> on this device (demo MVP). There is no account sync until you wire a
-          backend. Open <Link href="/settings" className="text-violet-300 hover:underline">Settings</Link>{" "}
+          backend. Open <Link href="/settings" className="text-sky-400 hover:underline">Settings</Link>{" "}
           for export, import, and other options.
         </p>
       </div>
@@ -182,7 +182,7 @@ export function TutorialPage() {
         <li key={s.id}>
           <a
             href={`#${s.id}`}
-            className="text-violet-300/90 hover:text-violet-200 hover:underline"
+            className="text-sky-400/90 hover:text-sky-200 hover:underline"
             onClick={(e) => {
               e.preventDefault();
               setOpenId(s.id);
@@ -200,7 +200,7 @@ export function TutorialPage() {
     <div className="mx-auto max-w-3xl p-6 pb-16 lg:max-w-4xl lg:p-8">
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-violet-300/80">
+          <p className="text-xs font-semibold uppercase tracking-wider text-sky-400/80">
             Always available
           </p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight lg:text-3xl">Tutorial</h1>
@@ -212,22 +212,22 @@ export function TutorialPage() {
         </div>
         <Link
           href="/dashboard"
-          className="rounded-[12px] border border-white/[0.1] px-4 py-2 text-sm font-medium text-wf-muted hover:border-violet-500/30 hover:text-wf-text"
+          className="rounded-[12px] border border-white/[0.1] px-4 py-2 text-sm font-medium text-wf-muted hover:border-white/16 hover:text-wf-text"
         >
           ← Dashboard
         </Link>
       </div>
 
-      <div className="relative mb-8 overflow-hidden rounded-[22px] border-2 border-violet-400/35 bg-gradient-to-br from-violet-500/[0.14] via-indigo-500/[0.08] to-fuchsia-500/[0.06] p-6 shadow-[0_0_60px_-10px_rgba(139,92,246,0.45)] lg:p-8">
+      <div className="relative mb-8 overflow-hidden rounded-[22px] border-2 border-white/15 bg-gradient-to-br from-slate-500/[0.1] via-slate-600/[0.06] to-slate-700/[0.05] p-6 shadow-[0_0_50px_-12px_rgba(56,189,248,0.12)] lg:p-8">
         <div
-          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-violet-400/20 blur-3xl"
+          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-sky-400/12 blur-3xl"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-indigo-400/15 blur-3xl"
+          className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-slate-500/12 blur-3xl"
           aria-hidden
         />
-        <p className="text-xs font-semibold uppercase tracking-wider text-violet-200/90">
+        <p className="text-xs font-semibold uppercase tracking-wider text-sky-200/90">
           Interactive spotlight
         </p>
         <h2 className="mt-2 text-xl font-bold text-wf-text lg:text-2xl">
@@ -235,7 +235,7 @@ export function TutorialPage() {
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-wf-muted">
           Start the guided tour: the rest of the screen dims and a{" "}
-          <strong className="font-medium text-violet-200/90">pulsing glow</strong> frames the real
+          <strong className="font-medium text-sky-200/90">pulsing glow</strong> frames the real
           button or field for that step ({TUTORIAL_TOUR_STEPS.length} stops). You can still click the
           highlighted control. The tour starts on the <strong className="font-medium text-wf-text">Dashboard</strong>{" "}
           and visits Songs, Setlists, Slide Studio, and Bible. Press{" "}
@@ -248,7 +248,7 @@ export function TutorialPage() {
             startTour();
             router.push("/dashboard");
           }}
-          className="mt-5 inline-flex items-center gap-2 rounded-[14px] bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-violet-900/40 transition hover:brightness-110"
+          className="mt-5 inline-flex items-center gap-2 rounded-[14px] bg-slate-600 hover:bg-slate-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-black/40 transition hover:brightness-110"
         >
           <span className="text-lg" aria-hidden>
             ✨
@@ -256,7 +256,7 @@ export function TutorialPage() {
           Start guided spotlight tour
         </button>
         {active ? (
-          <p className="mt-3 text-xs text-violet-200/80">
+          <p className="mt-3 text-xs text-sky-200/80">
             Tour is active — use the panel at the bottom of the screen (Next / Back / Skip).
           </p>
         ) : null}
@@ -272,19 +272,19 @@ export function TutorialPage() {
           <div className="mt-4 border-t border-white/[0.06] pt-4">
             <p className="text-[10px] font-medium uppercase tracking-wider text-wf-muted">Shortcuts</p>
             <div className="mt-2 flex flex-col gap-1.5 text-xs">
-              <Link href="/songs" className="text-violet-300/90 hover:underline">
+              <Link href="/songs" className="text-sky-400/90 hover:underline">
                 Songs
               </Link>
-              <Link href="/studio" className="text-violet-300/90 hover:underline">
+              <Link href="/studio" className="text-sky-400/90 hover:underline">
                 Slide Studio
               </Link>
-              <Link href="/setlists" className="text-violet-300/90 hover:underline">
+              <Link href="/setlists" className="text-sky-400/90 hover:underline">
                 Setlists
               </Link>
-              <Link href="/bible" className="text-violet-300/90 hover:underline">
+              <Link href="/bible" className="text-sky-400/90 hover:underline">
                 Bible
               </Link>
-              <Link href="/ai" className="text-violet-300/90 hover:underline">
+              <Link href="/ai" className="text-sky-400/90 hover:underline">
                 AI Assistant
               </Link>
             </div>
@@ -316,8 +316,8 @@ export function TutorialPage() {
         </div>
       </div>
 
-      <aside className="mt-10 rounded-[16px] border border-violet-500/20 bg-violet-500/[0.06] p-5">
-        <p className="text-sm font-semibold text-violet-100">Dummy AI reminder</p>
+      <aside className="mt-10 rounded-[16px] border border-sky-500/15 bg-sky-500/[0.06] p-5">
+        <p className="text-sm font-semibold text-slate-100">Dummy AI reminder</p>
         <p className="mt-2 text-sm leading-relaxed text-wf-muted">
           Chat, bridge generation, and Bible topic matching use{" "}
           <strong className="font-medium text-wf-text">fixed test content</strong> from{" "}

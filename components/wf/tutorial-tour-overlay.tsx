@@ -128,7 +128,7 @@ export function TutorialTourOverlay() {
       {/* Spotlight ring + glow — hole stays click-through (no element here) */}
       {rect && rect.width > 0 && rect.height > 0 ? (
         <div
-          className="wf-tour-spotlight-pulse pointer-events-none fixed z-[501] rounded-xl border-2 border-violet-300/90 shadow-[0_0_0_6px_rgba(139,92,246,0.25),0_0_48px_20px_rgba(167,139,250,0.45),0_0_80px_30px_rgba(196,181,253,0.2)]"
+          className="wf-tour-spotlight-pulse pointer-events-none fixed z-[501] rounded-xl border-2 border-sky-400/70 shadow-[0_0_0_4px_rgba(56,189,248,0.15),0_0_40px_16px_rgba(14,165,233,0.1)]"
           style={{
             top: rect.top,
             left: rect.left,
@@ -139,9 +139,9 @@ export function TutorialTourOverlay() {
       ) : null}
 
       {/* Tooltip */}
-      <div className="pointer-events-auto fixed bottom-6 left-1/2 z-[502] w-[min(92vw,420px)] -translate-x-1/2 rounded-[18px] border border-violet-500/30 bg-wf-card/95 p-4 shadow-2xl shadow-violet-950/50 backdrop-blur-xl">
+      <div className="pointer-events-auto fixed bottom-6 left-1/2 z-[502] w-[min(92vw,420px)] -translate-x-1/2 rounded-[18px] border border-white/[0.12] bg-wf-card/95 p-4 shadow-2xl shadow-black/50 backdrop-blur-xl">
         <div className="mb-1 flex items-center justify-between gap-2">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-300/90">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-sky-400/90">
             Step {stepIndex + 1} / {total}
           </span>
           <button
@@ -172,7 +172,7 @@ export function TutorialTourOverlay() {
             <button
               type="button"
               onClick={stopTour}
-              className="rounded-[12px] bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-900/30"
+              className="rounded-[12px] bg-slate-600 hover:bg-slate-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-black/35"
             >
               Finish
             </button>
@@ -180,7 +180,7 @@ export function TutorialTourOverlay() {
             <button
               type="button"
               onClick={nextStep}
-              className="rounded-[12px] bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-900/30"
+              className="rounded-[12px] bg-slate-600 hover:bg-slate-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-black/35"
             >
               Next
             </button>

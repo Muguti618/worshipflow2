@@ -55,7 +55,7 @@ export function SlideBackgroundRow(props: Props) {
                 })
               }
               className={`h-8 w-8 overflow-hidden rounded-md border ${
-                on ? "border-violet-400 ring-1 ring-violet-500/40" : "border-white/10"
+                on ? "border-sky-500/40 ring-1 ring-sky-500/40" : "border-white/10"
               }`}
             >
               <span
@@ -96,7 +96,7 @@ export function SlideBackgroundRow(props: Props) {
                 })
               }
               className={`h-8 w-8 rounded-md border-2 ${
-                on ? "border-violet-400 ring-1 ring-violet-500/40" : "border-white/15"
+                on ? "border-sky-500/40 ring-1 ring-sky-500/40" : "border-white/15"
               }`}
               style={{ backgroundColor: hex }}
             />
@@ -157,7 +157,7 @@ export function SlideBackgroundRow(props: Props) {
                 backgroundFullBleed: e.target.checked ? true : undefined,
               })
             }
-            className="mt-0.5 h-3.5 w-3.5 rounded border-white/25 accent-violet-500"
+            className="mt-0.5 h-3.5 w-3.5 rounded border-white/25 accent-sky-600"
           />
           <span className="text-[10px] leading-snug text-wf-muted">
             <span className="font-medium text-wf-text/90">Designed graphic</span> — sharp background, no

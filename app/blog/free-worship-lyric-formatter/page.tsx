@@ -13,8 +13,8 @@ export default function BlogPostFreeWorshipLyricFormatter() {
   return (
     <>
       <BlogShell>
-        <article className="prose prose-invert max-w-none prose-p:text-wf-muted prose-headings:text-wf-text prose-a:text-violet-300">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300/90">Blog</p>
+        <article className="prose prose-invert max-w-none prose-p:text-wf-muted prose-headings:text-wf-text prose-a:text-sky-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-400/90">Blog</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-wf-text sm:text-[2rem]">
             Free worship lyric formatter (for projection, not Word)
           </h1>
@@ -32,7 +32,7 @@ export default function BlogPostFreeWorshipLyricFormatter() {
 
           <p className="mt-4 text-base leading-relaxed">
             The goal is simple readability. Section markers like{" "}
-            <span className="font-mono text-sm text-violet-200/90">[Chorus]</span> and blank lines between
+            <span className="font-mono text-sm text-sky-300/90">[Chorus]</span> and blank lines between
             blocks help the formatter understand structure. You can copy the output as plain text for
             rehearsal notes, or bring the same habits into{" "}
             <Link href="/register">LumenWorship</Link> when you are ready to save songs and build setlists.
@@ -48,7 +48,7 @@ export default function BlogPostFreeWorshipLyricFormatter() {
 
           <p className="mt-8 rounded-xl border border-wf-border bg-wf-card/50 p-4 text-sm">
             <strong className="text-wf-text">Try it:</strong>{" "}
-            <Link href="/#lyric-splitter" className="font-medium text-violet-300 hover:underline">
+            <Link href="/#lyric-splitter" className="font-medium text-sky-400 hover:underline">
               Free lyric splitter — no sign-up
             </Link>
           </p>

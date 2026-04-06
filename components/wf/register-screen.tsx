@@ -90,7 +90,7 @@ export function RegisterScreen() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="h-11 w-full rounded-[12px] border border-wf-input-border bg-wf-bg/80 px-3.5 text-sm text-wf-text outline-none transition focus:border-violet-500/45 focus:ring-2 focus:ring-violet-500/20"
+            className="h-11 w-full rounded-[12px] border border-wf-input-border bg-wf-bg/80 px-3.5 text-sm text-wf-text outline-none transition focus:border-sky-500/45 focus:ring-2 focus:ring-sky-500/20"
             placeholder="Alex Morgan"
           />
         </div>
@@ -105,7 +105,7 @@ export function RegisterScreen() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="h-11 w-full rounded-[12px] border border-wf-input-border bg-wf-bg/80 px-3.5 text-sm text-wf-text outline-none transition focus:border-violet-500/45 focus:ring-2 focus:ring-violet-500/20"
+            className="h-11 w-full rounded-[12px] border border-wf-input-border bg-wf-bg/80 px-3.5 text-sm text-wf-text outline-none transition focus:border-sky-500/45 focus:ring-2 focus:ring-sky-500/20"
             placeholder="you@church.org"
           />
         </div>
@@ -121,7 +121,7 @@ export function RegisterScreen() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={8}
-            className="h-11 w-full rounded-[12px] border border-wf-input-border bg-wf-bg/80 px-3.5 text-sm text-wf-text outline-none transition focus:border-violet-500/45 focus:ring-2 focus:ring-violet-500/20"
+            className="h-11 w-full rounded-[12px] border border-wf-input-border bg-wf-bg/80 px-3.5 text-sm text-wf-text outline-none transition focus:border-sky-500/45 focus:ring-2 focus:ring-sky-500/20"
             placeholder="At least 8 characters"
           />
         </div>
@@ -137,7 +137,7 @@ export function RegisterScreen() {
             onChange={(e) => setConfirm(e.target.value)}
             required
             minLength={8}
-            className="h-11 w-full rounded-[12px] border border-wf-input-border bg-wf-bg/80 px-3.5 text-sm text-wf-text outline-none transition focus:border-violet-500/45 focus:ring-2 focus:ring-violet-500/20"
+            className="h-11 w-full rounded-[12px] border border-wf-input-border bg-wf-bg/80 px-3.5 text-sm text-wf-text outline-none transition focus:border-sky-500/45 focus:ring-2 focus:ring-sky-500/20"
             placeholder="Repeat password"
           />
         </div>
@@ -154,7 +154,7 @@ export function RegisterScreen() {
         <button
           type="submit"
           disabled={pending}
-          className="h-11 w-full rounded-[12px] bg-gradient-to-r from-blue-600/95 via-violet-600/95 to-fuchsia-600/85 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 transition hover:brightness-110 disabled:opacity-50"
+          className="h-11 w-full rounded-[12px] bg-blue-600 text-sm font-semibold text-white shadow-lg shadow-black/35 transition hover:bg-blue-500 disabled:opacity-50"
         >
           {pending ? "Creating account…" : "Create account"}
         </button>
@@ -168,7 +168,7 @@ export function RegisterScreen() {
               ? "/login"
               : `/login?next=${encodeURIComponent(redirectTo)}`
           }
-          className="font-semibold text-violet-300 hover:underline"
+          className="font-semibold text-sky-400 hover:underline"
         >
           Sign in
         </Link>

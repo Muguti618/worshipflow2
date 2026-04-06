@@ -70,7 +70,7 @@ export function SetlistsPage() {
             className={`inline-flex h-10 items-center gap-2 rounded-[12px] px-4 text-sm font-semibold transition ${
               atFreeSetlistLimit
                 ? "border border-amber-500/40 bg-amber-500/10 text-amber-100/90 hover:bg-amber-500/15"
-                : "bg-gradient-to-r from-blue-600/90 to-violet-600/90 text-white"
+                : "bg-blue-600 hover:bg-blue-500 text-white"
             }`}
           >
             New setlist
@@ -79,7 +79,7 @@ export function SetlistsPage() {
             href="/present?room=default"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-white/[0.12] bg-wf-card/60 px-4 text-sm font-semibold text-wf-text hover:border-violet-500/35"
+            className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-white/[0.12] bg-wf-card/60 px-4 text-sm font-semibold text-wf-text hover:border-white/18"
           >
             Presenter
           </Link>
@@ -108,7 +108,7 @@ export function SetlistsPage() {
                     <button
                       type="button"
                       onClick={() => sendToPresenter(s.id)}
-                      className="rounded-lg border border-violet-500/30 bg-violet-500/10 px-3 py-1.5 text-xs font-semibold text-violet-200 hover:bg-violet-500/15"
+                      className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-sky-200 hover:bg-sky-500/10"
                     >
                       Send to presenter
                     </button>
@@ -133,7 +133,7 @@ export function SetlistsPage() {
         ) : (
           <p className="text-sm text-wf-muted">
             No setlists yet.{" "}
-            <Link href="/setlists/new" className="text-violet-300 hover:underline">
+            <Link href="/setlists/new" className="text-sky-400 hover:underline">
               Create one
             </Link>
             .

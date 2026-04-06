@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const link = "text-wf-muted transition hover:text-violet-300 hover:underline";
+const link = "text-wf-muted transition hover:text-sky-300 hover:underline";
 const heading = "text-xs font-semibold uppercase tracking-wider text-wf-text/90";
 
 export function SiteFooter() {
@@ -100,7 +100,7 @@ export function SiteFooter() {
             © {new Date().getFullYear()} LumenWorship. All rights reserved.
           </p>
           <p className="text-xs text-wf-muted">
-            Made with <span className="text-fuchsia-400/90">♥</span> by{" "}
+            Made with <span className="text-rose-400/80">♥</span> by{" "}
             <span className="font-medium text-wf-text/90">Forma</span>.
           </p>
         </div>

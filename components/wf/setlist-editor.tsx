@@ -261,7 +261,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
     return (
       <div className="p-8">
         <p className="text-wf-muted">Setlist not found.</p>
-        <Link href="/setlists" className="mt-4 inline-block text-sm text-violet-300 hover:underline">
+        <Link href="/setlists" className="mt-4 inline-block text-sm text-sky-400 hover:underline">
           ← Back to setlists
         </Link>
       </div>
@@ -279,10 +279,10 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
           </Link>
           <h1 className="mt-2 text-2xl font-bold tracking-tight">Edit setlist</h1>
           <p className="mt-1 text-sm text-wf-muted">
-            Add songs from <Link href="/songs" className="text-violet-300 hover:underline">Songs</Link> or
+            Add songs from <Link href="/songs" className="text-sky-400 hover:underline">Songs</Link> or
             create new ones. Each song has <strong className="font-medium text-wf-text">multiple slides</strong>
             — Present advances through every slide in order for that item.{" "}
-            <Link href="/tutorial" className="text-violet-300 hover:underline">
+            <Link href="/tutorial" className="text-sky-400 hover:underline">
               Tutorial
             </Link>
           </p>
@@ -291,7 +291,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
           <button
             type="button"
             onClick={save}
-            className="rounded-[12px] bg-gradient-to-r from-blue-600/90 to-violet-600/90 px-4 py-2 text-sm font-semibold text-white"
+            className="rounded-[12px] bg-blue-600 hover:bg-blue-500 px-4 py-2 text-sm font-semibold text-white"
           >
             {savedFlash ? "Saved" : "Save"}
           </button>
@@ -311,7 +311,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
           <input
             value={draft.name}
             onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-            className="mt-1 h-10 w-full rounded-[10px] border border-white/[0.08] bg-wf-bg/60 px-3 text-sm text-wf-text outline-none focus:ring-2 focus:ring-violet-500/25"
+            className="mt-1 h-10 w-full rounded-[10px] border border-white/[0.08] bg-wf-bg/60 px-3 text-sm text-wf-text outline-none focus:ring-2 focus:ring-sky-500/25"
           />
         </label>
         <label className="block">
@@ -321,13 +321,13 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
           <input
             value={draft.description}
             onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-            className="mt-1 h-10 w-full rounded-[10px] border border-white/[0.08] bg-wf-bg/60 px-3 text-sm text-wf-text outline-none focus:ring-2 focus:ring-violet-500/25"
+            className="mt-1 h-10 w-full rounded-[10px] border border-white/[0.08] bg-wf-bg/60 px-3 text-sm text-wf-text outline-none focus:ring-2 focus:ring-sky-500/25"
           />
         </label>
       </div>
 
-      <div className="mt-8 rounded-[16px] border border-violet-500/20 bg-violet-500/[0.06] p-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-violet-200/80">Add a song</p>
+      <div className="mt-8 rounded-[16px] border border-sky-500/15 bg-sky-500/[0.06] p-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-sky-200/80">Add a song</p>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <label className="min-w-[200px] flex-1">
             <span className="text-[10px] text-wf-muted">From library</span>
@@ -348,14 +348,14 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
             type="button"
             onClick={addSongFromLibrary}
             disabled={!pickSongId}
-            className="h-9 rounded-lg bg-violet-600/80 px-4 text-sm font-semibold text-white disabled:opacity-40"
+            className="h-9 rounded-lg bg-blue-600/90 px-4 text-sm font-semibold text-white disabled:opacity-40"
           >
             Add to setlist
           </button>
           <button
             type="button"
             onClick={() => setNewSongOpen(true)}
-            className="h-9 rounded-lg border border-white/[0.12] px-4 text-sm font-medium text-wf-text hover:border-violet-500/35"
+            className="h-9 rounded-lg border border-white/[0.12] px-4 text-sm font-medium text-wf-text hover:border-white/18"
           >
             + New song
           </button>
@@ -387,7 +387,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
           <button
             type="button"
             onClick={() => setScriptureWizardOpen(true)}
-            className="rounded-lg border border-white/[0.08] px-2.5 py-1 text-[11px] font-medium text-wf-muted hover:border-violet-500/30 hover:text-wf-text"
+            className="rounded-lg border border-white/[0.08] px-2.5 py-1 text-[11px] font-medium text-wf-muted hover:border-white/16 hover:text-wf-text"
           >
             + {kindLabel("scripture")}
           </button>
@@ -399,7 +399,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
                 setCustomBlockKind(k);
                 setCustomBlockOpen(true);
               }}
-              className="rounded-lg border border-white/[0.08] px-2.5 py-1 text-[11px] font-medium text-wf-muted hover:border-violet-500/30 hover:text-wf-text"
+              className="rounded-lg border border-white/[0.08] px-2.5 py-1 text-[11px] font-medium text-wf-muted hover:border-white/16 hover:text-wf-text"
             >
               + {kindLabel(k as SetlistItemKind)}
             </button>
@@ -413,7 +413,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
             graphics look clean on screen.
           </p>
           {imageImportNote ? (
-            <p className="w-full text-[10px] text-violet-200/90" role="status">
+            <p className="w-full text-[10px] text-sky-200/90" role="status">
               {imageImportNote}
             </p>
           ) : null}
@@ -558,7 +558,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
               }}
               className={`rounded-[16px] border bg-wf-card/35 p-4 backdrop-blur-sm transition-colors ${
                 isOver
-                  ? "border-violet-500/50 bg-violet-500/[0.08]"
+                  ? "border-sky-500/35 bg-white/[0.03]"
                   : "border-white/[0.06]"
               } ${isDragging ? "opacity-60" : ""}`}
             >
@@ -577,7 +577,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
                       setDragItemId(null);
                       setOverItemId(null);
                     }}
-                    className="mt-0.5 flex h-9 w-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-lg border border-white/[0.1] bg-wf-bg/40 text-wf-muted outline-none hover:border-violet-500/35 hover:text-wf-text focus-visible:ring-2 focus-visible:ring-violet-500/40 active:cursor-grabbing"
+                    className="mt-0.5 flex h-9 w-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-lg border border-white/[0.1] bg-wf-bg/40 text-wf-muted outline-none hover:border-white/18 hover:text-wf-text focus-visible:ring-2 focus-visible:ring-sky-500/40 active:cursor-grabbing"
                     title="Drag to reorder"
                     aria-label={`Drag to reorder: ${item.name}`}
                   >
@@ -614,7 +614,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
                   <button
                     type="button"
                     onClick={() => toggleItemExpanded(item.id)}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.1] bg-wf-bg/40 text-wf-muted outline-none transition hover:border-violet-500/35 hover:text-wf-text focus-visible:ring-2 focus-visible:ring-violet-500/40"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.1] bg-wf-bg/40 text-wf-muted outline-none transition hover:border-white/18 hover:text-wf-text focus-visible:ring-2 focus-visible:ring-sky-500/40"
                     aria-expanded={isExpanded}
                     aria-controls={isExpanded ? panelId : undefined}
                     title={isExpanded ? "Collapse" : "Expand"}
@@ -637,7 +637,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
                 >
                   <Link
                     href={`/songs?song=${encodeURIComponent(item.songId)}`}
-                    className="text-[11px] font-medium text-violet-300 hover:underline"
+                    className="text-[11px] font-medium text-sky-400 hover:underline"
                   >
                     Edit song in Songs →
                   </Link>
@@ -749,7 +749,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
                   <button
                     type="button"
                     onClick={() => addSlide(itemIndex)}
-                    className="text-[11px] font-medium text-violet-300 hover:text-violet-200"
+                    className="text-[11px] font-medium text-sky-400 hover:text-sky-200"
                   >
                     + Add slide
                   </button>

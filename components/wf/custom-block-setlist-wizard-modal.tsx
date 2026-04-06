@@ -161,9 +161,9 @@ export function CustomBlockSetlistWizardModal(props: {
               <button
                 type="button"
                 onClick={() => setStep("ai-input")}
-                className="rounded-xl border border-violet-500/35 bg-violet-500/10 px-4 py-4 text-left transition hover:border-violet-400/50 hover:bg-violet-500/[0.14]"
+                className="rounded-xl border border-white/15 bg-white/[0.04] px-4 py-4 text-left transition hover:border-sky-400/45 hover:bg-slate-1000/[0.14]"
               >
-                <span className="text-sm font-semibold text-violet-100">Use AI</span>
+                <span className="text-sm font-semibold text-slate-100">Use AI</span>
                 <span className="mt-1 block text-[11px] text-wf-muted">
                   Background + optional sample slides (review before adding)
                 </span>
@@ -257,7 +257,7 @@ export function CustomBlockSetlistWizardModal(props: {
                 type="button"
                 onClick={() => void runAiGenerate()}
                 disabled={aiLoading}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
               >
                 {aiLoading ? "Generating…" : "Generate"}
               </button>
@@ -344,7 +344,7 @@ export function CustomBlockSetlistWizardModal(props: {
               <button
                 type="button"
                 onClick={addReviewSlide}
-                className="text-[11px] font-medium text-violet-300 hover:text-violet-200"
+                className="text-[11px] font-medium text-sky-400 hover:text-sky-200"
               >
                 + Add slide
               </button>
@@ -368,7 +368,7 @@ export function CustomBlockSetlistWizardModal(props: {
                 type="button"
                 onClick={confirmAiAdd}
                 disabled={!reviewSlides.length}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
               >
                 Add to setlist
               </button>
@@ -407,7 +407,7 @@ export function CustomBlockSetlistWizardModal(props: {
               <button
                 type="button"
                 onClick={confirmManualAdd}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
               >
                 Add to setlist
               </button>

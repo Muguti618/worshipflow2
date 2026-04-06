@@ -88,7 +88,7 @@ export function Sidebar() {
           <>
             <div className="flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-left text-sm">
               <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/40 to-violet-500/40 text-xs font-bold text-white"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-600/50 to-slate-700/50 text-xs font-bold text-white"
                 aria-hidden
               >
                 {userInitials(session.name, session.email)}
@@ -118,7 +118,7 @@ export function Sidebar() {
                 <p className="text-xs font-medium text-wf-text">Pro</p>
                 <Link
                   href="/upgrade"
-                  className="mt-1.5 inline-block text-[10px] font-medium text-violet-400 underline-offset-2 hover:underline"
+                  className="mt-1.5 inline-block text-[10px] font-medium text-sky-400 underline-offset-2 hover:underline"
                 >
                   Billing &amp; invoices
                 </Link>
@@ -137,13 +137,13 @@ export function Sidebar() {
           <div className="flex flex-col gap-2">
             <Link
               href="/login"
-              className="flex w-full items-center justify-center rounded-[12px] bg-gradient-to-r from-blue-600/90 to-violet-600/90 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-900/25 transition hover:brightness-110"
+              className="flex w-full items-center justify-center rounded-[12px] bg-blue-600 hover:bg-blue-500 py-2.5 text-sm font-semibold text-white shadow-md shadow-black/30 transition hover:brightness-110"
             >
               Sign in
             </Link>
             <Link
               href="/register"
-              className="flex w-full items-center justify-center rounded-[12px] border border-wf-border py-2.5 text-sm font-medium text-wf-muted transition hover:border-violet-500/35 hover:text-wf-text"
+              className="flex w-full items-center justify-center rounded-[12px] border border-wf-border py-2.5 text-sm font-medium text-wf-muted transition hover:border-white/18 hover:text-wf-text"
             >
               Create account
             </Link>

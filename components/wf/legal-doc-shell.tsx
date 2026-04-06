@@ -16,7 +16,7 @@ export function LegalDocShell({
         <div className="mx-auto flex max-w-3xl">
           <Link
             href="/"
-            className="text-sm font-medium text-violet-400 transition hover:text-violet-300 hover:underline"
+            className="text-sm font-medium text-sky-400 transition hover:text-sky-300 hover:underline"
           >
             ← LumenWorship home
           </Link>

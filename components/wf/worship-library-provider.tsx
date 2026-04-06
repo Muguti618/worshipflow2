@@ -108,7 +108,7 @@ export function WorshipLibraryProvider({ children }: { children: React.ReactNode
   if (loading) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 p-8">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-500/30 border-t-violet-400" />
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-white/[0.12] border-t-sky-500" />
         <p className="text-sm text-wf-muted">Loading your library…</p>
       </div>
     );
