@@ -63,6 +63,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              {...(item.href === "/songs" ? { "data-wf-tour": "tour-nav-songs" } : {})}
               className={`flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                 active
                   ? "bg-wf-text/[0.08] text-wf-text shadow-[0_0_0_1px_rgba(139,92,246,0.25)]"

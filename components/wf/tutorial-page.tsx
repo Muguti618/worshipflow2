@@ -236,11 +236,14 @@ export function TutorialPage() {
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-wf-muted">
           Start the guided tour: the rest of the screen dims and a{" "}
           <strong className="font-medium text-sky-200/90">pulsing glow</strong> frames the real
-          button or field for that step ({TUTORIAL_TOUR_STEPS.length} stops). You can still click the
-          highlighted control. The tour starts on the <strong className="font-medium text-wf-text">Dashboard</strong>{" "}
-          and visits Songs, Setlists, Slide Studio, and Bible. Press{" "}
+          control for that step ({TUTORIAL_TOUR_STEPS.length} stops) —{" "}
+          <strong className="font-medium text-wf-text/90">Songs</strong> in the nav,{" "}
+          <strong className="font-medium text-wf-text/90">+ New</strong> song, dashboard{" "}
+          <strong className="font-medium text-wf-text/90">presenter setlist</strong>,{" "}
+          <strong className="font-medium text-wf-text/90">Open Presenter</strong>, then{" "}
+          <strong className="font-medium text-wf-text/90">Quick verse</strong> for a Bible beam. Press{" "}
           <kbd className="rounded border border-white/20 px-1.5 py-0.5 font-mono text-[11px] text-wf-text">Esc</kbd>{" "}
-          or Skip to exit — Tutorial stays in the sidebar and top bar anytime.
+          or Skip to exit.
         </p>
         <button
           type="button"

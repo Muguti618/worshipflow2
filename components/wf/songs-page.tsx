@@ -283,6 +283,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
             <h1 className="text-lg font-bold tracking-tight">Songs</h1>
             <button
               type="button"
+              data-wf-tour="tour-songs-new"
               onClick={() => void openNewSongModal()}
               title={atFreeSongLimit ? "Song limit reached — upgrade for more" : "Add a new song"}
               className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${

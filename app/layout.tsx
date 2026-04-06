@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { RootTutorialTour } from "@/components/wf/root-tutorial-tour";
 import { SwRegister } from "@/components/sw-register";
 import "./globals.css";
 
@@ -40,7 +41,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <SwRegister />
-        {children}
+        <RootTutorialTour>{children}</RootTutorialTour>
       </body>
     </html>
   );

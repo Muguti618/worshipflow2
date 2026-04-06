@@ -355,6 +355,7 @@ export function PresentMode({ room }: { room: string }) {
           </select>
           <button
             type="button"
+            data-wf-tour="tour-present-quick-verse"
             onClick={() => {
               setQvPick(null);
               setQvSuggestions(null);
