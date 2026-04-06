@@ -6,12 +6,23 @@ import {
   BIBLE_TRANSLATION_ORDER,
   type BibleTranslationKey,
 } from "@/lib/bible-lookup";
-import { fetchScriptureSetlistAi } from "@/lib/fetch-scripture-setlist-ai";
+import {
+  fetchScriptureSetlistAi,
+  type ScriptureSetlistAiMultiPayload,
+  type ScriptureSetlistAiPayload,
+  type ScriptureSetlistAiOption,
+} from "@/lib/fetch-scripture-setlist-ai";
 import type { DeckSlide } from "@/lib/setlists-catalog";
 
-type Step = "choose" | "ai-input" | "ai-review" | "manual";
+type Step = "choose" | "ai-input" | "ai-pick" | "ai-review" | "manual";
 
 type ReviewSlide = { title: string; lines: string[] };
+
+function isMultiPayload(
+  p: ScriptureSetlistAiPayload | ScriptureSetlistAiMultiPayload,
+): p is ScriptureSetlistAiMultiPayload {
+  return "options" in p;
+}
 
 export function ScriptureSetlistWizardModal(props: {
   open: boolean;
@@ -30,6 +41,7 @@ export function ScriptureSetlistWizardModal(props: {
   const [aiNote, setAiNote] = useState("");
   /** Canonical passage ref from AI (footer on audience). */
   const [aiPassageRef, setAiPassageRef] = useState("");
+  const [aiOptions, setAiOptions] = useState<ScriptureSetlistAiOption[] | null>(null);
 
   useEffect(() => {
     if (!open) {
@@ -41,6 +53,7 @@ export function ScriptureSetlistWizardModal(props: {
       setReviewSlides([]);
       setAiNote("");
       setAiPassageRef("");
+      setAiOptions(null);
     }
   }, [open]);
 
@@ -82,10 +95,23 @@ export function ScriptureSetlistWizardModal(props: {
       const outcome = await fetchScriptureSetlistAi(query.trim(), translation);
       if (outcome.ok) {
         const payload = outcome.data;
+        if (isMultiPayload(payload)) {
+          const options = payload.options ?? [];
+          setAiOptions(options);
+          setAiNote(payload.note ?? "");
+          if (options.length === 0) {
+            setStep("ai-input");
+          } else {
+            setStep("ai-pick");
+          }
+          return;
+        }
+        setAiOptions(null);
         setReviewSlides(payload.slides.map((s) => ({ title: s.title, lines: [...s.lines] })));
         setRowLabel(payload.ref);
         setAiPassageRef(payload.ref);
         setAiNote(payload.note ?? "");
+        setStep("ai-review");
       } else {
         setReviewSlides([
           {
@@ -95,13 +121,22 @@ export function ScriptureSetlistWizardModal(props: {
         ]);
         setRowLabel("Scripture");
         setAiPassageRef("");
+        setAiOptions(null);
         setAiNote(outcome.error);
+        setStep("ai-review");
       }
-      setStep("ai-review");
     } finally {
       setAiLoading(false);
     }
   }, [query, translation]);
+
+  const pickAiOption = useCallback((opt: ScriptureSetlistAiOption) => {
+    setAiOptions(null);
+    setReviewSlides(opt.slides.map((s) => ({ title: s.title, lines: [...s.lines] })));
+    setRowLabel(opt.ref);
+    setAiPassageRef(opt.ref);
+    setStep("ai-review");
+  }, []);
 
   const confirmAiAdd = useCallback(() => {
     const name = rowLabel.trim() || "Scripture";
@@ -231,6 +266,55 @@ export function ScriptureSetlistWizardModal(props: {
                 className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
               >
                 {aiLoading ? "Generating slides…" : "Generate slides"}
+              </button>
+            </div>
+            {aiNote ? (
+              <p className="mt-3 rounded-lg border border-white/[0.06] bg-wf-bg/30 px-3 py-2 text-[11px] text-wf-muted">
+                {aiNote}
+              </p>
+            ) : null}
+          </>
+        ) : null}
+
+        {step === "ai-pick" ? (
+          <>
+            {aiNote ? (
+              <p className="mt-3 rounded-lg border border-white/[0.06] bg-wf-bg/30 px-3 py-2 text-[11px] text-wf-muted">
+                {aiNote}
+              </p>
+            ) : null}
+            <p className="mt-4 text-[10px] font-semibold uppercase tracking-wider text-wf-muted">
+              Pick a passage
+            </p>
+            <div className="mt-2 space-y-2">
+              {(aiOptions ?? []).map((o) => (
+                <button
+                  key={o.ref}
+                  type="button"
+                  onClick={() => pickAiOption(o)}
+                  className="w-full rounded-xl border border-white/[0.08] bg-wf-bg/40 px-4 py-3 text-left transition hover:border-violet-400/40 hover:bg-violet-500/10"
+                >
+                  <p className="text-sm font-semibold text-wf-text">{o.ref}</p>
+                  {o.blurb ? (
+                    <p className="mt-1 text-[11px] text-wf-muted">{o.blurb}</p>
+                  ) : null}
+                </button>
+              ))}
+            </div>
+            <div className="mt-5 flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setStep("ai-input")}
+                className="rounded-lg border border-white/[0.1] px-4 py-2 text-sm text-wf-muted"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg border border-white/[0.1] px-4 py-2 text-sm text-wf-muted"
+              >
+                Cancel
               </button>
             </div>
           </>

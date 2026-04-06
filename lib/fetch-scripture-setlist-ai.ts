@@ -6,8 +6,19 @@ export type ScriptureSetlistAiPayload = {
   note?: string;
 };
 
+export type ScriptureSetlistAiOption = {
+  ref: string;
+  slides: { title: string; lines: string[] }[];
+  blurb?: string;
+};
+
+export type ScriptureSetlistAiMultiPayload = {
+  options: ScriptureSetlistAiOption[];
+  note?: string;
+};
+
 export type FetchScriptureSetlistOutcome =
-  | { ok: true; data: ScriptureSetlistAiPayload }
+  | { ok: true; data: ScriptureSetlistAiPayload | ScriptureSetlistAiMultiPayload }
   | { ok: false; error: string };
 
 export async function fetchScriptureSetlistAi(
@@ -24,6 +35,7 @@ export async function fetchScriptureSetlistAi(
       error?: string;
       ref?: unknown;
       slides?: unknown;
+      options?: unknown;
       note?: string;
     };
     if (!res.ok) {
@@ -35,6 +47,42 @@ export async function fetchScriptureSetlistAi(
             : `Could not load scripture AI (${res.status}).`,
       };
     }
+
+    // New multi-option payload (topic queries)
+    if (Array.isArray(raw.options)) {
+      const options = raw.options
+        .map((o) => {
+          if (!o || typeof o !== "object") return null;
+          const v = o as { ref?: unknown; slides?: unknown; blurb?: unknown };
+          const ref = typeof v.ref === "string" ? v.ref : "";
+          if (!ref) return null;
+          const slidesRaw = Array.isArray(v.slides) ? v.slides : [];
+          const slides = slidesRaw
+            .map((s) => {
+              if (!s || typeof s !== "object") return null;
+              const sl = s as { title?: unknown; lines?: unknown };
+              const lines = Array.isArray(sl.lines) ? sl.lines.map((l) => String(l)) : [];
+              return { title: String(sl.title ?? ref), lines };
+            })
+            .filter((x): x is { title: string; lines: string[] } => x !== null);
+          if (!slides.length) return null;
+          const blurb = typeof v.blurb === "string" ? v.blurb : undefined;
+          const base: ScriptureSetlistAiOption = { ref, slides };
+          if (blurb) base.blurb = blurb;
+          return base;
+        })
+        .filter((x): x is ScriptureSetlistAiOption => x !== null);
+
+      return {
+        ok: true,
+        data: {
+          options,
+          note: typeof raw.note === "string" ? raw.note : undefined,
+        },
+      };
+    }
+
+    // Legacy single payload (reference queries)
     const ref = typeof raw.ref === "string" ? raw.ref : "";
     if (!ref) return { ok: false, error: "Server returned no reference." };
     if (!Array.isArray(raw.slides) || raw.slides.length === 0) {

@@ -18,6 +18,12 @@ import { tryOpenAIScriptureTopic } from "@/lib/openai-worship-flows";
 import { scriptureToSlideCards } from "@/lib/slide-engine";
 import { proRequiredForFeatureResponse, sessionMayUseProAiApis } from "@/lib/plan-server";
 
+type ScriptureOption = {
+  ref: string;
+  slides: { title: string; lines: string[] }[];
+  blurb?: string;
+};
+
 function isTranslationKey(x: string): x is BibleTranslationKey {
   return x in BIBLE_TRANSLATIONS;
 }
@@ -66,24 +72,49 @@ export async function POST(req: Request) {
 
   const { mode, cfg } = getAiRuntimeMode();
   if (mode === "unconfigured") return aiNotConfiguredResponse();
-  if (mode === "dummy") {
-    const sug = suggestVersesForTopic(query, translation)[0]!;
-    const cards = scriptureToSlideCards(sug.ref, sug.text);
+
+  const local = suggestVersesForTopic(query, translation).slice(0, 5);
+  const localOptions: ScriptureOption[] = local.map((s) => {
+    const cards = scriptureToSlideCards(s.ref, s.text);
     const slides = cards.map((c) => ({ title: c.title, lines: [...c.lines] }));
+    return { ref: s.ref, slides, blurb: s.blurb };
+  });
+
+  if (mode === "dummy") {
+    if (localOptions.length === 0) {
+      return Response.json({
+        options: [],
+        note: `${AI_DUMMY_META.modelLabel} — no topic match found. Try a different keyword, or paste a reference like “John 3:16”.`,
+        meta: AI_DUMMY_META,
+      });
+    }
     return Response.json({
-      ref: sug.ref,
-      slides,
-      note: `${AI_DUMMY_META.modelLabel} — curated topic match: ${sug.blurb}`,
+      options: localOptions,
+      note: `${AI_DUMMY_META.modelLabel} — pick a passage and review the slides before adding it.`,
       meta: AI_DUMMY_META,
     });
   }
 
-  const r = await tryOpenAIScriptureTopic(cfg, query, translationLong);
-  if (!r.ok) return openAiFlowFailedResponse(r);
+  const meta = aiMetaForRequest(cfg);
+  const aiPick = await tryOpenAIScriptureTopic(cfg, query, translationLong);
+  if (!aiPick.ok) return openAiFlowFailedResponse(aiPick);
+
+  const options: ScriptureOption[] = [
+    { ref: aiPick.data.ref, slides: aiPick.data.slides, blurb: aiPick.data.note || "AI pick" },
+    ...localOptions.filter((o) => o.ref !== aiPick.data.ref),
+  ];
+
+  if (options.length === 0) {
+    return Response.json({
+      options: [],
+      note: "No scripture options found for that topic. Try a different keyword, or paste a reference like “John 3:16”.",
+      meta,
+    });
+  }
+
   return Response.json({
-    ref: r.data.ref,
-    slides: r.data.slides,
-    note: r.data.note,
-    meta: aiMetaForRequest(cfg),
+    options,
+    note: "Pick a passage, then review the slides before adding it to your setlist.",
+    meta,
   });
 }
