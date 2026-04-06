@@ -84,7 +84,13 @@ export async function fetchScriptureSetlistAi(
 
     // Legacy single payload (reference queries)
     const ref = typeof raw.ref === "string" ? raw.ref : "";
-    if (!ref) return { ok: false, error: "Server returned no reference." };
+    if (!ref) {
+      return {
+        ok: false,
+        error:
+          "No scripture options were returned for that prompt. Try a simpler keyword, or paste a reference like “John 3:16”.",
+      };
+    }
     if (!Array.isArray(raw.slides) || raw.slides.length === 0) {
       return { ok: false, error: "Server returned no slides." };
     }

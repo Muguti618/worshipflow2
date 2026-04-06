@@ -16,7 +16,9 @@ type TopicPack = {
 const PACKS: TopicPack[] = [
   {
     match: (t) =>
-      /anxiet|worry|worried|stress|stressed|fear|afraid|nervous|panic|calm|peace of mind/.test(t),
+      /anxiet|worry|worried|stress|stressed|fear|afraid|nervous|panic|calm|peace of mind|storm|storms|tempest|waves/.test(
+        t,
+      ),
     verses: [
       {
         ref: "Philippians 4:6–7",

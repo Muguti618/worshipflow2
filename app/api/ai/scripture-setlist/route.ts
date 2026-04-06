@@ -99,9 +99,15 @@ export async function POST(req: Request) {
   const aiPick = await tryOpenAIScriptureTopic(cfg, query, translationLong);
   if (!aiPick.ok) return openAiFlowFailedResponse(aiPick);
 
+  const aiRef = (aiPick.data.ref ?? "").trim();
+  const aiSlides = Array.isArray(aiPick.data.slides) ? aiPick.data.slides : [];
+  const aiUsable = Boolean(aiRef && aiSlides.length > 0);
+
   const options: ScriptureOption[] = [
-    { ref: aiPick.data.ref, slides: aiPick.data.slides, blurb: aiPick.data.note || "AI pick" },
-    ...localOptions.filter((o) => o.ref !== aiPick.data.ref),
+    ...(aiUsable
+      ? [{ ref: aiRef, slides: aiSlides, blurb: aiPick.data.note || "AI pick" }]
+      : []),
+    ...localOptions.filter((o) => o.ref !== aiRef),
   ];
 
   if (options.length === 0) {
