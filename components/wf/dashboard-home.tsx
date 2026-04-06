@@ -197,28 +197,48 @@ export function DashboardHome() {
               </Link>
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <label htmlFor="wf-dash-setlist" className="sr-only">
-              Setlist for presenter
-            </label>
-            <select
+          <div className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:max-w-[17rem]">
+            <div
               id="wf-dash-setlist"
               data-wf-tour="tour-dash-setlist"
-              value={activeListId || ""}
-              onChange={(e) => selectSetlist(e.target.value)}
-              disabled={allSetlists.length === 0}
-              className="h-8 max-w-[13rem] shrink-0 cursor-pointer rounded-lg border border-white/[0.06] bg-white/[0.03] px-2 text-xs text-wf-text/90 outline-none transition hover:border-white/12 focus:border-violet-500/30 focus:ring-1 focus:ring-violet-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+              role="group"
+              aria-label="Setlist for presenter"
+              className="flex min-w-0 flex-col gap-1.5"
             >
+              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-wf-muted/80">
+                Presenter setlist
+              </span>
               {allSetlists.length === 0 ? (
-                <option value="">No setlists yet</option>
+                <p className="rounded-lg border border-dashed border-white/[0.1] bg-wf-card/30 px-3 py-2.5 text-xs leading-snug text-wf-muted">
+                  No setlists yet — use <strong className="font-medium text-wf-text/80">+ New</strong> to create
+                  one.
+                </p>
               ) : (
-                allSetlists.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))
+                <ul className="max-h-[min(40vh,220px)] space-y-0.5 overflow-y-auto rounded-lg border border-white/[0.08] bg-wf-card/45 p-1 shadow-inner shadow-black/20">
+                  {allSetlists.map((s) => {
+                    const active = s.id === activeListId;
+                    return (
+                      <li key={s.id}>
+                        <button
+                          type="button"
+                          onClick={() => selectSetlist(s.id)}
+                          aria-current={active ? "true" : undefined}
+                          className={`flex w-full rounded-md px-2.5 py-2 text-left text-xs font-medium transition ${
+                            active
+                              ? "bg-violet-500/20 text-wf-text ring-1 ring-violet-500/35"
+                              : "text-wf-text/85 hover:bg-white/[0.06] hover:text-wf-text"
+                          }`}
+                        >
+                          <span className="min-w-0 flex-1 truncate">{s.name}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
-            </select>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Link
               href="/setlists/new"
               data-wf-tour="tour-dash-new-setlist"
@@ -484,7 +504,7 @@ export function DashboardHome() {
                 </ul>
               </>
             ) : (
-              <p className="mt-2 text-[11px] text-wf-muted">Pick a setlist from the menu above.</p>
+              <p className="mt-2 text-[11px] text-wf-muted">Pick a setlist from the list above.</p>
             )}
           </div>
 

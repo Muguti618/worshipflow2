@@ -34,7 +34,7 @@ type SlideStageProps = {
 };
 
 export function SlideStage({
-  title,
+  title: _title,
   lines,
   layout,
   backgroundUrl,
@@ -125,15 +125,6 @@ export function SlideStage({
             </p>
           ) : (
             <>
-              {title && !isAudience ? (
-                <p
-                  className={`mb-4 font-semibold uppercase tracking-[0.2em] text-white/50 ${
-                    isPreview ? "text-[10px] tracking-[0.22em]" : "text-[11px] tracking-[0.2em]"
-                  }`}
-                >
-                  {title}
-                </p>
-              ) : null}
               <div className={`space-y-3 md:space-y-4 ${isAudience ? "max-w-5xl" : ""}`}>
                 {lines.map((line, i) => (
                   <p

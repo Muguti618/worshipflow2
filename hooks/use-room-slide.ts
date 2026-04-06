@@ -33,6 +33,13 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
   const lastRemoteUpdateAtRef = useRef<number>(0);
   /** While a deck slide POST is in flight, ignore polled slideIndex that still shows the old server value (avoids flicker). */
   const pendingMasterSlideRef = useRef<number | null>(null);
+  /**
+   * After the server accepts a slide POST, ignore poll responses that started before that bump — they often
+   * carry the previous slideIndex with the same or older updatedAt (straggler GETs).
+   */
+  const presentPollGenerationRef = useRef(0);
+  const slideCountRef = useRef(slideCount);
+  slideCountRef.current = slideCount;
 
   const clamp = useCallback(
     (n: number) => Math.max(0, Math.min(Math.max(0, slideCount - 1), n)),
@@ -62,10 +69,19 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
                 lastRemoteUpdateAtRef.current,
                 j.updatedAt,
               );
+            } else {
+              lastRemoteUpdateAtRef.current = Math.max(
+                lastRemoteUpdateAtRef.current,
+                Date.now(),
+              );
             }
           } catch {
-            /* ignore body parse */
+            lastRemoteUpdateAtRef.current = Math.max(
+              lastRemoteUpdateAtRef.current,
+              Date.now(),
+            );
           }
+          presentPollGenerationRef.current += 1;
         }
       } catch {
         /* offline — localStorage + BroadcastChannel still work */
@@ -85,11 +101,33 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
       writePersistedBeam(room, nextBeam);
       bcRef.current?.postMessage({ type: "beam", beam: nextBeam });
       try {
-        await fetch("/api/present/state", {
+        const res = await fetch("/api/present/state", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ room, beam: nextBeam }),
         });
+        if (res.ok) {
+          try {
+            const j = (await res.json()) as { updatedAt?: number };
+            if (typeof j.updatedAt === "number" && Number.isFinite(j.updatedAt)) {
+              lastRemoteUpdateAtRef.current = Math.max(
+                lastRemoteUpdateAtRef.current,
+                j.updatedAt,
+              );
+            } else {
+              lastRemoteUpdateAtRef.current = Math.max(
+                lastRemoteUpdateAtRef.current,
+                Date.now(),
+              );
+            }
+          } catch {
+            lastRemoteUpdateAtRef.current = Math.max(
+              lastRemoteUpdateAtRef.current,
+              Date.now(),
+            );
+          }
+          presentPollGenerationRef.current += 1;
+        }
       } catch {
         /* offline */
       }
@@ -105,17 +143,28 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
     beamRef.current = beam;
   }, [beam]);
 
+  /* Hydrate from storage when the room changes only — avoid re-reading on deck length changes (races BC / slide reset). */
   useLayoutEffect(() => {
+    const maxIdx = Math.max(0, slideCountRef.current - 1);
     const si = readPersistedSlideIndex(room);
     if (si !== null) {
-      const c = clamp(si);
+      const c = Math.max(0, Math.min(maxIdx, si));
       setIndex(c);
       indexRef.current = c;
     }
     const pb = readPersistedBeam(room);
     setBeam(pb);
     beamRef.current = pb;
-  }, [room, slideCount, clamp]);
+  }, [room]);
+
+  useEffect(() => {
+    const maxIdx = Math.max(0, slideCount - 1);
+    setIndex((prev) => {
+      const next = Math.min(prev, maxIdx);
+      if (next !== prev) indexRef.current = next;
+      return next;
+    });
+  }, [slideCount]);
 
   useEffect(() => {
     setNetOnline(navigator.onLine);
@@ -159,16 +208,22 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
     let cancelled = false;
     const pull = async () => {
       if (typeof navigator !== "undefined" && !navigator.onLine) return;
+      const genAtPullStart = presentPollGenerationRef.current;
       try {
         const r = await fetch(`/api/present/state?room=${encodeURIComponent(room)}`, {
           cache: "no-store",
         });
         if (!r.ok || cancelled) return;
         const j = (await r.json()) as { slideIndex?: number; beam?: unknown; updatedAt?: number };
+        if (role === "master" && genAtPullStart < presentPollGenerationRef.current) {
+          /* Straggler from before last successful slide POST — discard whole payload (slide + timestamps + beam). */
+          return;
+        }
         const remoteUpdatedAt =
           typeof j.updatedAt === "number" && Number.isFinite(j.updatedAt) ? j.updatedAt : null;
         if (remoteUpdatedAt !== null && remoteUpdatedAt < lastRemoteUpdateAtRef.current) return;
         if (remoteUpdatedAt !== null) lastRemoteUpdateAtRef.current = remoteUpdatedAt;
+
         if (typeof j.slideIndex === "number") {
           const c = clamp(j.slideIndex);
           const pend = pendingMasterSlideRef.current;
