@@ -1,13 +1,26 @@
 /**
- * In-memory sync (OK for single Node / `next dev`). On serverless, use Redis / PartyKit / Ably
- * so every edge instance shares the same room state.
+ * In-memory sync for anonymous / local dev. Signed-in users with Supabase use `present_states`
+ * so verse beams and slide index survive serverless cold instances.
  */
 import type { PresentBeamState } from "@/lib/present-beam";
 import { parsePresentBeamState } from "@/lib/present-beam";
+import {
+  getPresentStateFromSupabase,
+  patchPresentStateInSupabase,
+} from "@/lib/present-state-supabase";
 import { getEntry, patchEntry } from "@/lib/present-state-store";
 
 export async function GET(req: Request) {
   const room = new URL(req.url).searchParams.get("room")?.trim() || "default";
+  const cloud = await getPresentStateFromSupabase(room);
+  if (cloud) {
+    return Response.json({
+      room: cloud.room,
+      slideIndex: cloud.slideIndex,
+      beam: cloud.beam,
+      updatedAt: cloud.updatedAt,
+    });
+  }
   const e = getEntry(room);
   return Response.json({ room, slideIndex: e.slideIndex, beam: e.beam, updatedAt: e.updatedAt });
 }
@@ -46,6 +59,17 @@ export async function POST(req: Request) {
 
   if (Object.keys(patch).length === 0) {
     return Response.json({ error: "No valid fields" }, { status: 400 });
+  }
+
+  const cloud = await patchPresentStateInSupabase(room, patch);
+  if (cloud) {
+    return Response.json({
+      ok: true,
+      room: cloud.room,
+      slideIndex: cloud.slideIndex,
+      beam: cloud.beam,
+      updatedAt: cloud.updatedAt,
+    });
   }
 
   const entry = patchEntry(room, patch);

@@ -33,6 +33,8 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
   const lastRemoteUpdateAtRef = useRef<number>(0);
   /** While a deck slide POST is in flight, ignore polled slideIndex that still shows the old server value (avoids flicker). */
   const pendingMasterSlideRef = useRef<number | null>(null);
+  /** While a Bible beam POST is in flight, ignore polled `beam` so stale server `null` does not wipe the optimistic verse. */
+  const beamPostInFlightRef = useRef(false);
   /**
    * After the server accepts a slide POST, ignore poll responses that started before that bump — they often
    * carry the previous slideIndex with the same or older updatedAt (straggler GETs).
@@ -95,41 +97,52 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
   );
 
   const publishBeam = useCallback(
-    async (nextBeam: PresentBeamState | null) => {
+    async (nextBeam: PresentBeamState | null): Promise<boolean> => {
+      const previous = beamRef.current;
       setBeam(nextBeam);
       beamRef.current = nextBeam;
       writePersistedBeam(room, nextBeam);
       bcRef.current?.postMessage({ type: "beam", beam: nextBeam });
+      beamPostInFlightRef.current = true;
       try {
         const res = await fetch("/api/present/state", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ room, beam: nextBeam }),
         });
-        if (res.ok) {
-          try {
-            const j = (await res.json()) as { updatedAt?: number };
-            if (typeof j.updatedAt === "number" && Number.isFinite(j.updatedAt)) {
-              lastRemoteUpdateAtRef.current = Math.max(
-                lastRemoteUpdateAtRef.current,
-                j.updatedAt,
-              );
-            } else {
-              lastRemoteUpdateAtRef.current = Math.max(
-                lastRemoteUpdateAtRef.current,
-                Date.now(),
-              );
-            }
-          } catch {
+        if (!res.ok) {
+          setBeam(previous);
+          beamRef.current = previous;
+          writePersistedBeam(room, previous);
+          bcRef.current?.postMessage({ type: "beam", beam: previous });
+          return false;
+        }
+        try {
+          const j = (await res.json()) as { updatedAt?: number };
+          if (typeof j.updatedAt === "number" && Number.isFinite(j.updatedAt)) {
+            lastRemoteUpdateAtRef.current = Math.max(
+              lastRemoteUpdateAtRef.current,
+              j.updatedAt,
+            );
+          } else {
             lastRemoteUpdateAtRef.current = Math.max(
               lastRemoteUpdateAtRef.current,
               Date.now(),
             );
           }
-          presentPollGenerationRef.current += 1;
+        } catch {
+          lastRemoteUpdateAtRef.current = Math.max(
+            lastRemoteUpdateAtRef.current,
+            Date.now(),
+          );
         }
+        presentPollGenerationRef.current += 1;
+        return true;
       } catch {
-        /* offline */
+        /* offline — keep optimistic beam; localStorage + BC still work */
+        return true;
+      } finally {
+        beamPostInFlightRef.current = false;
       }
     },
     [room],
@@ -237,7 +250,7 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
             writePersistedSlideIndex(room, c);
           }
         }
-        if ("beam" in j) {
+        if ("beam" in j && !(role === "master" && beamPostInFlightRef.current)) {
           const parsed =
             j.beam === null ? null : parsePresentBeamState(j.beam);
           const nextSig = parsed ? JSON.stringify(parsed) : "";

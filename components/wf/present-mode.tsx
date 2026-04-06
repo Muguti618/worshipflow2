@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
 import { useActiveDeck } from "@/hooks/use-active-deck";
 import { useRoomSlide } from "@/hooks/use-room-slide";
@@ -9,11 +9,12 @@ import {
   BIBLE_TRANSLATION_LABELS,
   BIBLE_TRANSLATION_ORDER,
   lookupScripture,
+  looksLikeVerseReference,
   type BibleTranslationKey,
 } from "@/lib/bible-lookup";
 import type { DeckSlide } from "@/lib/setlists-catalog";
 import { scriptureToSlideCards } from "@/lib/slide-engine";
-import type { VerseSuggestion } from "@/lib/bible-topic-suggestions";
+import { suggestVersesForTopic, type VerseSuggestion } from "@/lib/bible-topic-suggestions";
 import { SlideTransitionShell } from "@/components/wf/slide-transition-shell";
 import { SlideStage } from "@/components/wf/slide-stage";
 import { useSlideTransition } from "@/hooks/use-slide-transition";
@@ -57,10 +58,35 @@ export function PresentMode({ room }: { room: string }) {
   const current = deck[Math.min(i, deck.length - 1)]!;
   const next = deck[Math.min(i + 1, deck.length - 1)]!;
 
-  const qvLookup = useMemo(() => lookupScripture(qvQuery, qvTranslation), [qvQuery, qvTranslation]);
-  const qvEffective = qvPick
-    ? { ref: qvPick.ref, text: qvPick.text }
-    : qvLookup;
+  const qvRefMode = useMemo(() => looksLikeVerseReference(qvQuery), [qvQuery]);
+  const prevQvRefMode = useRef(qvRefMode);
+  useEffect(() => {
+    if (prevQvRefMode.current !== qvRefMode) {
+      setQvPick(null);
+      setQvSuggestions(null);
+      setQvAiNote(null);
+      setQvAiError(null);
+    }
+    prevQvRefMode.current = qvRefMode;
+  }, [qvRefMode]);
+
+  const qvLookup = useMemo(
+    () => (qvRefMode ? lookupScripture(qvQuery, qvTranslation) : null),
+    [qvQuery, qvTranslation, qvRefMode],
+  );
+  const topicCuratedSuggestions = useMemo(() => {
+    if (qvRefMode || !qvQuery.trim()) return null;
+    return suggestVersesForTopic(qvQuery, qvTranslation);
+  }, [qvQuery, qvTranslation, qvRefMode]);
+
+  const displaySuggestions = qvSuggestions ?? topicCuratedSuggestions;
+
+  const qvEffective = useMemo(() => {
+    if (qvRefMode) {
+      return qvPick ?? qvLookup;
+    }
+    return qvPick;
+  }, [qvRefMode, qvPick, qvLookup]);
   const qvSlides = useMemo(() => {
     if (!qvEffective) return [];
     return scriptureToSlideCards(qvEffective.ref, qvEffective.text);
@@ -118,7 +144,7 @@ export function PresentMode({ room }: { room: string }) {
     return limitsApply ? readVerseBeamUsageCount() : 0;
   }, [limitsApply, beamUsageTick]);
 
-  const beamToAudience = useCallback(() => {
+  const beamToAudience = useCallback(async () => {
     if (!qvEffective) return;
     const cards = scriptureToSlideCards(qvEffective.ref, qvEffective.text);
     if (cards.length === 0) return;
@@ -138,7 +164,13 @@ export function PresentMode({ room }: { room: string }) {
       backgroundColor: "#0c0c0f",
       audienceCitation: ref,
     }));
-    void publishBeam({ slides, index: 0 });
+    const synced = await publishBeam({ slides, index: 0 });
+    if (!synced) {
+      window.alert(
+        "Could not sync the verse to the room (server rejected the request). Check your connection and try again.",
+      );
+      return;
+    }
     if (limitsApply) {
       incrementVerseBeamUsage();
       setBeamUsageTick((x) => x + 1);
@@ -361,19 +393,19 @@ export function PresentMode({ room }: { room: string }) {
               Beam a verse
             </h2>
             <p className="mt-1 text-xs text-white/50">
-              Type a <strong className="font-medium text-white/65">reference</strong> (spaces are
-              fine) or a <strong className="font-medium text-white/65">topic</strong> like
-              &quot;bible verse on the armour of God&quot;
+              <strong className="font-medium text-white/65">Reference</strong> (e.g.{" "}
+              <span className="font-mono text-[11px] text-white/55">John 3:16</span>,{" "}
+              <span className="font-mono text-[11px] text-white/55">Romans 8:28</span>) shows{" "}
+              <strong className="font-medium text-white/65">one</strong> passage. A{" "}
+              <strong className="font-medium text-white/65">topic</strong> (e.g. peace, grief, armor of
+              God) shows <strong className="font-medium text-white/65">several related verses</strong>
               {limitsApply ? (
-                <>
-                  . On Free, use a <strong className="font-medium text-white/65">reference</strong>{" "}
-                  to look up text — verse ideas (AI) are on Pro.
-                </>
+                <> — curated on Free; Pro can refresh with AI.</>
               ) : (
                 <>
                   {" "}
-                  — then use <strong className="font-medium text-white/65">Get verse ideas</strong> for
-                  several options. Tap one to preview, then beam to the room.
+                  — tap <strong className="font-medium text-white/65">Get verse ideas (AI)</strong> for
+                  open-ended themes.
                 </>
               )}
             </p>
@@ -395,26 +427,38 @@ export function PresentMode({ room }: { room: string }) {
               }}
               rows={3}
               className="mt-1 w-full resize-y rounded-xl border border-white/15 bg-black/50 px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2 focus:ring-sky-500/30"
-              placeholder='e.g. John 3:16 — or — bible verse on the armour of God'
+              placeholder='Reference: John 3:16 — Topic: God’s peace / armor of God / comfort in grief'
               autoComplete="off"
             />
+            <p className="mt-2 text-[11px] text-sky-200/80">
+              {qvRefMode
+                ? "Detected: reference — one passage in preview when we have sample text for it."
+                : qvQuery.trim()
+                  ? "Detected: topic — pick one of the related verses below (or use AI on Pro)."
+                  : "Type a reference or a topic to begin."}
+            </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {!limitsApply ? (
                 <button
                   type="button"
                   onClick={() => void fetchVerseIdeas()}
-                  disabled={qvAiLoading}
+                  disabled={qvAiLoading || qvRefMode}
                   aria-busy={qvAiLoading}
+                  title={
+                    qvRefMode
+                      ? "Use a topic phrase for several AI ideas, or beam this reference as-is."
+                      : undefined
+                  }
                   className="rounded-xl bg-slate-600 hover:bg-slate-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-black/30 disabled:opacity-50"
                 >
                   {qvAiLoading ? "Finding verses…" : "Get verse ideas (AI)"}
                 </button>
               ) : (
                 <p className="text-[11px] text-white/40">
-                  AI verse ideas require Pro — paste a reference (e.g. John 3:16) to beam.
+                  Topics show curated related verses on Free. Pro adds AI ideas for any theme.
                 </p>
               )}
-              {qvSuggestions?.length ? (
+              {qvSuggestions && qvSuggestions.length > 0 ? (
                 <button
                   type="button"
                   onClick={() => {
@@ -423,7 +467,7 @@ export function PresentMode({ room }: { room: string }) {
                   }}
                   className="rounded-xl border border-white/15 px-3 py-2 text-xs font-medium text-white/55 hover:bg-white/5 hover:text-white/80"
                 >
-                  Hide suggestions
+                  Hide AI suggestions
                 </button>
               ) : null}
             </div>
@@ -453,14 +497,16 @@ export function PresentMode({ room }: { room: string }) {
               </select>
             </label>
 
-            {qvSuggestions && qvSuggestions.length > 0 ? (
+            {!qvRefMode && displaySuggestions && displaySuggestions.length > 0 ? (
               <div className="mt-5">
                 <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-white/45">
-                  Suggested verses — tap to preview
+                  {qvSuggestions?.length
+                    ? "AI suggestions — tap to preview"
+                    : "Related verses — tap to preview"}
                 </p>
                 <ul className="grid max-h-[min(40vh,320px)] gap-2 overflow-y-auto sm:grid-cols-2">
-                  {qvSuggestions.map((s, idx) => (
-                    <li key={`${s.ref}-${idx}`}>
+                  {displaySuggestions.map((s, idx) => (
+                    <li key={`${s.ref}-${idx}-${s.text.slice(0, 12)}`}>
                       <button
                         type="button"
                         onClick={() => setQvPick(s)}
@@ -486,7 +532,12 @@ export function PresentMode({ room }: { room: string }) {
 
             <div className="mt-6 rounded-xl border border-white/[0.08] bg-black/30 p-4">
               <p className="text-center text-[11px] uppercase tracking-widest text-white/35">
-                Preview{qvPick ? " (selected verse)" : " (reference lookup)"}
+                Preview
+                {qvRefMode
+                  ? " — this passage"
+                  : qvPick
+                    ? " — selected verse"
+                    : " — choose one above"}
               </p>
               {qvEffective ? (
                 <>
@@ -495,11 +546,17 @@ export function PresentMode({ room }: { room: string }) {
                     {qvEffective.text}
                   </p>
                 </>
+              ) : qvRefMode ? (
+                <p className="mt-3 text-center text-sm leading-relaxed text-white/55">
+                  No built-in sample for that reference yet. Try another bundled passage (e.g. John 3:16,
+                  Romans 8:28) or type a <strong className="font-medium text-white/75">topic</strong> for
+                  related verses.
+                </p>
               ) : (
                 <p className="mt-3 text-center text-sm leading-relaxed text-white/55">
-                  No built-in sample for that reference. Tap{" "}
-                  <strong className="font-medium text-white/75">Get verse ideas (AI)</strong> (Pro) or pick a
-                  suggested verse below.
+                  Tap a related verse above to preview, then beam. On Pro, use{" "}
+                  <strong className="font-medium text-white/75">Get verse ideas (AI)</strong> for more
+                  options.
                 </p>
               )}
               <p className="mt-3 text-center text-[11px] text-white/40">

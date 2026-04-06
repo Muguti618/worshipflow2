@@ -161,6 +161,18 @@ function isJohn316Query(q: string): boolean {
 }
 
 /**
+ * True when the line looks like a single passage reference (book + chapter:verse), not a topic sentence.
+ * Used by Present “Beam a verse” to choose one passage vs. a list of related verses.
+ */
+export function looksLikeVerseReference(raw: string): boolean {
+  const q = raw.trim();
+  if (!q || q.length > 120) return false;
+  return /^\s*(?:[1-5]\s+)?[A-Za-z][A-Za-z0-9\s.'’]+\s+\d{1,3}\s*:\s*\d{1,3}(?:\s*[–-]\s*\d{1,3})?\s*$/u.test(
+    q,
+  );
+}
+
+/**
  * Returns bundled sample text for a small set of references, or null if unknown.
  * (Does not default to John 3:16 — callers should use AI / topic flow when null.)
  */
