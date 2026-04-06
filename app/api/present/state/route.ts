@@ -9,7 +9,7 @@ import { getEntry, patchEntry } from "@/lib/present-state-store";
 export async function GET(req: Request) {
   const room = new URL(req.url).searchParams.get("room")?.trim() || "default";
   const e = getEntry(room);
-  return Response.json({ room, slideIndex: e.slideIndex, beam: e.beam });
+  return Response.json({ room, slideIndex: e.slideIndex, beam: e.beam, updatedAt: e.updatedAt });
 }
 
 export async function POST(req: Request) {
@@ -49,5 +49,11 @@ export async function POST(req: Request) {
   }
 
   const entry = patchEntry(room, patch);
-  return Response.json({ ok: true, room, slideIndex: entry.slideIndex, beam: entry.beam });
+  return Response.json({
+    ok: true,
+    room,
+    slideIndex: entry.slideIndex,
+    beam: entry.beam,
+    updatedAt: entry.updatedAt,
+  });
 }

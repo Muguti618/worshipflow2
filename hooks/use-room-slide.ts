@@ -30,6 +30,7 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
   const indexRef = useRef(0);
   const beamRef = useRef<PresentBeamState | null>(null);
   const bcRef = useRef<BroadcastChannel | null>(null);
+  const lastRemoteUpdateAtRef = useRef<number>(0);
 
   const clamp = useCallback(
     (n: number) => Math.max(0, Math.min(Math.max(0, slideCount - 1), n)),
@@ -142,7 +143,11 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
           cache: "no-store",
         });
         if (!r.ok || cancelled) return;
-        const j = (await r.json()) as { slideIndex?: number; beam?: unknown };
+        const j = (await r.json()) as { slideIndex?: number; beam?: unknown; updatedAt?: number };
+        const remoteUpdatedAt =
+          typeof j.updatedAt === "number" && Number.isFinite(j.updatedAt) ? j.updatedAt : null;
+        if (remoteUpdatedAt !== null && remoteUpdatedAt < lastRemoteUpdateAtRef.current) return;
+        if (remoteUpdatedAt !== null) lastRemoteUpdateAtRef.current = remoteUpdatedAt;
         if (typeof j.slideIndex === "number") {
           const c = clamp(j.slideIndex);
           if (c !== indexRef.current) {
