@@ -5,7 +5,7 @@ import { BLOG_POSTS } from "@/lib/blog-posts";
 import { SiteFooter } from "@/components/wf/site-footer";
 
 export const metadata: Metadata = {
-  title: "Blog — LumenWorship",
+  title: "Blog — worshipflow2",
   description:
     "Free worship lyric formatter tips, worship slide maker ideas, and lighter alternatives to ProPresenter and EasyWorship.",
 };

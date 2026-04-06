@@ -3,8 +3,8 @@ import { LegalDocShell } from "@/components/wf/legal-doc-shell";
 import { PrivacyPolicyBody } from "@/components/wf/privacy-policy-body";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — LumenWorship",
-  description: "How LumenWorship and Forma collect, use, and protect your personal data.",
+  title: "Privacy Policy — worshipflow2",
+  description: "How worshipflow2 and Forma collect, use, and protect your personal data.",
 };
 
 export default function PrivacyPolicyPage() {

@@ -10,7 +10,7 @@ import {
   writePersistedSlideIndex,
 } from "@/lib/present-local-state";
 
-export const PRESENT_BC_PREFIX = "worshipflow-present";
+export const PRESENT_BC_PREFIX = "worshipflow2-present";
 
 function channelName(room: string) {
   return `${PRESENT_BC_PREFIX}:${room}`;

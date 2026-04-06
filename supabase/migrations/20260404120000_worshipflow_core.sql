@@ -1,5 +1,5 @@
 -- =============================================================================
--- LumenWorship — Supabase / PostgreSQL core schema
+-- worshipflow2 — Supabase / PostgreSQL core schema
 -- =============================================================================
 -- Run in: Supabase Dashboard → SQL Editor → New query → Paste → Run
 -- Or:     supabase db push (CLI linked project)
@@ -156,7 +156,7 @@ BEGIN
       NULLIF(trim(NEW.raw_user_meta_data ->> 'full_name'), ''),
       NULLIF(trim(NEW.raw_user_meta_data ->> 'name'), ''),
       NULLIF(split_part(NEW.email, '@', 1), ''),
-      'LumenWorship user'
+      'worshipflow2 user'
     )
   );
   INSERT INTO public.user_settings (user_id)

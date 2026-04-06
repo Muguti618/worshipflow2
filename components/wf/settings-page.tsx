@@ -28,7 +28,7 @@ export function SettingsPage() {
         <section className="rounded-[18px] border border-wf-border bg-wf-card/40 p-6 backdrop-blur-md">
           <h2 className="text-sm font-semibold text-wf-text">Presenter shortcuts</h2>
           <p className="mt-1 text-xs text-wf-muted">
-            While the Present tab is focused (not when typing in Quick verse).
+            While the Present tab is focused (not when typing in Quick beam).
           </p>
           <ul className="mt-3 space-y-2 text-sm text-wf-text">
             <li className="flex justify-between gap-4 border-b border-wf-border/80 pb-2">
@@ -93,7 +93,7 @@ export function SettingsPage() {
         <section className="rounded-[18px] border border-wf-border bg-wf-card/40 p-6 backdrop-blur-md">
           <h2 className="text-sm font-semibold text-wf-text">About</h2>
           <p className="mt-2 text-sm text-wf-muted">
-            <span className="font-medium text-wf-text">LumenWorship</span> · version {APP_VERSION}
+            <span className="font-medium text-wf-text">worshipflow2</span> · version {APP_VERSION}
           </p>
           <p className="mt-2 text-xs leading-relaxed text-wf-muted">
             Browser-based worship flow: songs, setlists, Bible lookup, presenter, audience, and phone

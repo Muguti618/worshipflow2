@@ -1,29 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
-import { useActiveDeck } from "@/hooks/use-active-deck";
-import { useRoomSlide } from "@/hooks/use-room-slide";
-import {
-  BIBLE_TRANSLATION_LABELS,
-  BIBLE_TRANSLATION_ORDER,
-  lookupScripture,
-  looksLikeVerseReference,
-  type BibleTranslationKey,
-} from "@/lib/bible-lookup";
-import type { DeckSlide } from "@/lib/setlists-catalog";
-import { scriptureToSlideCards } from "@/lib/slide-engine";
-import { suggestVersesForTopic, type VerseSuggestion } from "@/lib/bible-topic-suggestions";
+import { QuickBeamModal } from "@/components/wf/quick-beam-modal";
 import { SlideTransitionShell } from "@/components/wf/slide-transition-shell";
 import { SlideStage } from "@/components/wf/slide-stage";
+import { useActiveDeck } from "@/hooks/use-active-deck";
+import { useRoomSlide } from "@/hooks/use-room-slide";
 import { useSlideTransition } from "@/hooks/use-slide-transition";
-import { FREE_MAX_VERSE_BEAMS, FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
-import {
-  incrementVerseBeamUsage,
-  readVerseBeamUsageCount,
-  verseBeamsRemaining,
-} from "@/lib/verse-beam-usage";
+import { FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
+import type { DeckSlide } from "@/lib/setlists-catalog";
 
 function keyTargetIsFormField(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -32,7 +19,6 @@ function keyTargetIsFormField(target: EventTarget | null): boolean {
 
 export function PresentMode({ room }: { room: string }) {
   const { limitsApply, ready } = usePlanEntitlements();
-  const [beamUsageTick, setBeamUsageTick] = useState(0);
   const deck = useActiveDeck();
   const count = Math.max(1, deck.length);
   const { index: i, go, jump, beam, publishBeam, clearBeam } = useRoomSlide({
@@ -41,14 +27,7 @@ export function PresentMode({ room }: { room: string }) {
     slideCount: count,
   });
 
-  const [quickVerseOpen, setQuickVerseOpen] = useState(false);
-  const [qvQuery, setQvQuery] = useState("John 3:16");
-  const [qvTranslation, setQvTranslation] = useState<BibleTranslationKey>("NIV");
-  const [qvPick, setQvPick] = useState<VerseSuggestion | null>(null);
-  const [qvSuggestions, setQvSuggestions] = useState<VerseSuggestion[] | null>(null);
-  const [qvAiLoading, setQvAiLoading] = useState(false);
-  const [qvAiError, setQvAiError] = useState<string | null>(null);
-  const [qvAiNote, setQvAiNote] = useState<string | null>(null);
+  const [quickBeamOpen, setQuickBeamOpen] = useState(false);
   const [slideTransition] = useSlideTransition();
 
   useEffect(() => {
@@ -57,40 +36,6 @@ export function PresentMode({ room }: { room: string }) {
 
   const current = deck[Math.min(i, deck.length - 1)]!;
   const next = deck[Math.min(i + 1, deck.length - 1)]!;
-
-  const qvRefMode = useMemo(() => looksLikeVerseReference(qvQuery), [qvQuery]);
-  const prevQvRefMode = useRef(qvRefMode);
-  useEffect(() => {
-    if (prevQvRefMode.current !== qvRefMode) {
-      setQvPick(null);
-      setQvSuggestions(null);
-      setQvAiNote(null);
-      setQvAiError(null);
-    }
-    prevQvRefMode.current = qvRefMode;
-  }, [qvRefMode]);
-
-  const qvLookup = useMemo(
-    () => (qvRefMode ? lookupScripture(qvQuery, qvTranslation) : null),
-    [qvQuery, qvTranslation, qvRefMode],
-  );
-  const topicCuratedSuggestions = useMemo(() => {
-    if (qvRefMode || !qvQuery.trim()) return null;
-    return suggestVersesForTopic(qvQuery, qvTranslation);
-  }, [qvQuery, qvTranslation, qvRefMode]);
-
-  const displaySuggestions = qvSuggestions ?? topicCuratedSuggestions;
-
-  const qvEffective = useMemo(() => {
-    if (qvRefMode) {
-      return qvPick ?? qvLookup;
-    }
-    return qvPick;
-  }, [qvRefMode, qvPick, qvLookup]);
-  const qvSlides = useMemo(() => {
-    if (!qvEffective) return [];
-    return scriptureToSlideCards(qvEffective.ref, qvEffective.text);
-  }, [qvEffective]);
 
   const beamSlides = beam?.slides;
   const beamIdx = beam?.index ?? 0;
@@ -110,6 +55,12 @@ export function PresentMode({ room }: { room: string }) {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
       if (keyTargetIsFormField(e.target)) return;
+      if (quickBeamOpen) return;
+      if (e.shiftKey && (e.key === "b" || e.key === "B")) {
+        e.preventDefault();
+        setQuickBeamOpen(true);
+        return;
+      }
       if (e.key === "ArrowRight" || e.key === " ") {
         e.preventDefault();
         go(1);
@@ -121,16 +72,16 @@ export function PresentMode({ room }: { room: string }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go]);
+  }, [go, quickBeamOpen]);
 
   useEffect(() => {
-    if (!quickVerseOpen) return;
+    if (!quickBeamOpen) return;
     const onEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setQuickVerseOpen(false);
+      if (e.key === "Escape") setQuickBeamOpen(false);
     };
     window.addEventListener("keydown", onEsc);
     return () => window.removeEventListener("keydown", onEsc);
-  }, [quickVerseOpen]);
+  }, [quickBeamOpen]);
 
   const audienceHref = `/present/audience?room=${encodeURIComponent(room)}`;
   const controlHref = `/present/control?room=${encodeURIComponent(room)}`;
@@ -138,80 +89,6 @@ export function PresentMode({ room }: { room: string }) {
   const copyRoom = useCallback(() => {
     void navigator.clipboard?.writeText(room);
   }, [room]);
-
-  const beamsUsed = useMemo(() => {
-    void beamUsageTick;
-    return limitsApply ? readVerseBeamUsageCount() : 0;
-  }, [limitsApply, beamUsageTick]);
-
-  const beamToAudience = useCallback(async () => {
-    if (!qvEffective) return;
-    const cards = scriptureToSlideCards(qvEffective.ref, qvEffective.text);
-    if (cards.length === 0) return;
-    if (limitsApply) {
-      const used = readVerseBeamUsageCount();
-      if (used >= FREE_MAX_VERSE_BEAMS) {
-        window.alert(
-          `Free plan includes ${FREE_MAX_VERSE_BEAMS} Bible verse beams to the room. Upgrade to Pro for unlimited beams.`,
-        );
-        return;
-      }
-    }
-    const ref = qvEffective.ref.trim();
-    const slides: DeckSlide[] = cards.map((c) => ({
-      ...c,
-      typography: "editorial",
-      backgroundColor: "#0c0c0f",
-      audienceCitation: ref,
-    }));
-    const synced = await publishBeam({ slides, index: 0 });
-    if (!synced) {
-      window.alert(
-        "Could not sync the verse to the room (server rejected the request). Check your connection and try again.",
-      );
-      return;
-    }
-    if (limitsApply) {
-      incrementVerseBeamUsage();
-      setBeamUsageTick((x) => x + 1);
-    }
-    setQuickVerseOpen(false);
-  }, [limitsApply, publishBeam, qvEffective]);
-
-  const fetchVerseIdeas = useCallback(async () => {
-    const topic = qvQuery.trim();
-    if (!topic) {
-      setQvAiError("Type a topic or reference first.");
-      return;
-    }
-    setQvAiLoading(true);
-    setQvAiError(null);
-    setQvAiNote(null);
-    setQvSuggestions(null);
-    setQvPick(null);
-    try {
-      const res = await fetch("/api/bible/suggest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, translation: qvTranslation }),
-      });
-      const data = (await res.json()) as {
-        suggestions?: VerseSuggestion[];
-        note?: string;
-        error?: string;
-      };
-      if (!res.ok) {
-        setQvAiError(data.error ?? "Could not load suggestions.");
-        return;
-      }
-      setQvSuggestions(data.suggestions ?? []);
-      setQvAiNote(data.note ?? null);
-    } catch {
-      setQvAiError("Network error — try again.");
-    } finally {
-      setQvAiLoading(false);
-    }
-  }, [qvQuery, qvTranslation]);
 
   return (
     <div className="flex min-h-screen min-h-[100dvh] flex-col bg-black text-white">
@@ -228,7 +105,7 @@ export function PresentMode({ room }: { room: string }) {
           </span>
           {beamSlides && beamSlides.length > 0 ? (
             <span className="rounded-full border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-200/90">
-              Bible on screen {beamIdx + 1}/{beamSlides.length}
+              Beam {beamIdx + 1}/{beamSlides.length}
             </span>
           ) : null}
         </div>
@@ -356,238 +233,28 @@ export function PresentMode({ room }: { room: string }) {
           <button
             type="button"
             data-wf-tour="tour-present-quick-verse"
-            onClick={() => {
-              setQvPick(null);
-              setQvSuggestions(null);
-              setQvAiError(null);
-              setQvAiNote(null);
-              setQuickVerseOpen(true);
-            }}
+            title="Shortcut: Shift+B"
+            onClick={() => setQuickBeamOpen(true)}
             className="rounded-[12px] border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium hover:bg-white/10"
           >
-            Quick verse…
+            Quick beam…
           </button>
         </div>
         <p className="mt-2 text-center text-[11px] text-white/35">
           Deck comes from the <strong className="text-white/50">Dashboard</strong> setlist.{" "}
-          <strong className="text-white/50">Quick verse</strong> sends scripture to Audience (and
-          Remote) without adding it to the setlist. Open <strong className="text-white/50">Audience</strong>{" "}
-          on the projector.
+          <strong className="text-white/50">Quick beam</strong> sends scripture or a spontaneous song to
+          Audience (and Remote on Pro) without editing the setlist.{" "}
+          <span className="text-white/40">Shift+B</span> opens this panel. Open{" "}
+          <strong className="text-white/50">Audience</strong> on the projector.
         </p>
       </footer>
 
-      {quickVerseOpen ? (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-4 sm:items-center"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="wf-quick-verse-title"
-        >
-          <button
-            type="button"
-            className="absolute inset-0 cursor-default"
-            aria-label="Close"
-            onClick={() => setQuickVerseOpen(false)}
-          />
-          <div className="relative z-10 max-h-[min(90dvh,880px)] w-full max-w-2xl overflow-y-auto rounded-[20px] border border-white/15 bg-zinc-950 p-5 shadow-2xl shadow-black/60">
-            <h2 id="wf-quick-verse-title" className="text-lg font-bold tracking-tight">
-              Beam a verse
-            </h2>
-            <p className="mt-1 text-xs text-white/50">
-              <strong className="font-medium text-white/65">Reference</strong> (e.g.{" "}
-              <span className="font-mono text-[11px] text-white/55">John 3:16</span>,{" "}
-              <span className="font-mono text-[11px] text-white/55">Romans 8:28</span>) shows{" "}
-              <strong className="font-medium text-white/65">one</strong> passage. A{" "}
-              <strong className="font-medium text-white/65">topic</strong> (e.g. peace, grief, armor of
-              God) shows <strong className="font-medium text-white/65">several related verses</strong>
-              {limitsApply ? (
-                <> — curated on Free; Pro can refresh with AI.</>
-              ) : (
-                <>
-                  {" "}
-                  — tap <strong className="font-medium text-white/65">Get verse ideas (AI)</strong> for
-                  open-ended themes.
-                </>
-              )}
-            </p>
-            {limitsApply ? (
-              <p className="mt-2 text-[11px] text-amber-200/85">
-                Verse beams this browser: {beamsUsed}/{FREE_MAX_VERSE_BEAMS} used ·{" "}
-                {verseBeamsRemaining(beamsUsed)} left on Free
-              </p>
-            ) : null}
-            <label htmlFor="wf-qv-ref" className="mt-4 block text-[10px] font-semibold uppercase tracking-wider text-white/40">
-              Topic or reference
-            </label>
-            <textarea
-              id="wf-qv-ref"
-              value={qvQuery}
-              onChange={(e) => {
-                setQvQuery(e.target.value);
-                setQvPick(null);
-              }}
-              rows={3}
-              className="mt-1 w-full resize-y rounded-xl border border-white/15 bg-black/50 px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2 focus:ring-sky-500/30"
-              placeholder='Reference: John 3:16 — Topic: God’s peace / armor of God / comfort in grief'
-              autoComplete="off"
-            />
-            <p className="mt-2 text-[11px] text-sky-200/80">
-              {qvRefMode
-                ? "Detected: reference — one passage in preview when we have sample text for it."
-                : qvQuery.trim()
-                  ? "Detected: topic — pick one of the related verses below (or use AI on Pro)."
-                  : "Type a reference or a topic to begin."}
-            </p>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              {!limitsApply ? (
-                <button
-                  type="button"
-                  onClick={() => void fetchVerseIdeas()}
-                  disabled={qvAiLoading || qvRefMode}
-                  aria-busy={qvAiLoading}
-                  title={
-                    qvRefMode
-                      ? "Use a topic phrase for several AI ideas, or beam this reference as-is."
-                      : undefined
-                  }
-                  className="rounded-xl bg-slate-600 hover:bg-slate-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-black/30 disabled:opacity-50"
-                >
-                  {qvAiLoading ? "Finding verses…" : "Get verse ideas (AI)"}
-                </button>
-              ) : (
-                <p className="text-[11px] text-white/40">
-                  Topics show curated related verses on Free. Pro adds AI ideas for any theme.
-                </p>
-              )}
-              {qvSuggestions && qvSuggestions.length > 0 ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQvSuggestions(null);
-                    setQvAiNote(null);
-                  }}
-                  className="rounded-xl border border-white/15 px-3 py-2 text-xs font-medium text-white/55 hover:bg-white/5 hover:text-white/80"
-                >
-                  Hide AI suggestions
-                </button>
-              ) : null}
-            </div>
-            {qvAiError ? <p className="mt-2 text-sm text-red-300/90">{qvAiError}</p> : null}
-            {qvAiNote ? <p className="mt-2 text-[11px] text-white/45">{qvAiNote}</p> : null}
-
-            <label htmlFor="qv-translation" className="mt-4 block">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
-                Translation
-              </span>
-              <select
-                id="qv-translation"
-                value={qvTranslation}
-                onChange={(e) => {
-                  setQvTranslation(e.target.value as BibleTranslationKey);
-                  setQvPick(null);
-                  setQvSuggestions(null);
-                  setQvAiNote(null);
-                }}
-                className="mt-2 h-10 w-full rounded-xl border border-white/15 bg-white/5 px-3 text-sm text-white outline-none focus:ring-2 focus:ring-sky-500/35"
-              >
-                {BIBLE_TRANSLATION_ORDER.map((t) => (
-                  <option key={t} value={t} className="bg-zinc-900 text-white">
-                    {t} — {BIBLE_TRANSLATION_LABELS[t]}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            {!qvRefMode && displaySuggestions && displaySuggestions.length > 0 ? (
-              <div className="mt-5">
-                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-white/45">
-                  {qvSuggestions?.length
-                    ? "AI suggestions — tap to preview"
-                    : "Related verses — tap to preview"}
-                </p>
-                <ul className="grid max-h-[min(40vh,320px)] gap-2 overflow-y-auto sm:grid-cols-2">
-                  {displaySuggestions.map((s, idx) => (
-                    <li key={`${s.ref}-${idx}-${s.text.slice(0, 12)}`}>
-                      <button
-                        type="button"
-                        onClick={() => setQvPick(s)}
-                        className={`flex h-full w-full flex-col rounded-xl border p-3 text-left text-sm transition ${
-                          qvPick?.ref === s.ref && qvPick?.text === s.text
-                            ? "border-amber-500/50 bg-amber-500/10"
-                            : "border-white/10 bg-white/[0.03] hover:border-white/18 hover:bg-white/[0.05]"
-                        }`}
-                      >
-                        <span className="text-[11px] font-bold uppercase tracking-wide text-sky-200/90">
-                          {s.ref}
-                        </span>
-                        <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-white/85">
-                          {s.text}
-                        </p>
-                        <span className="mt-2 line-clamp-2 text-[11px] text-white/45">{s.blurb}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            <div className="mt-6 rounded-xl border border-white/[0.08] bg-black/30 p-4">
-              <p className="text-center text-[11px] uppercase tracking-widest text-white/35">
-                Preview
-                {qvRefMode
-                  ? " — this passage"
-                  : qvPick
-                    ? " — selected verse"
-                    : " — choose one above"}
-              </p>
-              {qvEffective ? (
-                <>
-                  <p className="mt-2 text-center text-xs font-semibold text-white/70">{qvEffective.ref}</p>
-                  <p className="mt-2 text-pretty text-center text-sm leading-relaxed text-white/88">
-                    {qvEffective.text}
-                  </p>
-                </>
-              ) : qvRefMode ? (
-                <p className="mt-3 text-center text-sm leading-relaxed text-white/55">
-                  No built-in sample for that reference yet. Try another bundled passage (e.g. John 3:16,
-                  Romans 8:28) or type a <strong className="font-medium text-white/75">topic</strong> for
-                  related verses.
-                </p>
-              ) : (
-                <p className="mt-3 text-center text-sm leading-relaxed text-white/55">
-                  Tap a related verse above to preview, then beam. On Pro, use{" "}
-                  <strong className="font-medium text-white/75">Get verse ideas (AI)</strong> for more
-                  options.
-                </p>
-              )}
-              <p className="mt-3 text-center text-[11px] text-white/40">
-                {qvSlides.length} slide{qvSlides.length === 1 ? "" : "s"} on output
-              </p>
-            </div>
-
-            <div className="mt-5 flex flex-wrap justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setQuickVerseOpen(false)}
-                className="rounded-xl border border-white/15 px-4 py-2.5 text-sm font-medium text-white/70 hover:bg-white/5"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => void beamToAudience()}
-                disabled={
-                  qvSlides.length === 0 ||
-                  (limitsApply && readVerseBeamUsageCount() >= FREE_MAX_VERSE_BEAMS)
-                }
-                className="rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg disabled:opacity-40"
-              >
-                Beam to audience
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <QuickBeamModal
+        open={quickBeamOpen}
+        onClose={() => setQuickBeamOpen(false)}
+        publishBeam={publishBeam}
+        limitsApply={limitsApply}
+      />
     </div>
   );
 }

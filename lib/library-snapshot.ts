@@ -17,7 +17,7 @@ export function getSnapshotSetlists(): SetlistDefinition[] {
   return snapshotSetlists;
 }
 
-export const WF_LIBRARY_CHANGED_EVENT = "worshipflow-library-changed";
+export const WF_LIBRARY_CHANGED_EVENT = "worshipflow2-library-changed";
 
 export function notifyLibraryChanged(): void {
   if (typeof window === "undefined") return;

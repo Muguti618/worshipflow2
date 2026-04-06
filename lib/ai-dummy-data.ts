@@ -9,7 +9,7 @@ import { lyricsToSlideCards } from "@/lib/slide-engine";
 
 export const AI_DUMMY_META = {
   mode: "dummy-test-data" as const,
-  modelLabel: "LumenWorship Preview v0 (stub)",
+  modelLabel: "worshipflow2 Preview v0 (stub)",
   latencyMsSimulated: 380,
 };
 
@@ -113,7 +113,7 @@ export function getDummyAiChatReply(userMessage: string): { text: string; tag: s
   if (/new song|add song|create song|first song|song presentation|polish.*slide/.test(q)) {
     return {
       tag: "song",
-      text: `**New songs:** when you add a song with **AI**, LumenWorship can suggest a **background** from the feel of your title and lyrics and pack lines **about two per slide** for easier reading on screen. That happens when you tap **Add to library** in **Songs** or **Save song and add** from a setlist.`,
+      text: `**New songs:** when you add a song with **AI**, worshipflow2 can suggest a **background** from the feel of your title and lyrics and pack lines **about two per slide** for easier reading on screen. That happens when you tap **Add to library** in **Songs** or **Save song and add** from a setlist.`,
     };
   }
 

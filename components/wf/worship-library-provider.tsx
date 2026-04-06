@@ -74,7 +74,7 @@ export function WorshipLibraryProvider({ children }: { children: React.ReactNode
             setLoading(false);
             return;
           } catch (e) {
-            console.error("LumenWorship: failed to load library from Supabase", e);
+            console.error("worshipflow2: failed to load library from Supabase", e);
           }
         }
       }

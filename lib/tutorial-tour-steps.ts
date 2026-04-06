@@ -45,6 +45,6 @@ export const TUTORIAL_TOUR_STEPS: TourStep[] = [
     path: "/present",
     target: "tour-present-quick-verse",
     title: "Bible verse beam",
-    body: "Quick verse beams scripture to Audience (and Remote on Pro) without editing the setlist — great for last-minute callouts.",
+    body: "Quick beam sends scripture or a library / pasted song to Audience (and Remote on Pro) without editing the setlist — stay on the Song tab to chain spontaneous songs.",
   },
 ];

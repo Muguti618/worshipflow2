@@ -1,5 +1,5 @@
-/* LumenWorship: cache GET navigations; skip API. Precache key routes so /present works offline after a prior online visit. */
-const CACHE = "lumenworship-shell-v1";
+/* worshipflow2: cache GET navigations; skip API. Precache key routes so /present works offline after a prior online visit. */
+const CACHE = "worshipflow2-shell-v1";
 const PRECACHE = [
   "/",
   "/present",

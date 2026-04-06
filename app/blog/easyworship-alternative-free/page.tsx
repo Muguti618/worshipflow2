@@ -4,7 +4,7 @@ import { BlogShell } from "@/components/wf/blog-shell";
 import { SiteFooter } from "@/components/wf/site-footer";
 
 export const metadata: Metadata = {
-  title: "EasyWorship Alternative Free — Start With Lyric Splitting | LumenWorship",
+  title: "EasyWorship Alternative Free — Start With Lyric Splitting | worshipflow2",
   description:
     "EasyWorship alternative free path: format worship lyrics in the browser before you buy presentation software.",
 };

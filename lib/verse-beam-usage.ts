@@ -1,6 +1,6 @@
 import { FREE_MAX_VERSE_BEAMS } from "@/lib/plan-limits";
 
-const STORAGE_KEY = "worshipflow.freeVerseBeamsUsed";
+const STORAGE_KEY = "worshipflow2.freeVerseBeamsUsed";
 
 export function readVerseBeamUsageCount(): number {
   if (typeof window === "undefined") return 0;

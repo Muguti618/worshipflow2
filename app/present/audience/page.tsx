@@ -3,7 +3,7 @@ import { AudienceView } from "@/components/wf/audience-view";
 import { roomFromSearchParams } from "@/lib/present-room-query";
 
 export const metadata: Metadata = {
-  title: "Audience — LumenWorship",
+  title: "Audience — worshipflow2",
   description: "Projector output — synced from Present or Remote",
 };
 

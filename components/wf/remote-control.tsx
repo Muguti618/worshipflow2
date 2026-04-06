@@ -65,7 +65,7 @@ export function RemoteControl({ room }: { room: string }) {
     return (
       <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 bg-zinc-950 px-6 text-center text-white">
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
-          LumenWorship · Remote pilot
+          worshipflow2 · Remote pilot
         </p>
         <h1 className="text-xl font-bold tracking-tight">Pro feature</h1>
         <p className="max-w-sm text-sm text-white/55">
@@ -89,7 +89,7 @@ export function RemoteControl({ room }: { room: string }) {
     <div className="flex min-h-[100dvh] flex-col bg-zinc-950 px-4 py-6 text-white">
       <header className="mb-6 text-center">
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
-          LumenWorship · Remote pilot
+          worshipflow2 · Remote pilot
         </p>
         <h1 className="mt-2 text-xl font-bold tracking-tight">Control</h1>
         <p className="mt-1 text-sm text-white/50">
@@ -111,7 +111,7 @@ export function RemoteControl({ room }: { room: string }) {
           </p>
           {beamSlides && beamSlides.length > 0 ? (
             <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-amber-200/80">
-              Bible beam {beamIdx + 1}/{beamSlides.length}
+              Beam {beamIdx + 1}/{beamSlides.length}
             </p>
           ) : null}
           <p className="mt-1 text-lg font-semibold text-white">{onScreen.title}</p>

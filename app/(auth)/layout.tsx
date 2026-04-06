@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  description: "Sign in or create a LumenWorship account on this device.",
+  description: "Sign in or create a worshipflow2 account on this device.",
 };
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -19,7 +19,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             href="/"
             className="inline-flex items-center gap-2 rounded-[12px] border border-wf-border bg-wf-card/60 px-3 py-2 text-sm font-medium text-wf-muted backdrop-blur-md transition hover:border-white/15 hover:text-wf-text"
           >
-            ← LumenWorship home
+            ← worshipflow2 home
           </Link>
         </div>
         <div className="flex flex-1 flex-col items-center justify-center px-4 pb-16 pt-6">

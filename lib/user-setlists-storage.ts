@@ -8,8 +8,8 @@ import {
   cloudUpsertSetlist,
 } from "@/lib/supabase-library-ops";
 
-export const USER_SETLISTS_KEY = "worshipflow-user-setlists";
-export const USER_SETLISTS_CHANNEL = "worshipflow-user-setlists";
+export const USER_SETLISTS_KEY = "worshipflow2-user-setlists";
+export const USER_SETLISTS_CHANNEL = "worshipflow2-user-setlists";
 
 export function broadcastUserSetlistsChanged(): void {
   try {

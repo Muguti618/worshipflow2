@@ -45,7 +45,7 @@ export function Sidebar() {
       <div className="flex h-14 items-center border-b border-wf-border bg-wf-card px-5">
         <div className="min-w-0">
           <p className="text-sm font-semibold tracking-tight text-wf-text">
-            LumenWorship
+            worshipflow2
           </p>
           <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-wf-muted">
             Worship deck

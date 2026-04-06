@@ -55,7 +55,7 @@ export function PublicLyricSplitter() {
           blocks are understood—everything runs in your browser (no account, no upload).
         </p>
         <p className="mx-auto mt-2 max-w-2xl text-[11px] leading-relaxed text-wf-muted/75">
-          This uses the same smart, section-aware engine as LumenWorship&apos;s preview. Optional
+          This uses the same smart, section-aware engine as worshipflow2&apos;s preview. Optional
           cloud-based layout refinement lives in the app for Pro users with an OpenAI key—start here free,
           then sign up when you want setlists and Present.
         </p>

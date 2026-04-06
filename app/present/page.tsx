@@ -3,7 +3,7 @@ import { PresentMode } from "@/components/wf/present-mode";
 import { roomFromSearchParams } from "@/lib/present-room-query";
 
 export const metadata: Metadata = {
-  title: "Present — LumenWorship",
+  title: "Present — worshipflow2",
   description: "Presenter console — audience and remote pilot share a room id",
 };
 

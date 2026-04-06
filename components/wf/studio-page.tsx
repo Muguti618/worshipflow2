@@ -167,7 +167,7 @@ export function StudioPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight">Slide Studio</h1>
         <p className="mt-1 max-w-2xl text-sm text-wf-muted">
-          One song in LumenWorship = <strong className="font-medium text-wf-text">many slides</strong>.
+          One song in worshipflow2 = <strong className="font-medium text-wf-text">many slides</strong>.
           Use <strong className="font-medium text-wf-text/90">Split with AI</strong> for section-aware
           layout, or the <strong className="font-medium text-wf-text/90">rule-based</strong> preview below.
           Save songs in{" "}

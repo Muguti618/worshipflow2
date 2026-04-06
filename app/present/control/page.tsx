@@ -3,7 +3,7 @@ import { RemoteControl } from "@/components/wf/remote-control";
 import { roomFromSearchParams } from "@/lib/present-room-query";
 
 export const metadata: Metadata = {
-  title: "Remote — LumenWorship",
+  title: "Remote — worshipflow2",
   description: "Phone / tablet slide control for the same room",
 };
 

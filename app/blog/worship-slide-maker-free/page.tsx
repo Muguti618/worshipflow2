@@ -4,7 +4,7 @@ import { BlogShell } from "@/components/wf/blog-shell";
 import { SiteFooter } from "@/components/wf/site-footer";
 
 export const metadata: Metadata = {
-  title: "Worship Slide Maker Free — Plan Lyrics Before Sunday | LumenWorship",
+  title: "Worship Slide Maker Free — Plan Lyrics Before Sunday | worshipflow2",
   description:
     "Worship slide maker free option: split lyrics into slides in your browser before you invest in heavy software.",
 };
@@ -38,7 +38,7 @@ export default function BlogPostWorshipSlideMakerFree() {
           </p>
 
           <p className="mt-4 text-base leading-relaxed">
-            LumenWorship puts a <strong className="text-wf-text">worship slide maker free</strong> entry point
+            worshipflow2 puts a <strong className="text-wf-text">worship slide maker free</strong> entry point
             on the homepage on purpose: try the{" "}
             <Link href="/#lyric-splitter">lyric splitter without signing up</Link>, then create an account if
             you want your library, setlists, and Present. You solve Sunday&apos;s readability problem first; the

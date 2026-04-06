@@ -1,11 +1,11 @@
 /**
- * Browser-only account helpers for LumenWorship.
+ * Browser-only account helpers for worshipflow2.
  * Sessions and credentials live in localStorage — suitable for demos only;
  * production apps should use a real backend and httpOnly cookies.
  */
 
-export const WF_SESSION_KEY = "worshipflow-auth-session";
-export const WF_USERS_KEY = "worshipflow-auth-users";
+export const WF_SESSION_KEY = "worshipflow2-auth-session";
+export const WF_USERS_KEY = "worshipflow2-auth-users";
 
 export const WF_AUTH_CHANGE_EVENT = "wf-auth-change";
 

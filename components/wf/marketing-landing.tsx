@@ -71,7 +71,7 @@ export function MarketingLanding() {
 
       <header className="relative z-10 border-b border-wf-border/80 bg-wf-bg/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
-          <span className="text-lg font-bold tracking-tight">LumenWorship</span>
+          <span className="text-lg font-bold tracking-tight">worshipflow2</span>
           <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
             <Link
               href="/blog"
@@ -530,7 +530,7 @@ export function MarketingLanding() {
               id="mw-demo-video-heading"
               className="text-center text-2xl font-bold tracking-tight sm:text-3xl"
             >
-              See LumenWorship in action
+              See worshipflow2 in action
             </h2>
             <p className="mx-auto mt-2 max-w-2xl text-center text-sm leading-relaxed text-wf-muted">
               A short walkthrough: dashboard, setlist → Present, Audience view, and phone remote—placeholder

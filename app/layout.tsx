@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "LumenWorship — Worship presentation, reimagined",
+  title: "worshipflow2 — Worship presentation, reimagined",
   description:
     "Browser-based worship pilot: AI slide formatting, scripture search, remote control, and offline-friendly caching.",
 };
@@ -32,7 +32,7 @@ export default function RootLayout({
           // Runs once in the initial HTML before paint; avoids next/script + React 19 client warnings.
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){try{var k='worshipflow-theme';var t=localStorage.getItem(k);document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();",
+              "(function(){try{var k='worshipflow2-theme';var t=localStorage.getItem(k);document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();",
           }}
         />
       </head>

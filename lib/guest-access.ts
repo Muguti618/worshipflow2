@@ -1,4 +1,4 @@
-const KEY = "worshipflow-guest-dashboard";
+const KEY = "worshipflow2-guest-dashboard";
 
 export function setGuestDashboardAllow(): void {
   if (typeof sessionStorage === "undefined") return;

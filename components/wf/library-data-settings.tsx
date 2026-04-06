@@ -6,7 +6,7 @@ import {
   applyLibraryBackupJson,
   buildLibraryBackupPayload,
   clearAllSongsSetlistsAndDeck,
-  estimateLumenWorshipStorageBytes,
+  estimateWorshipflow2StorageBytes,
 } from "@/lib/library-data";
 import { USER_SETLISTS_CHANNEL } from "@/lib/user-setlists-storage";
 import { USER_SONGS_CHANNEL } from "@/lib/user-songs-storage";
@@ -27,7 +27,7 @@ export function LibraryDataSettings() {
   const [libTick, setLibTick] = useState(0);
 
   const refreshStorage = useCallback(() => {
-    setStorageBytes(estimateLumenWorshipStorageBytes());
+    setStorageBytes(estimateWorshipflow2StorageBytes());
     setLibTick((t) => t + 1);
   }, []);
 
@@ -61,7 +61,7 @@ export function LibraryDataSettings() {
     const a = document.createElement("a");
     const stamp = new Date().toISOString().slice(0, 10);
     a.href = URL.createObjectURL(blob);
-    a.download = `lumenworship-library-${stamp}.json`;
+    a.download = `worshipflow2-library-${stamp}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
     setMessage({
@@ -140,7 +140,7 @@ export function LibraryDataSettings() {
       <h2 className="text-sm font-semibold text-wf-text">Library &amp; data</h2>
       <p className="mt-1 text-xs leading-relaxed text-wf-muted">
         Songs, setlists, and the active presenter deck are stored only in this browser (localStorage).
-        They are not uploaded to LumenWorship servers. Export a JSON file before clearing or switching
+        They are not uploaded to worshipflow2 servers. Export a JSON file before clearing or switching
         devices.
       </p>
 

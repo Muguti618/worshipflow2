@@ -1,6 +1,6 @@
 /** Persisted slide change effect for presenter / audience / dashboard preview. */
 
-export const SLIDE_TRANSITION_STORAGE_KEY = "worshipflow.slideTransition";
+export const SLIDE_TRANSITION_STORAGE_KEY = "worshipflow2.slideTransition";
 
 export type SlideTransitionId = "fade" | "push" | "cross-blur";
 

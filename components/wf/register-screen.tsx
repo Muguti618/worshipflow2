@@ -75,7 +75,7 @@ export function RegisterScreen() {
           🎛️
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-wf-text">Create your account</h1>
-        <p className="mt-2 text-sm text-wf-muted">Join LumenWorship on this device</p>
+        <p className="mt-2 text-sm text-wf-muted">Join worshipflow2 on this device</p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4">

@@ -4,7 +4,7 @@ import { BlogShell } from "@/components/wf/blog-shell";
 import { SiteFooter } from "@/components/wf/site-footer";
 
 export const metadata: Metadata = {
-  title: "Free Worship Lyric Formatter for Church Screens | LumenWorship",
+  title: "Free Worship Lyric Formatter for Church Screens | worshipflow2",
   description:
     "Looking for a free worship lyric formatter? Format verses and choruses for projection—respect section tags, no install, try it in the browser first.",
 };
@@ -35,7 +35,7 @@ export default function BlogPostFreeWorshipLyricFormatter() {
             <span className="font-mono text-sm text-sky-300/90">[Chorus]</span> and blank lines between
             blocks help the formatter understand structure. You can copy the output as plain text for
             rehearsal notes, or bring the same habits into{" "}
-            <Link href="/register">LumenWorship</Link> when you are ready to save songs and build setlists.
+            <Link href="/register">worshipflow2</Link> when you are ready to save songs and build setlists.
           </p>
 
           <p className="mt-4 text-base leading-relaxed">

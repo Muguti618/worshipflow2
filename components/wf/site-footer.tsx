@@ -9,7 +9,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
-            <p className="text-sm font-bold tracking-tight text-wf-text">LumenWorship</p>
+            <p className="text-sm font-bold tracking-tight text-wf-text">worshipflow2</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-wf-muted">
               Worship planning, multi-slide songs, setlists, Present &amp; Audience, and optional phone
               remote—built for teams who serve from the browser.
@@ -97,7 +97,7 @@ export function SiteFooter() {
         </div>
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-wf-border/80 pt-8 text-center sm:flex-row sm:text-left">
           <p className="text-xs text-wf-muted">
-            © {new Date().getFullYear()} LumenWorship. All rights reserved.
+            © {new Date().getFullYear()} worshipflow2. All rights reserved.
           </p>
           <p className="text-xs text-wf-muted">
             Made with <span className="text-rose-400/80">♥</span> by{" "}

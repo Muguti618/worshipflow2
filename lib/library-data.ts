@@ -92,7 +92,7 @@ export async function applyLibraryBackupJson(
     throw new Error("The file is not valid JSON.");
   }
   if (!isRecord(raw) || raw.version !== LIBRARY_BACKUP_VERSION) {
-    throw new Error("This file is not a LumenWorship library backup (expected version 1).");
+    throw new Error("This file is not a worshipflow2 library backup (expected version 1).");
   }
   if (!Array.isArray(raw.songs) || !Array.isArray(raw.setlists)) {
     throw new Error("Backup is missing songs or setlists.");
@@ -158,7 +158,7 @@ export async function clearAllSongsSetlistsAndDeck(): Promise<void> {
 }
 
 /** Rough size of app library keys in localStorage (UTF-16 string length × 2). */
-export function estimateLumenWorshipStorageBytes(): number {
+export function estimateWorshipflow2StorageBytes(): number {
   if (typeof window === "undefined") return 0;
   const keys = [
     USER_SONGS_KEY,

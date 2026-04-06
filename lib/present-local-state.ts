@@ -2,8 +2,8 @@ import type { PresentBeamState } from "@/lib/present-beam";
 import { parsePresentBeamState } from "@/lib/present-beam";
 
 /** Keep presenter slide index + beam in localStorage so /present works without network after refresh. */
-const SLIDE_PREFIX = "worshipflow-present-slide:";
-const BEAM_PREFIX = "worshipflow-present-beam:";
+const SLIDE_PREFIX = "worshipflow2-present-slide:";
+const BEAM_PREFIX = "worshipflow2-present-beam:";
 
 export function safePresentRoomKey(room: string): string {
   const s = room.trim().slice(0, 64);

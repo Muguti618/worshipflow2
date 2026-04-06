@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog — LumenWorship",
+  title: "Blog — worshipflow2",
   description: "Guides for worship leaders: free lyric formatting, slide makers, and browser-based presentation.",
 };
 

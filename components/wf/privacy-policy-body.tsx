@@ -3,7 +3,7 @@ export function PrivacyPolicyBody() {
     <>
       <section>
         <p>
-          This Privacy Policy explains how LumenWorship (&ldquo;we&rdquo;, &ldquo;us&rdquo;), operated by
+          This Privacy Policy explains how worshipflow2 (&ldquo;we&rdquo;, &ldquo;us&rdquo;), operated by
           Forma, collects, uses, and shares personal data when you use our website and services
           (&ldquo;Service&rdquo;). By using the Service, you agree to this policy alongside our Terms of
           Service.
@@ -173,7 +173,7 @@ export function PrivacyPolicyBody() {
         <h2>13. Contact</h2>
         <p>
           For privacy requests or questions, contact us via the support channel linked to your account or the
-          contact details published on the LumenWorship website.
+          contact details published on the worshipflow2 website.
         </p>
       </section>
     </>

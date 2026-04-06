@@ -64,7 +64,7 @@ export function LoginScreen(props: { showGuestContinue?: boolean }) {
           🎛️
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-wf-text">Welcome back</h1>
-        <p className="mt-2 text-sm text-wf-muted">Sign in to LumenWorship</p>
+        <p className="mt-2 text-sm text-wf-muted">Sign in to worshipflow2</p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4">

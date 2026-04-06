@@ -10,9 +10,9 @@ export const EMPTY_PRESENTER_PLACEHOLDER: DeckSlide[] = [
   },
 ];
 
-export const ACTIVE_DECK_STORAGE_KEY = "worshipflow-active-deck";
-export const ACTIVE_SETLIST_ID_KEY = "worshipflow-active-setlist-id";
-export const DECK_SYNC_CHANNEL = "worshipflow-deck-sync";
+export const ACTIVE_DECK_STORAGE_KEY = "worshipflow2-active-deck";
+export const ACTIVE_SETLIST_ID_KEY = "worshipflow2-active-setlist-id";
+export const DECK_SYNC_CHANNEL = "worshipflow2-deck-sync";
 export const DEFAULT_PRESENT_ROOM = "default";
 
 export function readActiveDeck(): DeckSlide[] | null {
@@ -51,7 +51,7 @@ export function broadcastDeckUpdated(): void {
 /** Reset presenter slide index (same tab + other tabs listening to BC / poll). */
 export function broadcastSlideReset(room: string): void {
   try {
-    const ch = new BroadcastChannel(`worshipflow-present:${room}`);
+    const ch = new BroadcastChannel(`worshipflow2-present:${room}`);
     ch.postMessage({ type: "slide", index: 0 });
     ch.close();
   } catch {

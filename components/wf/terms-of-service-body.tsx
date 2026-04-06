@@ -3,7 +3,7 @@ export function TermsOfServiceBody() {
     <>
       <section>
         <p>
-          These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of LumenWorship
+          These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of worshipflow2
           (&ldquo;Service&rdquo;), operated by Forma and its affiliates (&ldquo;we&rdquo;, &ldquo;us&rdquo;).
           By creating an account, using the website or app, or clicking to accept where offered, you agree
           to these Terms. If you do not agree, do not use the Service.
@@ -13,7 +13,7 @@ export function TermsOfServiceBody() {
       <section>
         <h2>1. The Service</h2>
         <p>
-          LumenWorship provides browser-based tools for worship teams, including (depending on your plan)
+          worshipflow2 provides browser-based tools for worship teams, including (depending on your plan)
           song and setlist management, slide-based presentation, audience output, optional remote control,
           Bible lookup, and optional AI-assisted features. We may add, change, or remove features; we will
           try to give reasonable notice for material changes that affect paid subscribers where practical.

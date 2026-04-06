@@ -52,7 +52,7 @@ export async function POST(req: Request) {
   const system: ChatMessage = {
     role: "system",
     content:
-      "You are LumenWorship’s assistant for worship teams. Help with slides (multiple slides per song), setlists, presenting, backgrounds, and planning. Use **markdown bold** sparingly. Be concise and practical. Do not claim to access the user’s files or account.",
+      "You are worshipflow2’s assistant for worship teams. Help with slides (multiple slides per song), setlists, presenting, backgrounds, and planning. Use **markdown bold** sparingly. Be concise and practical. Do not claim to access the user’s files or account.",
   };
   const out = await openaiTextChat(cfg, [system, ...messages]);
   if (!out.ok) return openAiHttpFailedResponse(out.status, out.error);

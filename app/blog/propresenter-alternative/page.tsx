@@ -4,7 +4,7 @@ import { BlogShell } from "@/components/wf/blog-shell";
 import { SiteFooter } from "@/components/wf/site-footer";
 
 export const metadata: Metadata = {
-  title: "ProPresenter Alternative in the Browser | LumenWorship",
+  title: "ProPresenter Alternative in the Browser | worshipflow2",
   description:
     "Looking for a ProPresenter alternative? A lighter browser workflow for lyrics, scripture, and setlists—without a media server.",
 };
@@ -40,7 +40,7 @@ export default function BlogPostProPresenterAlternative() {
           <p className="mt-4 text-base leading-relaxed">
             If you want to test the philosophy before you compare licenses, start with the free{" "}
             <Link href="/#lyric-splitter">lyric splitter</Link> on our homepage—format lyrics first—then
-            explore <Link href="/register">LumenWorship</Link> for Present, Audience, and optional remote
+            explore <Link href="/register">worshipflow2</Link> for Present, Audience, and optional remote
             control when you are ready to standardize on one calm workflow.
           </p>
 

@@ -1,4 +1,4 @@
-export const WF_THEME_STORAGE_KEY = "worshipflow-theme";
+export const WF_THEME_STORAGE_KEY = "worshipflow2-theme";
 
 export type WfTheme = "light" | "dark";
 

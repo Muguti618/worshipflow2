@@ -9,11 +9,11 @@ import { TUTORIAL_TOUR_STEPS } from "@/lib/tutorial-tour-steps";
 const SECTIONS = [
   {
     id: "overview",
-    title: "How LumenWorship fits together",
+    title: "How worshipflow2 fits together",
     body: (
       <div className="space-y-3 text-sm leading-relaxed text-wf-muted">
         <p>
-          LumenWorship is built around <strong className="font-medium text-wf-text">songs</strong>{" "}
+          worshipflow2 is built around <strong className="font-medium text-wf-text">songs</strong>{" "}
           (each with <strong className="font-medium text-wf-text">many slides</strong>),{" "}
           <strong className="font-medium text-wf-text">setlists</strong> that order those songs and
           other moments, and a <strong className="font-medium text-wf-text">presenter</strong> that
@@ -241,7 +241,7 @@ export function TutorialPage() {
           <strong className="font-medium text-wf-text/90">+ New</strong> song, dashboard{" "}
           <strong className="font-medium text-wf-text/90">presenter setlist</strong>,{" "}
           <strong className="font-medium text-wf-text/90">Open Presenter</strong>, then{" "}
-          <strong className="font-medium text-wf-text/90">Quick verse</strong> for a Bible beam. Press{" "}
+          <strong className="font-medium text-wf-text/90">Quick beam</strong> (scripture or song). Press{" "}
           <kbd className="rounded border border-white/20 px-1.5 py-0.5 font-mono text-[11px] text-wf-text">Esc</kbd>{" "}
           or Skip to exit.
         </p>

@@ -9,8 +9,8 @@ import {
   cloudUpsertSong,
 } from "@/lib/supabase-library-ops";
 
-export const USER_SONGS_KEY = "worshipflow-user-songs";
-export const USER_SONGS_CHANNEL = "worshipflow-user-songs";
+export const USER_SONGS_KEY = "worshipflow2-user-songs";
+export const USER_SONGS_CHANNEL = "worshipflow2-user-songs";
 
 export function broadcastUserSongsChanged(): void {
   try {

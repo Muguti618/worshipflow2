@@ -18,7 +18,7 @@ export function LegalDocShell({
             href="/"
             className="text-sm font-medium text-sky-400 transition hover:text-sky-300 hover:underline"
           >
-            ← LumenWorship home
+            ← worshipflow2 home
           </Link>
         </div>
       </header>

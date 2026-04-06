@@ -1,5 +1,5 @@
 /** Free tier: one AI-assisted “new song” (slide splitting via /api/ai/song-present). */
-const STORAGE_KEY = "worshipflow.freeTierAiSongSplitUsed";
+const STORAGE_KEY = "worshipflow2.freeTierAiSongSplitUsed";
 
 export function readFreeTierAiSongSplitUsed(): boolean {
   if (typeof window === "undefined") return false;
