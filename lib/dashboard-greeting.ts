@@ -5,9 +5,22 @@ export type DashboardGreeting = {
   title: string;
   /** Line under the title */
   subtitle: string;
-  /** Exact local time + weekday date, e.g. "Right now it's 7:24 PM — Tuesday, 4 December 2026." */
-  detailLine: string;
 };
+
+function firstName(displayName: string | undefined): string | null {
+  if (!displayName?.trim()) return null;
+  const parts = displayName.trim().split(/\s+/).filter(Boolean);
+  return parts[0] ?? null;
+}
+
+/** Emoji paired with dashboard greeting (sidebar + hero). */
+export function greetingEmojiForDate(now: Date = new Date()): string {
+  const hour = now.getHours();
+  if (hour >= 5 && hour < 12) return "🌤️";
+  if (hour >= 12 && hour < 17) return "☀️";
+  if (hour >= 17 && hour < 22) return "🌆";
+  return "🌙";
+}
 
 function christmasSeason(d: Date): boolean {
   const m = d.getMonth();
@@ -32,22 +45,21 @@ function timeOfDayPhrase(hour: number): string {
   return "Good night";
 }
 
-export function getDashboardGreeting(now: Date = new Date()): DashboardGreeting {
+function commaName(displayName: string | undefined): string {
+  const fn = firstName(displayName);
+  return fn ? `, ${fn}` : "";
+}
+
+export function getDashboardGreeting(
+  now: Date = new Date(),
+  opts?: { displayName?: string },
+): DashboardGreeting {
   const hour = now.getHours();
   const dow = now.getDay();
   const tod = timeOfDayPhrase(hour);
-
-  const timeStr = now.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-  const dateStr = now.toLocaleDateString(undefined, {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-  const detailLine = `Right now it's ${timeStr} — ${dateStr}.`;
+  const emoji = greetingEmojiForDate(now);
+  const dn = opts?.displayName;
+  const cn = commaName(dn);
 
   const isSun = dow === 0;
   const xmas = christmasSeason(now);
@@ -55,44 +67,40 @@ export function getDashboardGreeting(now: Date = new Date()): DashboardGreeting 
   const nyd = newYearsDay(now);
 
   if (isSun) {
-    let title = "Happy Sunday";
-    if (xmasPeak) title = "Happy Sunday — Merry Christmas!";
-    else if (xmas) title = "Happy Sunday — Merry Christmas";
+    let title: string;
+    if (xmasPeak) title = `Happy Sunday${cn} — Merry Christmas! 🎄`;
+    else if (xmas) title = `Happy Sunday${cn} — Merry Christmas 🎄`;
+    else title = `Happy Sunday${cn} 🙏`;
     return {
       title,
       subtitle: "Let's worship Him together.",
-      detailLine,
     };
   }
 
   if (nyd) {
     return {
-      title: `${tod} — Happy New Year!`,
+      title: `${tod}${cn} — Happy New Year! 🎉`,
       subtitle: "A fresh start — may God bless your worship and your people today.",
-      detailLine,
     };
   }
 
   if (xmasPeak) {
     return {
-      title: `${tod} — Merry Christmas!`,
+      title: `${tod}${cn} — Merry Christmas! 🎄`,
       subtitle: "Celebrating the birth of our Saviour — bless your gathering today.",
-      detailLine,
     };
   }
 
   if (xmas) {
     return {
-      title: `${tod} — Merry Christmas`,
+      title: `${tod}${cn} — Merry Christmas 🎄`,
       subtitle: "Christmas season — may your services glorify Him.",
-      detailLine,
     };
   }
 
   return {
-    title: tod,
+    title: `${tod}${cn} ${emoji}`,
     subtitle:
       "Choose a setlist below — your deck is every slide, in order. Present and Audience stay in sync.",
-    detailLine,
   };
 }

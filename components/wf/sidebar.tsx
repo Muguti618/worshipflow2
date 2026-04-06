@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
 import { useAuthSession } from "@/hooks/use-auth-session";
+import { greetingEmojiForDate } from "@/lib/dashboard-greeting";
 
 function userInitials(name: string, email: string): string {
   const n = name.trim();
@@ -23,13 +24,13 @@ function userInitials(name: string, email: string): string {
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: "🏠" },
   { href: "/songs", label: "Songs", icon: "🎵" },
-  { href: "/studio", label: "Slide Studio", icon: "⚡" },
+  { href: "/setlists", label: "Setlist", icon: "📅" },
   { href: "/bible", label: "Bible", icon: "✝️" },
-  { href: "/setlists", label: "Setlists", icon: "📅" },
   { href: "/ai", label: "Assistant", icon: "✨" },
+  { href: "/studio", label: "Slide Studio", icon: "⚡" },
   { href: "/tutorial", label: "Tutorial", icon: "📖" },
-  { href: "/upgrade", label: "Upgrade", icon: "✨" },
   { href: "/settings", label: "Settings", icon: "⚙️" },
+  { href: "/upgrade", label: "Upgrade", icon: "💎" },
 ] as const;
 
 export function Sidebar() {
@@ -95,7 +96,12 @@ export function Sidebar() {
                 {userInitials(session.name, session.email)}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-wf-text">{session.name}</p>
+                <p className="truncate font-medium text-wf-text">
+                  <span className="mr-1.5" aria-hidden>
+                    {greetingEmojiForDate()}
+                  </span>
+                  {session.name}
+                </p>
                 <p className="truncate text-xs text-wf-muted">{session.email}</p>
               </div>
             </div>

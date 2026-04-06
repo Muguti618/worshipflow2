@@ -15,49 +15,45 @@ import {
   readActiveSetlistId,
   writeActiveDeck,
 } from "@/lib/active-deck";
-import { lookupScripture } from "@/lib/bible-lookup";
-import { scriptureToSlideCards } from "@/lib/slide-engine";
 import { kindLabel } from "@/lib/setlists-catalog";
 import { getDashboardGreeting } from "@/lib/dashboard-greeting";
 import { flattenSetlistToDeck, itemRangesInDeck } from "@/lib/setlist-flatten";
-import {
-  FREE_MAX_SETLISTS,
-  FREE_TIER_SLIDE_BRANDING,
-  FREE_TRANSITION_IDS,
-} from "@/lib/plan-limits";
-import {
-  SLIDE_TRANSITION_OPTIONS,
-  type SlideTransitionId,
-} from "@/lib/slide-transition";
+import { FREE_MAX_SETLISTS, FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
 import { getSetlistById } from "@/lib/setlists-resolve";
 import { RemoteControlQr } from "@/components/wf/remote-control-qr";
 import { SlideTransitionShell } from "@/components/wf/slide-transition-shell";
 import { SlideStage } from "@/components/wf/slide-stage";
 import { useSlideTransition } from "@/hooks/use-slide-transition";
+import { useAuthSession } from "@/hooks/use-auth-session";
+
+const PREVIEW_FALLBACK_BG =
+  "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1600&q=80";
+
+type StageBackground = {
+  backgroundUrl?: string;
+  backgroundColor?: string;
+  backgroundFullBleed?: boolean;
+};
 
 export function DashboardHome() {
   const { limitsApply, ready: planReady } = usePlanEntitlements();
+  const { session } = useAuthSession();
   const deck = useActiveDeck();
   const { setlists: allSetlists, version: listVersion } = useAllSetlists();
   const setlistLimitBannerRef = useRef<HTMLDivElement>(null);
   const atFreeSetlistLimit = planReady && limitsApply && allSetlists.length >= FREE_MAX_SETLISTS;
   const [previewIdx, setPreviewIdx] = useState(0);
   const [activeListId, setActiveListId] = useState("");
-  const [bgMode, setBgMode] = useState<"ai" | "stock">("ai");
-  const [transition, setTransition] = useSlideTransition();
-  const [autoFormat, setAutoFormat] = useState(true);
-  const [bibleInput, setBibleInput] = useState("John 3:16");
-  const [verseOverride, setVerseOverride] = useState<{
-    title?: string;
-    lines: string[];
-  } | null>(null);
+  const [transition] = useSlideTransition();
   const [greeting, setGreeting] = useState(() => getDashboardGreeting());
 
   useEffect(() => {
-    const tick = () => setGreeting(getDashboardGreeting());
-    const id = setInterval(tick, 60_000);
+    const tick = () =>
+      setGreeting(getDashboardGreeting(new Date(), { displayName: session?.name }));
+    tick();
+    const id = setInterval(tick, 60 * 60 * 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [session?.name]);
 
   useEffect(() => {
     const saved = readActiveSetlistId();
@@ -101,21 +97,12 @@ export function DashboardHome() {
     void postPresenterSlide(DEFAULT_PRESENT_ROOM, 0);
     setActiveListId(id);
     setPreviewIdx(0);
-    setVerseOverride(null);
   }, []);
 
   const slide = deck[previewIdx] ?? deck[0]!;
-  const preview = verseOverride ?? slide;
+  const preview = slide;
 
-  const bgUrl = useMemo(() => {
-    if (bgMode === "stock") {
-      return "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&q=80";
-    }
-    return "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1600&q=80";
-  }, [bgMode]);
-
-  const stageBackground = useMemo(() => {
-    if (verseOverride) return {} as { backgroundUrl?: string; backgroundColor?: string; backgroundFullBleed?: boolean };
+  const stageBackground = useMemo((): StageBackground => {
     const s = deck[previewIdx] ?? deck[0];
     if (!s) return {};
     if (s.backgroundColor?.trim()) {
@@ -128,43 +115,17 @@ export function DashboardHome() {
       };
     }
     return {};
-  }, [verseOverride, deck, previewIdx]);
+  }, [deck, previewIdx]);
 
-  const previewBgUrl = verseOverride
-    ? bgUrl
-    : stageBackground.backgroundUrl ??
-      (!stageBackground.backgroundColor?.trim() ? bgUrl : undefined);
-
-  const applyBibleToPreview = useCallback(() => {
-    const r = lookupScripture(bibleInput, "NIV");
-    if (!r) {
-      window.alert(
-        "That reference is not in our built-in sample set. Try John 3:16, Romans 8:28, Psalm 23, or use the Bible page for AI verse ideas.",
-      );
-      return;
-    }
-    const cards = scriptureToSlideCards(r.ref, r.text);
-    const first = cards[0];
-    setVerseOverride({
-      title: first?.title ?? r.ref,
-      lines: first?.lines ?? [r.text],
-    });
-  }, [bibleInput]);
+  const previewBgUrl =
+    stageBackground.backgroundUrl ??
+    (!stageBackground.backgroundColor?.trim() ? PREVIEW_FALLBACK_BG : undefined);
 
   const presentHref = `/present?room=${encodeURIComponent(DEFAULT_PRESENT_ROOM)}`;
   const audienceHref = `/present/audience?room=${encodeURIComponent(DEFAULT_PRESENT_ROOM)}`;
   const controlHref = `/present/control?room=${encodeURIComponent(DEFAULT_PRESENT_ROOM)}`;
 
-  const transitionOptions = useMemo(
-    () =>
-      limitsApply
-        ? SLIDE_TRANSITION_OPTIONS.filter((o) => FREE_TRANSITION_IDS.includes(o.id))
-        : SLIDE_TRANSITION_OPTIONS,
-    [limitsApply],
-  );
-
   const previewSongContext = useMemo(() => {
-    if (verseOverride) return null;
     for (const { item, startIndex, count } of setlistRanges) {
       if (previewIdx >= startIndex && previewIdx < startIndex + count) {
         const within = previewIdx - startIndex + 1;
@@ -172,7 +133,7 @@ export function DashboardHome() {
       }
     }
     return null;
-  }, [setlistRanges, previewIdx, verseOverride]);
+  }, [setlistRanges, previewIdx]);
 
   return (
     <div className="flex min-h-[calc(100vh-3.5rem)] flex-col">
@@ -189,10 +150,7 @@ export function DashboardHome() {
               </span>
             </h1>
             <p className="mt-2.5 max-w-xl text-sm font-normal leading-relaxed text-wf-muted">
-              {greeting.subtitle}
-            </p>
-            <p className="mt-2 max-w-xl text-[11px] leading-relaxed text-wf-muted/65">
-              {greeting.detailLine}{" "}
+              {greeting.subtitle}{" "}
               <Link
                 href="/tutorial"
                 className="font-medium text-sky-400/90 hover:text-sky-300 hover:underline"
@@ -277,43 +235,6 @@ export function DashboardHome() {
 
       <div className="mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-8 p-6 lg:flex-row lg:items-stretch lg:gap-8">
         <aside className="order-2 flex w-full shrink-0 flex-col gap-4 lg:order-1 lg:w-[220px] lg:max-w-[220px]">
-          <div className="rounded-[14px] border border-white/[0.08] bg-wf-card/50 p-3 backdrop-blur-xl">
-            <p className="text-xs font-medium text-wf-muted">Bible · preview only</p>
-            <label htmlFor="wf-dash-bible" className="sr-only">
-              Bible search
-            </label>
-            <input
-              id="wf-dash-bible"
-              data-wf-tour="tour-dash-bible"
-              value={bibleInput}
-              onChange={(e) => setBibleInput(e.target.value)}
-              placeholder="John 3:16, armor of God…"
-              className="mt-2 h-9 w-full rounded-lg border border-white/[0.08] bg-wf-bg/60 px-2.5 text-xs text-wf-text outline-none focus:ring-1 focus:ring-sky-500/25"
-            />
-            <button
-              type="button"
-              onClick={applyBibleToPreview}
-              className="mt-2 w-full rounded-lg bg-blue-600 hover:bg-blue-500 py-2 text-xs font-semibold text-white"
-            >
-              Show on preview
-            </button>
-            {verseOverride ? (
-              <button
-                type="button"
-                onClick={() => setVerseOverride(null)}
-                className="mt-1.5 w-full rounded-lg border border-white/[0.1] py-1.5 text-[11px] font-medium text-wf-muted hover:text-wf-text"
-              >
-                Clear verse preview
-              </button>
-            ) : null}
-            <Link
-              href="/bible"
-              className="mt-2 flex w-full items-center justify-center rounded-lg border border-white/[0.1] py-2 text-xs font-medium text-wf-text transition hover:border-white/18"
-            >
-              Full Bible tool →
-            </Link>
-          </div>
-
           {limitsApply ? (
             <div className="rounded-[14px] border border-amber-500/25 bg-amber-500/[0.08] p-3 backdrop-blur-xl">
               <p className="text-xs font-medium text-amber-100/90">Phone / tablet remote</p>
@@ -359,13 +280,11 @@ export function DashboardHome() {
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                 </span>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-wf-muted/85">
-                  {verseOverride ? "Verse preview" : "Stage preview"}
+                  Stage preview
                 </p>
               </div>
               <p className="text-xs text-wf-muted/70">
-                {verseOverride
-                  ? "Local only — not sent to Presenter"
-                  : `Deck position · slide ${previewIdx + 1} of ${deck.length}`}
+                Deck position · slide {previewIdx + 1} of {deck.length}
               </p>
               {previewSongContext ? (
                 <p className="text-[11px] text-wf-muted/75">
@@ -379,26 +298,24 @@ export function DashboardHome() {
                 </p>
               ) : null}
             </div>
-            {!verseOverride ? (
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPreviewIdx((p) => Math.max(0, p - 1))}
-                  className="rounded-[10px] border border-white/[0.12] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-wf-text transition hover:border-white/15 hover:bg-white/[0.06]"
-                >
-                  ← Prev
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setPreviewIdx((p) => Math.min(deck.length - 1, p + 1))
-                  }
-                  className="rounded-[10px] border border-white/[0.12] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-wf-text transition hover:border-white/15 hover:bg-white/[0.06]"
-                >
-                  Next →
-                </button>
-              </div>
-            ) : null}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setPreviewIdx((p) => Math.max(0, p - 1))}
+                className="rounded-[10px] border border-white/[0.12] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-wf-text transition hover:border-white/15 hover:bg-white/[0.06]"
+              >
+                ← Prev
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setPreviewIdx((p) => Math.min(deck.length - 1, p + 1))
+                }
+                className="rounded-[10px] border border-white/[0.12] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-wf-text transition hover:border-white/15 hover:bg-white/[0.06]"
+              >
+                Next →
+              </button>
+            </div>
           </div>
 
           <div className="relative flex min-h-0 flex-1 flex-col">
@@ -410,32 +327,23 @@ export function DashboardHome() {
               <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[17px] bg-wf-bg/30 ring-1 ring-inset ring-white/[0.06]">
                 <SlideTransitionShell
                   transition={transition}
-                  transitionKey={
-                    verseOverride ? `v-${bibleInput.trim()}` : `deck-${previewIdx}`
-                  }
+                  transitionKey={`deck-${previewIdx}`}
                   className="flex min-h-0 flex-1 flex-col"
                 >
                   <SlideStage
                     variant="preview"
                     className="min-h-[min(74vh,920px)] w-full flex-1 rounded-none ring-0 lg:min-h-[min(62vh,820px)]"
                     title={preview.title}
-                    lines={autoFormat ? preview.lines : [preview.lines.join(" · ")]}
-                    layout={verseOverride ? undefined : slide.layout}
+                    lines={preview.lines}
+                    layout={slide.layout}
                     backgroundUrl={previewBgUrl}
-                    backgroundColor={verseOverride ? undefined : stageBackground.backgroundColor}
-                    backgroundFullBleed={
-                      verseOverride ? undefined : stageBackground.backgroundFullBleed
-                    }
+                    backgroundColor={stageBackground.backgroundColor}
+                    backgroundFullBleed={stageBackground.backgroundFullBleed}
                     motion={
-                      !verseOverride &&
                       !stageBackground.backgroundColor?.trim() &&
                       !stageBackground.backgroundFullBleed
                     }
-                    typography={
-                      verseOverride
-                        ? "editorial"
-                        : (slide.typography ?? "editorial")
-                    }
+                    typography={slide.typography ?? "editorial"}
                     tierWatermark={
                       planReady && limitsApply ? FREE_TIER_SLIDE_BRANDING : undefined
                     }
@@ -471,14 +379,12 @@ export function DashboardHome() {
                       <ul className="mt-1.5 space-y-0.5 border-l border-sky-500/15 pl-2.5">
                         {item.slides.map((sl, j) => {
                           const globalIdx = startIndex + j;
-                          const isHere =
-                            !verseOverride && previewIdx === globalIdx;
+                          const isHere = previewIdx === globalIdx;
                           return (
                             <li key={`${item.id}-${j}`}>
                               <button
                                 type="button"
                                 onClick={() => {
-                                  setVerseOverride(null);
                                   setPreviewIdx(globalIdx);
                                 }}
                                 className={`w-full rounded-md px-1 py-1 text-left text-[11px] leading-snug transition ${
@@ -500,64 +406,6 @@ export function DashboardHome() {
             ) : (
               <p className="mt-2 text-[11px] text-wf-muted">Choose a setlist in the dropdown above.</p>
             )}
-          </div>
-
-          <div className="space-y-2 rounded-[14px] border border-white/[0.06] bg-wf-card/50 p-3 backdrop-blur-md">
-          <p className="text-[11px] font-medium text-wf-muted">Look</p>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setBgMode("ai")}
-              className={`rounded-[10px] px-3 py-1.5 text-xs font-medium transition ${
-                bgMode === "ai"
-                  ? "bg-sky-600/45 text-white"
-                  : "bg-white/[0.05] text-wf-muted hover:text-wf-text"
-              }`}
-            >
-              Mood A
-            </button>
-            <button
-              type="button"
-              onClick={() => setBgMode("stock")}
-              className={`rounded-[10px] px-3 py-1.5 text-xs font-medium transition ${
-                bgMode === "stock"
-                  ? "bg-sky-600/45 text-white"
-                  : "bg-white/[0.05] text-wf-muted hover:text-wf-text"
-              }`}
-            >
-              Mood B
-            </button>
-          </div>
-          <div>
-            <label htmlFor="wf-transition" className="text-xs text-wf-muted">
-              Transition
-            </label>
-            <select
-              id="wf-transition"
-              value={
-                transitionOptions.some((o) => o.id === transition)
-                  ? transition
-                  : transitionOptions[0]!.id
-              }
-              onChange={(e) => setTransition(e.target.value as SlideTransitionId)}
-              className="mt-1 w-full rounded-[10px] border border-white/[0.08] bg-wf-bg/80 px-3 py-2 text-sm text-wf-text outline-none focus:ring-2 focus:ring-sky-500/30"
-            >
-              {transitionOptions.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <label className="flex cursor-pointer items-center justify-between gap-3 rounded-[10px] border border-white/[0.06] bg-wf-bg/40 px-3 py-2">
-            <span className="text-xs font-medium text-wf-text">Auto-format lines</span>
-            <input
-              type="checkbox"
-              checked={autoFormat}
-              onChange={(e) => setAutoFormat(e.target.checked)}
-              className="h-4 w-4 rounded border-white/20 bg-wf-card text-sky-500 focus:ring-sky-500/40"
-            />
-          </label>
           </div>
         </aside>
       </div>
