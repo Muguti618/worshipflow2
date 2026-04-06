@@ -107,6 +107,7 @@ export function AudienceView({ room }: { room: string }) {
           className="min-h-0 flex-1"
           title={current.title}
           lines={current.lines}
+          layout={current.layout}
           backgroundUrl={current.backgroundUrl}
           backgroundColor={current.backgroundColor}
           backgroundFullBleed={current.backgroundFullBleed}

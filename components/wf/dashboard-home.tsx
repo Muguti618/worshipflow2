@@ -403,6 +403,7 @@ export function DashboardHome() {
                     className="min-h-[min(74vh,920px)] w-full flex-1 rounded-none ring-0 lg:min-h-[min(62vh,820px)]"
                     title={preview.title}
                     lines={autoFormat ? preview.lines : [preview.lines.join(" · ")]}
+                    layout={verseOverride ? undefined : slide.layout}
                     backgroundUrl={previewBgUrl}
                     backgroundColor={verseOverride ? undefined : stageBackground.backgroundColor}
                     backgroundFullBleed={

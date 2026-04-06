@@ -4,6 +4,11 @@ export type SlideTypography = "default" | "editorial";
 export type DeckSlide = {
   title: string;
   lines: string[];
+  /**
+   * Full-slide song title card (inserted before lyric slides in the presenter deck).
+   * Renders the slide text large, bold, and centered.
+   */
+  layout?: "song-title";
   /** Stock / custom image URL; ignored when `backgroundColor` is set. */
   backgroundUrl?: string;
   /** Solid fill (hex, rgb, etc.); takes precedence over `backgroundUrl` when presenting. */

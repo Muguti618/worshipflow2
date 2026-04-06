@@ -64,12 +64,39 @@ function withSongBackgrounds(song: LibrarySong, slides: DeckSlide[]): DeckSlide[
   });
 }
 
+function songTitleCardSlide(label: string, from: DeckSlide): DeckSlide {
+  const t = label.trim() || "Song";
+  const card: DeckSlide = {
+    title: "",
+    lines: [t],
+    layout: "song-title",
+  };
+  if (from.backgroundUrl?.trim()) card.backgroundUrl = from.backgroundUrl.trim();
+  if (from.backgroundColor?.trim()) card.backgroundColor = from.backgroundColor.trim();
+  if (from.backgroundFullBleed) card.backgroundFullBleed = true;
+  if (from.typography) card.typography = from.typography;
+  return card;
+}
+
+function prependSongTitleCard(name: string, slides: DeckSlide[]): DeckSlide[] {
+  if (slides.length === 0) return slides;
+  return [songTitleCardSlide(name, slides[0]!), ...slides];
+}
+
 /** Slides used in presenter for one setlist row (library song or inline). */
 export function resolveSlidesForItem(item: SetlistItem): DeckSlide[] {
   if (item.kind === "song" && item.songId) {
     const song = getSongById(item.songId);
-    if (song?.slides?.length) return withSongBackgrounds(song, cloneSlides(song.slides));
-    if (item.slides.length) return withInlineItemDefaults(item, cloneSlides(item.slides));
+    if (song?.slides?.length) {
+      const deck = withSongBackgrounds(song, cloneSlides(song.slides));
+      const label = song.title?.trim() || item.name?.trim() || "Song";
+      return prependSongTitleCard(label, deck);
+    }
+    if (item.slides.length) {
+      const deck = withInlineItemDefaults(item, cloneSlides(item.slides));
+      const label = item.name?.trim() || "Song";
+      return prependSongTitleCard(label, deck);
+    }
     return [
       {
         title: item.name || "Song",

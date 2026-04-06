@@ -249,6 +249,7 @@ export function PresentMode({ room }: { room: string }) {
               className="min-h-[38vh] flex-1 lg:min-h-0"
               title={onScreen.title}
               lines={onScreen.lines}
+              layout={onScreen.layout}
               backgroundUrl={onScreen.backgroundUrl}
               backgroundColor={onScreen.backgroundColor}
               backgroundFullBleed={onScreen.backgroundFullBleed}
@@ -266,6 +267,7 @@ export function PresentMode({ room }: { room: string }) {
             className="min-h-[28vh] flex-1 scale-[0.98] lg:min-h-0"
             title={onScreenNext.title}
             lines={onScreenNext.lines}
+            layout={onScreenNext.layout}
             backgroundUrl={onScreenNext.backgroundUrl}
             backgroundColor={onScreenNext.backgroundColor}
             backgroundFullBleed={onScreenNext.backgroundFullBleed}

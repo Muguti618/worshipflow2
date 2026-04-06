@@ -10,6 +10,8 @@ export type { SlideTypography };
 type SlideStageProps = {
   title?: string;
   lines: readonly string[];
+  /** Full-slide title card (song name before lyrics). */
+  layout?: "song-title";
   backgroundUrl?: string;
   /** When set (non-empty), fills the stage instead of the image. */
   backgroundColor?: string;
@@ -34,6 +36,7 @@ type SlideStageProps = {
 export function SlideStage({
   title,
   lines,
+  layout,
   backgroundUrl,
   backgroundColor,
   backgroundFullBleed = false,
@@ -47,6 +50,14 @@ export function SlideStage({
   const isAudience = variant === "audience";
   const isPreview = variant === "preview";
   const editorial = typography === "editorial";
+  const isSongTitle = layout === "song-title";
+  const songTitleText = isSongTitle
+    ? lines
+        .map((l) => l.trim())
+        .filter(Boolean)
+        .join(" ")
+        .trim()
+    : "";
   const color = backgroundColor?.trim();
   const useSolid = Boolean(color);
   const imgUrl = (backgroundUrl?.trim() || DEFAULT_BG).trim();
@@ -100,37 +111,53 @@ export function SlideStage({
             isAudience ? "min-h-0 flex-1" : ""
           }`}
         >
-          {title && !isAudience ? (
+          {isSongTitle && songTitleText ? (
             <p
-              className={`mb-4 font-semibold uppercase tracking-[0.2em] text-white/50 ${
-                isPreview ? "text-[10px] tracking-[0.22em]" : "text-[11px] tracking-[0.2em]"
+              className={`max-w-[95%] text-balance font-extrabold leading-[1.05] tracking-tight text-white drop-shadow-lg ${
+                isAudience
+                  ? "text-[clamp(2.25rem,8vw,5.5rem)]"
+                  : isPreview
+                    ? "text-[clamp(1.75rem,5vw,3.75rem)]"
+                    : "text-[clamp(1.5rem,4.5vw,2.75rem)]"
               }`}
             >
-              {title}
+              {songTitleText}
             </p>
-          ) : null}
-          <div className={`space-y-3 md:space-y-4 ${isAudience ? "max-w-5xl" : ""}`}>
-            {lines.map((line, i) => (
-              <p
-                key={`${i}-${line.slice(0, 12)}`}
-                className={`text-balance leading-snug tracking-tight text-white drop-shadow-md ${
-                  editorial
-                    ? isAudience
-                      ? "text-3xl font-light sm:text-4xl md:text-5xl lg:text-6xl"
-                      : isPreview
-                        ? "text-[1.35rem] font-light leading-tight sm:text-2xl md:text-3xl lg:text-[2rem]"
-                        : "text-xl font-light md:text-2xl"
-                    : isAudience
-                      ? "text-3xl font-semibold sm:text-4xl md:text-5xl lg:text-6xl"
-                      : isPreview
-                        ? "text-[1.35rem] font-semibold leading-tight sm:text-2xl md:text-3xl lg:text-[2rem]"
-                        : "text-2xl font-semibold md:text-3xl"
-                }`}
-              >
-                {line}
-              </p>
-            ))}
-          </div>
+          ) : (
+            <>
+              {title && !isAudience ? (
+                <p
+                  className={`mb-4 font-semibold uppercase tracking-[0.2em] text-white/50 ${
+                    isPreview ? "text-[10px] tracking-[0.22em]" : "text-[11px] tracking-[0.2em]"
+                  }`}
+                >
+                  {title}
+                </p>
+              ) : null}
+              <div className={`space-y-3 md:space-y-4 ${isAudience ? "max-w-5xl" : ""}`}>
+                {lines.map((line, i) => (
+                  <p
+                    key={`${i}-${line.slice(0, 12)}`}
+                    className={`text-balance leading-snug tracking-tight text-white drop-shadow-md ${
+                      editorial
+                        ? isAudience
+                          ? "text-3xl font-light sm:text-4xl md:text-5xl lg:text-6xl"
+                          : isPreview
+                            ? "text-[1.35rem] font-light leading-tight sm:text-2xl md:text-3xl lg:text-[2rem]"
+                            : "text-xl font-light md:text-2xl"
+                        : isAudience
+                          ? "text-3xl font-semibold sm:text-4xl md:text-5xl lg:text-6xl"
+                          : isPreview
+                            ? "text-[1.35rem] font-semibold leading-tight sm:text-2xl md:text-3xl lg:text-[2rem]"
+                            : "text-2xl font-semibold md:text-3xl"
+                    }`}
+                  >
+                    {line}
+                  </p>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         {showAudienceFooter ? (
