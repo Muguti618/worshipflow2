@@ -1,8 +1,13 @@
-import { type NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+/**
+ * Vercel runs middleware on the Edge runtime.
+ * Keep this file dependency-free so builds don't fail on unsupported modules.
+ *
+ * Auth gating still happens inside the app (e.g. `DashboardAuthGate`).
+ */
+import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  return updateSession(request);
+export function middleware(_request: NextRequest) {
+  return NextResponse.next();
 }
 
 export const config = {

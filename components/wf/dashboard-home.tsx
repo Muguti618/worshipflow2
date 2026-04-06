@@ -65,8 +65,6 @@ export function DashboardHome() {
       const first = allSetlists[0]!;
       writeActiveDeck(flattenSetlistToDeck(first.items), first.id);
       broadcastDeckUpdated();
-      broadcastSlideReset(DEFAULT_PRESENT_ROOM);
-      void postPresenterSlide(DEFAULT_PRESENT_ROOM, 0);
       setActiveListId(first.id);
       return;
     }

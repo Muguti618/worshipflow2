@@ -301,13 +301,17 @@ export function PresentMode({ room }: { room: string }) {
             </button>
           ) : null}
           <select
-            className="rounded-[12px] border border-white/15 bg-white/5 px-3 py-2 text-sm outline-none"
+            className="rounded-[12px] border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none"
             value={i}
             onChange={(e) => jump(Number(e.target.value))}
             aria-label="Jump to section"
           >
             {deck.map((s, idx) => (
-              <option key={`${idx}-${s.title}`} value={idx}>
+              <option
+                key={`${idx}-${s.title}`}
+                value={idx}
+                className="bg-zinc-950 text-white"
+              >
                 {idx + 1}. {s.title}
               </option>
             ))}
