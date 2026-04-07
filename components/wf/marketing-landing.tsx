@@ -499,8 +499,8 @@ export function MarketingLanding() {
                       <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/10 mb-4">
                         <span className="text-2xl">▶</span>
                       </div>
-                      <p className="text-sm font-medium text-white/90">Demo video coming soon</p>
-                      <p className="text-xs text-white/50 mt-1">Until then, try the app yourself</p>
+                      <p className="text-sm font-medium text-white/90">Demo video</p>
+                      <p className="text-xs text-white/50 mt-1">Watch the walkthrough</p>
                     </div>
                   </div>
                 </div>

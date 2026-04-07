@@ -64,7 +64,7 @@ export async function POST(req: Request) {
       return Response.json({
         ref: r.ref,
         slides,
-        note: "Sample wording from bundled passages — replace with your licensed translation for services.",
+        note: "Bundled sample passage text for preview and slide layout.",
         meta: LOCAL_SCRIPTURE_SAMPLE_META,
       });
     }
