@@ -35,6 +35,17 @@ type StageBackground = {
   backgroundFullBleed?: boolean;
 };
 
+function splitTrailingEmoji(s: string): { text: string; emoji: string | null } {
+  const t = s.trim();
+  if (!t) return { text: "", emoji: null };
+  // Matches a final emoji (incl. variation selectors/ZWJ sequences) optionally preceded by whitespace.
+  const m = t.match(/\s*([\p{Extended_Pictographic}\uFE0F\u200D]+)\s*$/u);
+  if (!m) return { text: t, emoji: null };
+  const emoji = m[1] ?? null;
+  const text = t.slice(0, t.length - m[0].length).trimEnd();
+  return { text, emoji };
+}
+
 export function DashboardHome() {
   const { limitsApply, ready: planReady } = usePlanEntitlements();
   const { session } = useAuthSession();
@@ -135,6 +146,10 @@ export function DashboardHome() {
     return null;
   }, [setlistRanges, previewIdx]);
 
+  const titleParts = useMemo(() => splitTrailingEmoji(greeting.title), [greeting.title]);
+  const showPreviewSongContext =
+    Boolean(previewSongContext) && (slide.layout ?? "") !== "song-title";
+
   return (
     <div className="flex min-h-[calc(100vh-3.5rem)] flex-col">
       {atFreeSetlistLimit ? <FreeSetlistLimitBanner ref={setlistLimitBannerRef} /> : null}
@@ -146,8 +161,13 @@ export function DashboardHome() {
             </p>
             <h1 className="mt-2 text-3xl font-semibold leading-[1.15] tracking-tight md:text-[2.125rem]">
               <span className="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-500 bg-clip-text text-transparent">
-                {greeting.title}
+                {titleParts.text || greeting.title}
               </span>
+              {titleParts.emoji ? (
+                <span className="ml-2 text-wf-text" aria-hidden>
+                  {titleParts.emoji}
+                </span>
+              ) : null}
             </h1>
             <p className="mt-2.5 max-w-xl text-sm font-normal leading-relaxed text-wf-muted">
               {greeting.subtitle}{" "}
@@ -286,7 +306,7 @@ export function DashboardHome() {
               <p className="text-xs text-wf-muted/70">
                 Deck position · slide {previewIdx + 1} of {deck.length}
               </p>
-              {previewSongContext ? (
+              {showPreviewSongContext && previewSongContext ? (
                 <p className="text-[11px] text-wf-muted/75">
                   <span className="font-medium text-wf-text/85">
                     {previewSongContext.item.name}
