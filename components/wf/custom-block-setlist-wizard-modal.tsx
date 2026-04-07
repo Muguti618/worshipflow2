@@ -151,7 +151,7 @@ export function CustomBlockSetlistWizardModal(props: {
         </h2>
         <p className="mt-1 text-[11px] text-wf-muted">
           AI can pick a <strong className="font-medium text-wf-text/90">background</strong> for this block.
-          You can type slide lines yourself or use sample text (dummy). Everything is saved with the
+          You can type slide lines yourself or start from sample text. Everything is saved with the
           setlist.
         </p>
 

@@ -37,7 +37,6 @@ export function StudioPage() {
   const [aiStatus, setAiStatus] = useState<{
     openaiConfigured: boolean;
     model: string | null;
-    dummyFallbackAllowed: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -47,7 +46,6 @@ export function StudioPage() {
         setAiStatus({
           openaiConfigured: Boolean(j.openaiConfigured),
           model: typeof j.model === "string" ? j.model : null,
-          dummyFallbackAllowed: Boolean(j.dummyFallbackAllowed),
         });
       })
       .catch(() => setAiStatus(null));
@@ -177,8 +175,6 @@ export function StudioPage() {
           for Present.{" "}
           {aiStatus?.openaiConfigured ? (
             <span className="text-xs text-emerald-200/90">Smart split is on.</span>
-          ) : aiStatus?.dummyFallbackAllowed ? (
-            <span className="text-xs text-amber-200/85">Preview mode — sample splits only.</span>
           ) : (
             <span className="text-xs text-amber-200/85">
               Smart split needs server setup — see{" "}

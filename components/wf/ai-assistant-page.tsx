@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
-import { AI_ASSISTANT_SEED } from "@/lib/ai-dummy-data";
 
 type Msg = { role: "user" | "assistant"; text: string; tag?: string };
 
-type ConnectionKind = "live" | "preview" | "setup";
+type ConnectionKind = "live" | "setup";
 
 const TAG_CHIPS: Record<string, string> = {
   bible: "Scripture",
@@ -33,7 +32,12 @@ function formatAiText(text: string) {
   });
 }
 
-const SEED: Msg[] = [{ role: "assistant", text: AI_ASSISTANT_SEED }];
+const SEED: Msg[] = [
+  {
+    role: "assistant",
+    text: "Ask anything about slides, setlists, presenting, backgrounds, or planning. I’ll keep it concise and practical.",
+  },
+];
 
 const TRY_PROMPTS = [
   "How do multiple slides work per song?",
@@ -60,7 +64,6 @@ export function AiAssistantPage() {
       .then(
         (j: { openaiConfigured?: boolean; dummyFallbackAllowed?: boolean }) => {
           if (j.openaiConfigured) setConnection("live");
-          else if (j.dummyFallbackAllowed) setConnection("preview");
           else setConnection("setup");
         },
       )
@@ -165,16 +168,6 @@ export function AiAssistantPage() {
         <div>
           <p className="text-sm font-medium text-emerald-100/95">Full smart replies</p>
           <p className="text-[11px] text-emerald-200/70">You’ll get detailed, conversational answers.</p>
-        </div>
-      </div>
-    ) : connection === "preview" ? (
-      <div className="flex items-center gap-3 rounded-[14px] border border-amber-500/25 bg-amber-500/10 px-4 py-3">
-        <span className="flex h-2 w-2 shrink-0 rounded-full bg-amber-400" />
-        <div>
-          <p className="text-sm font-medium text-amber-100/95">Preview mode</p>
-          <p className="text-[11px] text-amber-200/75">
-            Short sample answers help you explore the app. Your host can turn on full replies anytime.
-          </p>
         </div>
       </div>
     ) : (

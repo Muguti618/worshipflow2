@@ -17,9 +17,11 @@ const SECTIONS = [
           (each with <strong className="font-medium text-wf-text">many slides</strong>),{" "}
           <strong className="font-medium text-wf-text">setlists</strong> that order those songs and
           other moments, and a <strong className="font-medium text-wf-text">presenter</strong> that
-          walks through every slide in order. AI features in this build use{" "}
-          <strong className="font-medium text-sky-200/90">dummy test data</strong> so you can
-          click through the whole product without API keys.
+          walks through every slide in order. Some AI tools require server configuration (see{" "}
+          <Link href="/settings" className="text-sky-400 hover:underline">
+            Settings
+          </Link>
+          ).
         </p>
         <p>
           Typical Sunday flow: build or import songs in <Link href="/songs" className="text-sky-400 hover:underline">Songs</Link>
@@ -76,10 +78,9 @@ const SECTIONS = [
           same lyrics.
         </p>
         <p>
-          <strong className="font-medium text-wf-text">Spontaneous bridge</strong> calls the{" "}
+          <strong className="font-medium text-wf-text">Spontaneous bridge</strong> can call the{" "}
           <code className="rounded bg-white/[0.06] px-1.5 py-0.5 text-xs text-wf-text">/api/ai/bridge</code>{" "}
-          endpoint — it returns <strong className="text-wf-text">dummy lines plus suggested slide
-          pairs</strong> for testing. Copy lines into a new song when you like them.
+          endpoint when AI is configured. Copy lines into a new song when you like them.
         </p>
       </div>
     ),
@@ -117,13 +118,12 @@ const SECTIONS = [
         <p>
           <Link href="/bible" className="text-sky-400 hover:underline">Bible</Link> supports
           reference lookup plus <strong className="font-medium text-wf-text">Get AI verse options</strong>
-          — curated dummy matches for common themes (anxiety, hope, love, …). Each option shows
+          — suggested passages for common themes (anxiety, hope, love, …). Each option shows
           reference, full text, and a short blurb. Pick one to load the preview and slide strip.
         </p>
         <p>
-          The <Link href="/ai" className="text-sky-400 hover:underline">AI Assistant</Link> chat
-          uses keyword-based <strong className="text-wf-text">dummy replies</strong> so you can test
-          the conversation UI. Replace with a hosted model when you are ready.
+          The <Link href="/ai" className="text-sky-400 hover:underline">Assistant</Link> is available when
+          AI is configured. When it isn't, you can still use the rest of the app: Songs, Setlists, and Present.
         </p>
       </div>
     ),
@@ -207,7 +207,7 @@ export function TutorialPage() {
           <p className="mt-2 max-w-2xl text-sm text-wf-muted">
             How the app is meant to work in this build — especially{" "}
             <strong className="font-medium text-wf-text">multi-slide songs</strong>, setlists, and
-            dummy AI for testing.
+            Present.
           </p>
         </div>
         <Link
@@ -319,13 +319,14 @@ export function TutorialPage() {
         </div>
       </div>
 
-      <aside className="mt-10 rounded-[16px] border border-sky-500/15 bg-sky-500/[0.06] p-5">
-        <p className="text-sm font-semibold text-slate-100">Dummy AI reminder</p>
+      <aside className="mt-10 rounded-[16px] border border-white/[0.08] bg-wf-card/30 p-5">
+        <p className="text-sm font-semibold text-wf-text">Need help hosting?</p>
         <p className="mt-2 text-sm leading-relaxed text-wf-muted">
-          Chat, bridge generation, and Bible topic matching use{" "}
-          <strong className="font-medium text-wf-text">fixed test content</strong> from{" "}
-          <code className="rounded bg-black/20 px-1.5 py-0.5 text-xs">lib/ai-dummy-data.ts</code> and
-          related routes. Swap those functions for real model calls when you deploy.
+          Open{" "}
+          <Link href="/settings" className="font-medium text-sky-400 hover:underline">
+            Settings
+          </Link>{" "}
+          for configuration and hosting notes.
         </p>
       </aside>
     </div>

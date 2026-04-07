@@ -229,7 +229,7 @@ export function ScriptureSetlistWizardModal(props: {
               />
             </label>
             <label className="mt-3 block">
-              <span className="text-[10px] text-wf-muted">Sample translation (stub)</span>
+              <span className="text-[10px] text-wf-muted">Translation</span>
               <select
                 value={translation}
                 onChange={(e) => setTranslation(e.target.value as BibleTranslationKey)}
