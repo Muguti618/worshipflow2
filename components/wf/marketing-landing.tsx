@@ -73,6 +73,7 @@ type IntroOffer = {
   pill: string;
   introPrice: string;
   introDetail: string;
+  thenLabel?: string;
   thenPrice: string;
   thenDetail: string;
   note?: string;
@@ -142,7 +143,9 @@ function PricingCard({
                   →
                 </span>
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-wf-muted/90">Then</p>
+                  <p className="text-xs font-medium uppercase tracking-wider text-wf-muted/90">
+                    {introOffer.thenLabel ?? "Then"}
+                  </p>
                   <p className="mt-0.5 text-lg font-bold text-wf-text">
                     {introOffer.thenPrice}{" "}
                     <span className="text-sm font-normal text-wf-muted">{introOffer.thenDetail}</span>
@@ -493,12 +496,13 @@ export function MarketingLanding() {
                 annualPrice="£250"
                 annualSavings="£50"
                 introOffer={{
-                  pill: "Limited intro",
+                  pill: "Next 2 months only",
                   introPrice: "£15",
-                  introDetail: "/ month · your first 2 months",
+                  introDetail: "/ month · locked for life",
+                  thenLabel: "After the window",
                   thenPrice: "£25",
-                  thenDetail: "/ month after that",
-                  note: "Same full Pro features from day one. Billed monthly via Stripe; renewal price shown before you pay.",
+                  thenDetail: "/ month for new sign-ups",
+                  note: "If you subscribe in the next two months, your Pro plan stays at £15/month for as long as you keep an active subscription — full features from day one. After that window closes, new subscribers pay £25/month. Billed via Stripe; details at checkout.",
                 }}
                 description="Full access for weekly services—unlimited songs, setlists, remote, AI (where configured), and priority support."
                 features={[
