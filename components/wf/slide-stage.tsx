@@ -51,6 +51,33 @@ export function SlideStage({
   const isPreview = variant === "preview";
   const editorial = typography === "editorial";
   const isSongTitle = layout === "song-title";
+  const title = (_title ?? "").trim();
+
+  const showScriptureBadge = (() => {
+    if (!title) return false;
+    // Heuristic: show a friendly reference badge for scripture-like titles,
+    // but avoid common song slide titles ("Verse 1", "Chorus", "Slide 1", etc.).
+    const lower = title.toLowerCase();
+    if (
+      lower.startsWith("verse") ||
+      lower.startsWith("chorus") ||
+      lower.startsWith("bridge") ||
+      lower.startsWith("tag") ||
+      lower.startsWith("pre-chorus") ||
+      lower.startsWith("intro") ||
+      lower.startsWith("outro") ||
+      lower.startsWith("slide ")
+    ) {
+      return false;
+    }
+    if (/\b\d+:\d+\b/.test(title)) return true; // e.g. John 3:16
+    if (!/\d/.test(title)) return false;
+    // e.g. Psalm 23, Romans 8, 1 Corinthians 13
+    return /\b(psalm|psalms|proverbs|ecclesiastes|song of songs|song of solomon|john|romans|genesis|exodus|leviticus|numbers|deuteronomy|joshua|judges|ruth|samuel|kings|chronicles|ezra|nehemiah|esther|job|isaiah|jeremiah|lamentations|ezekiel|daniel|hosea|joel|amos|obadiah|jonah|micah|nahum|habakkuk|zephaniah|haggai|zechariah|malachi|matthew|mark|luke|acts|corinthians|galatians|ephesians|philippians|colossians|thessalonians|timothy|titus|philemon|hebrews|james|peter|jude|revelation)\b/i.test(
+      title,
+    );
+  })();
+
   const songTitleText = isSongTitle
     ? lines
         .map((l) => l.trim())
@@ -125,6 +152,16 @@ export function SlideStage({
             </p>
           ) : (
             <>
+              {showScriptureBadge ? (
+                <div className="mb-5 flex w-full justify-center">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-black/35 px-4 py-2 text-[11px] font-semibold tracking-wide text-amber-100 shadow-[0_12px_40px_rgba(0,0,0,0.45)] backdrop-blur-md">
+                    <span className="text-amber-300/90" aria-hidden>
+                      ✝
+                    </span>
+                    <span className="text-white/90">{title}</span>
+                  </div>
+                </div>
+              ) : null}
               <div className={`space-y-3 md:space-y-4 ${isAudience ? "max-w-5xl" : ""}`}>
                 {lines.map((line, i) => (
                   <p

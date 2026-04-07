@@ -265,7 +265,7 @@ export function BiblePage() {
       </section>
 
       <div className="mt-8 rounded-[16px] border border-white/[0.06] bg-wf-card/30 p-5">
-        <p className="text-sm font-semibold text-wf-text">Tip</p>
+        <p className="text-sm font-semibold text-wf-text">Helpful tip</p>
         <p className="mt-2 text-sm leading-relaxed text-wf-muted">
           Use <strong className="font-medium text-wf-text">Get AI verse options</strong> when you
           have a theme in mind but not a chapter and verse. After you pick an option, the main
