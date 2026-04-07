@@ -464,6 +464,20 @@ export function MarketingLanding() {
               </p>
             </div>
 
+            <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-amber-400/40 bg-gradient-to-br from-amber-500/[0.14] via-amber-500/[0.06] to-sky-500/[0.08] px-5 py-5 text-center shadow-lg shadow-black/25 sm:px-8 sm:py-6">
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-200/95">
+                Checkout code
+              </p>
+              <p className="mt-3 font-mono text-2xl font-extrabold tracking-[0.08em] text-white sm:text-3xl">
+                WORSHIPHIM15
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-wf-muted">
+                Use code <span className="font-semibold text-wf-text">WORSHIPHIM15</span> at checkout for{" "}
+                <strong className="font-semibold text-wf-text">£15/month forever</strong> — your rate stays
+                at £15 for as long as you keep an active Pro subscription.
+              </p>
+            </div>
+
             <div className="mt-12 grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
               <PricingCard
                 tier="Free"
@@ -502,7 +516,7 @@ export function MarketingLanding() {
                   thenLabel: "After the window",
                   thenPrice: "£25",
                   thenDetail: "/ month for new sign-ups",
-                  note: "If you subscribe in the next two months, your Pro plan stays at £15/month for as long as you keep an active subscription — full features from day one. After that window closes, new subscribers pay £25/month. Billed via Stripe; details at checkout.",
+                  note: "Enter WORSHIPHIM15 at checkout for £15/month forever (same rate while Pro stays active). Offer window: next two months; after it closes, new sign-ups pay £25/month unless they use a valid code. Full Pro features from day one. Billed via Stripe.",
                 }}
                 description="Full access for weekly services—unlimited songs, setlists, remote, AI (where configured), and priority support."
                 features={[
