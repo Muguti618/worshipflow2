@@ -69,6 +69,15 @@ const sundayOutcomes = [
   },
 ] as const;
 
+type IntroOffer = {
+  pill: string;
+  introPrice: string;
+  introDetail: string;
+  thenPrice: string;
+  thenDetail: string;
+  note?: string;
+};
+
 function PricingCard({ 
   tier, 
   price, 
@@ -80,7 +89,8 @@ function PricingCard({
   ctaLink,
   popular = false,
   annualPrice,
-  annualSavings
+  annualSavings,
+  introOffer,
 }: { 
   tier: string; 
   price: string; 
@@ -93,6 +103,7 @@ function PricingCard({
   popular?: boolean;
   annualPrice?: string;
   annualSavings?: string;
+  introOffer?: IntroOffer;
 }) {
   const [isAnnual, setIsAnnual] = useState(false);
 
@@ -113,23 +124,73 @@ function PricingCard({
       
       <div className="mb-6">
         <h3 className="text-xl font-bold text-wf-text">{tier}</h3>
-        <div className="mt-4 flex items-baseline gap-1">
-          <span className="text-4xl font-bold text-wf-text">{price}</span>
-          <span className="text-wf-muted">/{period}</span>
-        </div>
-        {annualPrice && (
-          <button
-            onClick={() => setIsAnnual(!isAnnual)}
-            className="mt-2 text-xs text-sky-400 hover:text-sky-300 transition"
-          >
-            {isAnnual ? `Switch to monthly (${price}/${period})` : `Save with annual (${annualPrice}/year)`}
-          </button>
+
+        {introOffer ? (
+          <div className="mt-4 space-y-4">
+            <div className="overflow-hidden rounded-2xl border border-emerald-400/25 bg-gradient-to-br from-emerald-500/[0.12] via-sky-500/[0.08] to-wf-card/60 p-4 shadow-inner shadow-black/20">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-200/90">
+                {introOffer.pill}
+              </p>
+              <div className="mt-2 flex flex-wrap items-end gap-x-2 gap-y-1">
+                <span className="text-4xl font-extrabold tracking-tight text-white">
+                  {introOffer.introPrice}
+                </span>
+                <span className="pb-1 text-sm font-medium text-wf-muted">{introOffer.introDetail}</span>
+              </div>
+              <div className="mt-4 flex items-center gap-2 border-t border-white/[0.08] pt-4">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-sm text-sky-300">
+                  →
+                </span>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wider text-wf-muted/90">Then</p>
+                  <p className="mt-0.5 text-lg font-bold text-wf-text">
+                    {introOffer.thenPrice}{" "}
+                    <span className="text-sm font-normal text-wf-muted">{introOffer.thenDetail}</span>
+                  </p>
+                </div>
+              </div>
+              {introOffer.note ? (
+                <p className="mt-3 text-xs leading-relaxed text-wf-muted/90">{introOffer.note}</p>
+              ) : null}
+            </div>
+            {annualPrice ? (
+              <p className="text-xs text-wf-muted">
+                Prefer yearly? <span className="font-medium text-wf-text">{annualPrice}/year</span> at
+                checkout
+                {annualSavings ? (
+                  <>
+                    {" "}
+                    — save <span className="font-medium text-emerald-400/90">{annualSavings}</span> vs 12
+                    months at £25
+                  </>
+                ) : null}
+                .
+              </p>
+            ) : null}
+          </div>
+        ) : (
+          <>
+            <div className="mt-4 flex items-baseline gap-1">
+              <span className="text-4xl font-bold text-wf-text">{price}</span>
+              <span className="text-wf-muted">/{period}</span>
+            </div>
+            {annualPrice && (
+              <button
+                type="button"
+                onClick={() => setIsAnnual(!isAnnual)}
+                className="mt-2 text-xs text-sky-400 hover:text-sky-300 transition"
+              >
+                {isAnnual ? `Switch to monthly (${price}/${period})` : `Save with annual (${annualPrice}/year)`}
+              </button>
+            )}
+            {isAnnual && annualSavings && (
+              <p className="mt-2 text-xs text-emerald-400/90 font-medium">
+                Save {annualSavings}/year
+              </p>
+            )}
+          </>
         )}
-        {isAnnual && annualSavings && (
-          <p className="mt-2 text-xs text-emerald-400/90 font-medium">
-            Save {annualSavings}/year
-          </p>
-        )}
+
         <p className="mt-4 text-sm text-wf-muted leading-relaxed">{description}</p>
       </div>
 
@@ -431,7 +492,15 @@ export function MarketingLanding() {
                 period="month"
                 annualPrice="£250"
                 annualSavings="£50"
-                description="Full access for weekly services—unlimited everything."
+                introOffer={{
+                  pill: "Limited intro",
+                  introPrice: "£15",
+                  introDetail: "/ month · your first 2 months",
+                  thenPrice: "£25",
+                  thenDetail: "/ month after that",
+                  note: "Same full Pro features from day one. Billed monthly via Stripe; renewal price shown before you pay.",
+                }}
+                description="Full access for weekly services—unlimited songs, setlists, remote, AI (where configured), and priority support."
                 features={[
                   "Unlimited songs & unlimited setlists",
                   "Phone & tablet remote control",

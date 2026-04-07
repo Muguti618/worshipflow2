@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { FirstVisitLegalGate } from "@/components/wf/first-visit-legal-gate";
 import { RootTutorialTour } from "@/components/wf/root-tutorial-tour";
 import { SwRegister } from "@/components/sw-register";
 import "./globals.css";
@@ -41,7 +42,10 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <SwRegister />
-        <RootTutorialTour>{children}</RootTutorialTour>
+        <RootTutorialTour>
+          <FirstVisitLegalGate />
+          {children}
+        </RootTutorialTour>
       </body>
     </html>
   );
