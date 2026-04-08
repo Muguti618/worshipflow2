@@ -34,6 +34,14 @@ export function priceIdForPlan(plan: BillingPlanParam): string | null {
 }
 
 /** Stripe Checkout line items need Price IDs (`price_...`), not Product IDs (`prod_...`). */
+/** True when Stripe reports the customer id does not exist (wrong account, deleted customer, test vs live mismatch). */
+export function isStripeMissingCustomerError(e: unknown): boolean {
+  if (!(e instanceof Stripe.errors.StripeInvalidRequestError)) return false;
+  if (e.code !== "resource_missing") return false;
+  if (e.param === "customer") return true;
+  return typeof e.message === "string" && e.message.toLowerCase().includes("no such customer");
+}
+
 export function stripePriceEnvErrorForId(id: string, envName: string): string | null {
   const t = id.trim();
   if (t.startsWith("prod_")) {

@@ -6,7 +6,7 @@ import {
   upsertBillingFromStripeSubscription,
   ensureCustomerLinked,
 } from "@/lib/billing-sync";
-import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import { getStripe, isStripeConfigured, isStripeMissingCustomerError } from "@/lib/stripe";
 import { createSupabaseAdminClient, isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -82,6 +82,24 @@ async function syncFromCustomerForUser(
     .maybeSingle();
 
   let customerId = row?.stripe_customer_id ?? null;
+
+  if (customerId) {
+    try {
+      await stripe.customers.retrieve(customerId);
+    } catch (e) {
+      if (isStripeMissingCustomerError(e)) {
+        console.warn("[sync-billing] clearing stale stripe_customer_id for user", user.id, customerId);
+        const { error: clearErr } = await admin
+          .from("billing_subscriptions")
+          .update({ stripe_customer_id: null })
+          .eq("user_id", user.id);
+        if (clearErr) console.error("[sync-billing] failed to clear stale customer", clearErr);
+        customerId = null;
+      } else {
+        throw e;
+      }
+    }
+  }
 
   if (!customerId) {
     const customers = await stripe.customers.list({ email, limit: 15 });

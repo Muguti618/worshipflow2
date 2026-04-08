@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import Stripe from "stripe";
 import { appOriginFromRequest } from "@/lib/app-origin";
-import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import { getStripe, isStripeConfigured, isStripeMissingCustomerError } from "@/lib/stripe";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -37,14 +38,36 @@ export async function POST(request: Request) {
 
   const origin = appOriginFromRequest(request);
 
-  const portal = await stripe.billingPortal.sessions.create({
-    customer: billing.stripe_customer_id,
-    return_url: `${origin}/settings`,
-  });
+  try {
+    const portal = await stripe.billingPortal.sessions.create({
+      customer: billing.stripe_customer_id,
+      return_url: `${origin}/settings`,
+    });
 
-  if (!portal.url) {
-    return NextResponse.json({ error: "Portal session missing URL." }, { status: 500 });
+    if (!portal.url) {
+      return NextResponse.json({ error: "Portal session missing URL." }, { status: 500 });
+    }
+
+    return NextResponse.json({ url: portal.url });
+  } catch (e) {
+    console.error("[portal] billingPortal.sessions.create", e);
+    if (isStripeMissingCustomerError(e)) {
+      return NextResponse.json(
+        {
+          error:
+            "This account is linked to a Stripe customer that no longer exists (for example test vs live keys or a deleted customer). Use “Refresh from Stripe” below to relink, then try Manage billing again.",
+          code: "stale_customer",
+        },
+        { status: 409 },
+      );
+    }
+    if (e instanceof Stripe.errors.StripeError) {
+      return NextResponse.json(
+        { error: e.message || "Stripe could not open the billing portal.", code: e.code },
+        { status: 502 },
+      );
+    }
+    const message = e instanceof Error ? e.message : "Portal failed.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  return NextResponse.json({ url: portal.url });
 }

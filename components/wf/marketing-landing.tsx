@@ -13,60 +13,72 @@ import { Check, Sparkles, Zap, Crown, ArrowRight } from "lucide-react";
 /** After register/sign-in, open Upgrade page to pick monthly vs yearly. */
 const UPGRADE_PAGE_NEXT = encodeURIComponent("/upgrade");
 
-const features = [
+const valueBullets = [
+  "No downloads",
+  "No training",
+  "No tech team required",
+  "Works on any computer",
+] as const;
+
+const whySwitching = [
   {
-    icon: "🎵",
-    title: "Multi-slide songs",
-    body: "Each song is a full slide deck—verses, choruses, and bridges—so Present always matches your library.",
+    title: "AI-powered slide creation",
+    body: "Paste your lyrics and let WorshipFlow2 generate clean, readable slides automatically.",
   },
   {
-    icon: "📅",
-    title: "Setlists & flow",
-    body: "Build Sunday orders with songs, scripture, prayer blocks, and moments. One tap sends the whole deck to Present.",
+    title: "100% browser-based",
+    body: "Runs on any laptop — Windows, Mac, Chromebook. No installs, no updates, no crashes.",
   },
   {
-    icon: "🎯",
-    title: "Present & audience",
-    body: "Operator view, clean audience output, and optional phone or tablet remote—aligned by room.",
+    title: "Built for small & medium churches",
+    body: "Simple enough for volunteers. Powerful enough for worship leaders.",
   },
   {
-    icon: "✝️",
-    title: "Bible & AI helpers",
-    body: "Look up passages, preview on the dashboard, and use OpenAI-powered verse ideas and slide formatting when you add your API key.",
+    title: "Faster than ProPresenter & EasyWorship",
+    body: "No bloated menus or confusing UI — just speed from plan to projector.",
+  },
+  {
+    title: "Affordable",
+    body: "ProPresenter and EasyWorship cost hundreds upfront. WorshipFlow2 Pro starts at £15/mo during launch — then £25/mo for new sign-ups after the window.",
   },
 ] as const;
 
-const howItWorks = [
-  {
-    step: "01",
-    title: "Plan in one place",
-    body: "Songs, scripture, and service order live together—no copy-paste between apps when the set changes.",
-  },
-  {
-    step: "02",
-    title: "Open Present",
-    body: "Advance slides from the operator screen; Audience stays clean and readable on the projector or stream.",
-  },
-  {
-    step: "03",
-    title: "Pilot from the room",
-    body: "Optional phone or tablet remote keeps volunteers aligned on the same deck and the same moment.",
-  },
+const foundingBenefits = [
+  "Lifetime £15/mo pricing when you use WORSHIPHIM15 at checkout during the launch window",
+  "Founding Member badge inside your account",
+  "Priority feature requests",
+  "Early access to new tools",
+  "Direct line to the founder for feedback",
 ] as const;
 
-const sundayOutcomes = [
-  {
-    title: "Fewer tabs on Saturday night",
-    body: "One URL for planning, rehearsal tweaks, and Sunday morning—less context-switching when time is tight.",
-  },
-  {
-    title: "Readable lyrics, every time",
-    body: "Section-aware splitting and preview mean your congregation sees lines that breathe—not walls of text.",
-  },
-  {
-    title: "Scripture without friction",
-    body: "Look up passages, beam verses to the room when you need them, and stay in flow with the rest of the set.",
-  },
+const comparisonRows: { feature: string; wf: string; pp: string; ew: string }[] = [
+  { feature: "Price (typical)", wf: "£15/mo launch (locked)", pp: "£400+", ew: "£299" },
+  { feature: "Browser-based", wf: "Yes", pp: "No", ew: "No" },
+  { feature: "AI slide creation", wf: "Yes", pp: "No", ew: "No" },
+  { feature: "Learning curve", wf: "Very easy", pp: "Hard", ew: "Medium" },
+  { feature: "Setup time", wf: "Instant", pp: "Long", ew: "Medium" },
+  { feature: "Works on any device (modern browser)", wf: "Yes", pp: "No", ew: "No" },
+];
+
+const churchTypes = [
+  "Small churches",
+  "Volunteer-led worship teams",
+  "Portable churches",
+  "Church plants",
+  "Youth groups",
+  "Home groups",
+] as const;
+
+const productFeatures = [
+  { icon: "✨", title: "AI slide generation", body: "Turn pasted lyrics into slide-ready lines without manual formatting marathons." },
+  { icon: "📐", title: "Auto-formatting", body: "Section-aware splits and previews so text is readable on screen." },
+  { icon: "🎨", title: "Background themes", body: "Preset moods and Pro options for custom images and polish." },
+  { icon: "✝️", title: "Scripture slides", body: "Look up passages, add verses to setlists, and beam them in Present." },
+  { icon: "🏷️", title: "Custom branding", body: "Make decks feel like your church, not a generic template." },
+  { icon: "📺", title: "Present & Audience", body: "Operator view plus a clean output for projector or stream." },
+  { icon: "☁️", title: "Cloud-based workspace", body: "Plan in the browser; sign in from the desk or the green room." },
+  { icon: "🎵", title: "Songs & setlists", body: "Free tier to try the flow; Pro unlocks unlimited songs and setlists." },
+  { icon: "📅", title: "Unlimited services", body: "Build as many setlists and orders as your season needs on Pro." },
 ] as const;
 
 type IntroOffer = {
@@ -316,23 +328,24 @@ export function MarketingLanding() {
       <main className="relative z-10">
         <section className="mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 sm:pt-20">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1 text-xs font-medium text-sky-400 backdrop-blur-sm mb-6">
-              <Sparkles className="h-3 w-3" />
-              Worship presentation, reimagined
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/35 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-200/95 backdrop-blur-sm mb-4">
+              <Sparkles className="h-3 w-3 text-amber-300" />
+              Launch offer: £15/month for life — 60-day window
             </div>
             <h1 className="mx-auto max-w-4xl text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.5rem]">
               <span className="bg-gradient-to-r from-slate-100 via-slate-200 to-slate-400 bg-clip-text text-transparent">
-                Your songs, setlists, and slides
+                WorshipFlow2 — the fastest way to create worship slides
               </span>
-              <br />
-              <span className="text-wf-text">in one calm flow.</span>
             </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-base font-medium text-emerald-200/90 sm:text-lg">
+              Lock in your price forever. No contracts. Cancel anytime.
+            </p>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-wf-muted sm:text-xl">
-              Plan in the browser, preview scripture and lyrics, then walk the room with Present, Audience,
-              and an optional phone remote—without tab-hopping across five tools.
+              Browser-based, AI-powered worship slides for churches that want speed and simplicity — without
+              paying hundreds for complicated software. Just paste your lyrics and get slides you can present.
             </p>
             <ul className="mt-8 flex flex-wrap items-center justify-center gap-2">
-              {["No card to start", "Browser-first", "Present + Audience"].map((label) => (
+              {valueBullets.map((label) => (
                 <li
                   key={label}
                   className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-wf-muted backdrop-blur-sm"
@@ -346,7 +359,7 @@ export function MarketingLanding() {
                 href="/register"
                 className="inline-flex h-12 items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 to-blue-500 px-8 text-sm font-bold text-white shadow-xl shadow-black/35 transition-all hover:scale-105 hover:shadow-2xl"
               >
-                Get started free
+                Start free trial
               </Link>
               <Link
                 href="/login"
@@ -382,18 +395,17 @@ export function MarketingLanding() {
         <section className="border-t border-wf-border/60 bg-gradient-to-b from-wf-bg to-wf-card/30 py-16">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="text-center mb-12">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">How Sunday flows</h2>
-              <p className="mt-2 text-wf-muted">From mid-week planning to the last song—stay in one workspace</p>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Why churches are switching to WorshipFlow2</h2>
+              <p className="mt-2 text-wf-muted">Speed, clarity, and a price that fits real church budgets</p>
             </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              {howItWorks.map((item) => (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {whySwitching.map((item) => (
                 <div
-                  key={item.step}
+                  key={item.title}
                   className="rounded-xl border border-wf-border/90 bg-wf-card/40 p-6 backdrop-blur-md transition hover:border-sky-500/25 hover:bg-wf-card/55"
                 >
-                  <span className="text-3xl font-bold text-sky-400/40">{item.step}</span>
-                  <h3 className="mt-3 text-lg font-semibold">{item.title}</h3>
-                  <p className="mt-2 text-sm text-wf-muted">{item.body}</p>
+                  <h3 className="text-lg font-semibold">{item.title}</h3>
+                  <p className="mt-2 text-sm text-wf-muted leading-relaxed">{item.body}</p>
                 </div>
               ))}
             </div>
@@ -402,6 +414,13 @@ export function MarketingLanding() {
 
         <section id="lyric-splitter" className="scroll-mt-24 border-t border-wf-border/60 py-16">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="mb-10 text-center">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">See it in action</h2>
+              <p className="mt-2 max-w-2xl mx-auto text-wf-muted">
+                Paste lyrics below — no account needed — then picture the same flow inside the full app with
+                setlists, scripture, and Present.
+              </p>
+            </div>
             <PublicLyricSplitter />
           </div>
         </section>
@@ -409,19 +428,17 @@ export function MarketingLanding() {
         <section className="border-t border-wf-border/60 bg-wf-card/20 py-16">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="text-center mb-12">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Built for worship teams</h2>
-              <p className="mt-2 text-wf-muted">Everything ties back to your library and setlists</p>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Built for real worship teams</h2>
+              <p className="mt-2 text-wf-muted">If you want fast, simple, affordable slides — this is for you.</p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
-              {features.map((f) => (
-                <div
-                  key={f.title}
-                  className="rounded-xl border border-wf-border bg-wf-card/50 p-6 backdrop-blur-md transition hover:border-white/[0.12]"
+            <div className="mx-auto flex max-w-3xl flex-wrap justify-center gap-2">
+              {churchTypes.map((label) => (
+                <span
+                  key={label}
+                  className="rounded-full border border-white/[0.1] bg-wf-bg/80 px-4 py-2 text-sm text-wf-muted"
                 >
-                  <span className="text-3xl">{f.icon}</span>
-                  <h3 className="mt-3 text-lg font-semibold">{f.title}</h3>
-                  <p className="mt-2 text-sm text-wf-muted">{f.body}</p>
-                </div>
+                  {label}
+                </span>
               ))}
             </div>
           </div>
@@ -430,17 +447,18 @@ export function MarketingLanding() {
         <section className="border-t border-wf-border/60 py-16">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="text-center mb-12">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Built for real Sundays</h2>
-              <p className="mt-2 text-wf-muted">Outcomes your team will actually feel in the room</p>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Features</h2>
+              <p className="mt-2 text-wf-muted">Everything in one workspace — from lyrics to the room</p>
             </div>
-            <div className="grid gap-5 md:grid-cols-3">
-              {sundayOutcomes.map((o) => (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {productFeatures.map((f) => (
                 <div
-                  key={o.title}
-                  className="rounded-xl border border-wf-border/80 bg-wf-bg/80 p-6"
+                  key={f.title}
+                  className="rounded-xl border border-wf-border bg-wf-card/50 p-6 backdrop-blur-md transition hover:border-white/[0.12]"
                 >
-                  <h3 className="font-semibold">{o.title}</h3>
-                  <p className="mt-2 text-sm text-wf-muted">{o.body}</p>
+                  <span className="text-2xl">{f.icon}</span>
+                  <h3 className="mt-3 text-lg font-semibold">{f.title}</h3>
+                  <p className="mt-2 text-sm text-wf-muted leading-relaxed">{f.body}</p>
                 </div>
               ))}
             </div>
@@ -453,14 +471,16 @@ export function MarketingLanding() {
             <div className="text-center mb-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-400 mb-4">
                 <Crown className="h-3 w-3" />
-                Simple, transparent pricing
+                Launch pricing — 60 days only
               </div>
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Choose the plan that fits
+                £15/month — lifetime price
               </h2>
               <p className="mt-3 text-wf-muted max-w-xl mx-auto">
-                All amounts in <strong className="text-wf-text">GBP (£)</strong>. Start free, upgrade when
-                you&apos;re ready.
+                Your Pro price stays <strong className="text-wf-text">£15/mo</strong> for as long as you keep
+                an active subscription when you join during the launch window. After the window, new sign-ups
+                pay <strong className="text-wf-text">£25/mo</strong> unless a valid promo applies. All amounts
+                in <strong className="text-wf-text">GBP (£)</strong>.
               </p>
             </div>
 
@@ -472,10 +492,29 @@ export function MarketingLanding() {
                 WORSHIPHIM15
               </p>
               <p className="mt-3 text-sm leading-relaxed text-wf-muted">
-                Use code <span className="font-semibold text-wf-text">WORSHIPHIM15</span> at checkout for{" "}
-                <strong className="font-semibold text-wf-text">£15/month forever</strong> — your rate stays
-                at £15 for as long as you keep an active Pro subscription.
+                Enter <span className="font-semibold text-wf-text">WORSHIPHIM15</span> at checkout to lock in{" "}
+                <strong className="font-semibold text-wf-text">£15/month for life</strong> while your Pro
+                subscription stays active. Normal price after launch:{" "}
+                <span className="line-through text-wf-muted/80">£25/month</span>.
               </p>
+              <p className="mt-3 text-xs font-medium text-amber-200/90">
+                This 60-day launch window ends soon — once it&apos;s gone, it&apos;s gone.
+              </p>
+            </div>
+
+            <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-wf-border bg-wf-card/40 px-6 py-8 backdrop-blur-md">
+              <h3 className="text-center text-lg font-bold text-wf-text">Founding member benefits</h3>
+              <p className="mt-2 text-center text-sm text-wf-muted">
+                Join during the launch window and get more than software — you help shape what we build next.
+              </p>
+              <ul className="mt-6 space-y-3">
+                {foundingBenefits.map((line) => (
+                  <li key={line} className="flex items-start gap-2 text-sm text-wf-muted">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400/80" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="mt-12 grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
@@ -510,13 +549,13 @@ export function MarketingLanding() {
                 annualPrice="£250"
                 annualSavings="£50"
                 introOffer={{
-                  pill: "Next 2 months only",
+                  pill: "60-day launch",
                   introPrice: "£15",
                   introDetail: "/ month · locked for life",
                   thenLabel: "After the window",
                   thenPrice: "£25",
                   thenDetail: "/ month for new sign-ups",
-                  note: "Enter WORSHIPHIM15 at checkout for £15/month forever (same rate while Pro stays active). Offer window: next two months; after it closes, new sign-ups pay £25/month unless they use a valid code. Full Pro features from day one. Billed via Stripe.",
+                  note: "Use WORSHIPHIM15 at checkout during the 60-day launch to keep £15/mo for life while Pro stays active. After the window closes, new subscribers pay £25/mo unless a valid code applies. Full Pro from day one. Billed via Stripe. Cancel anytime.",
                 }}
                 description="Full access for weekly services—unlimited songs, setlists, remote, AI (where configured), and priority support."
                 features={[
@@ -545,6 +584,43 @@ export function MarketingLanding() {
                 Cancel anytime. Tax and renewal dates shown before payment via Stripe.
               </p>
             </div>
+
+            <div className="mt-14 rounded-2xl border border-wf-border/80 bg-wf-bg/60 px-5 py-8 text-center sm:px-8">
+              <h3 className="text-lg font-bold text-wf-text">No contracts. Cancel anytime.</h3>
+              <p className="mx-auto mt-2 max-w-xl text-sm text-wf-muted leading-relaxed">
+                You&apos;re not locked into a yearly plan. Keep your launch rate for life when you qualify with
+                WORSHIPHIM15 — even if we raise standard pricing later for new customers.
+              </p>
+            </div>
+
+            <div className="mt-16">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold tracking-tight sm:text-3xl">Compare WorshipFlow2</h3>
+                <p className="mt-2 text-sm text-wf-muted">Honest differences — pick what fits your church</p>
+              </div>
+              <div className="overflow-x-auto rounded-xl border border-wf-border/80">
+                <table className="w-full min-w-[520px] text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-wf-border/80 bg-wf-card/50">
+                      <th className="px-4 py-3 font-semibold text-wf-text">Feature</th>
+                      <th className="px-4 py-3 font-semibold text-sky-300">WorshipFlow2</th>
+                      <th className="px-4 py-3 font-semibold text-wf-muted">ProPresenter</th>
+                      <th className="px-4 py-3 font-semibold text-wf-muted">EasyWorship</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {comparisonRows.map((row) => (
+                      <tr key={row.feature} className="border-b border-wf-border/40 last:border-0">
+                        <td className="px-4 py-3 font-medium text-wf-text">{row.feature}</td>
+                        <td className="px-4 py-3 text-wf-muted">{row.wf}</td>
+                        <td className="px-4 py-3 text-wf-muted">{row.pp}</td>
+                        <td className="px-4 py-3 text-wf-muted">{row.ew}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -552,9 +628,10 @@ export function MarketingLanding() {
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="grid gap-12 items-center lg:grid-cols-2">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">See the flow in action</h2>
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Demo video</h2>
                 <p className="mt-3 text-wf-muted">
-                  Build or tweak a setlist, open Present, peek at Audience, and hand someone the remote—so volunteers know exactly what Sunday feels like.
+                  Paste lyrics → slides appear. No dragging through template libraries. Add this walkthrough
+                  when you&apos;re ready — even a 20-second screen recording is enough to show the flow.
                 </p>
                 <div className="mt-6 space-y-3">
                   {["Dashboard → setlist order and last-minute swaps", "Operator screen + clean Audience output", "Optional room remote on a second device"].map((item) => (
@@ -586,8 +663,8 @@ export function MarketingLanding() {
                       <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/10 mb-4">
                         <span className="text-2xl">▶</span>
                       </div>
-                      <p className="text-sm font-medium text-white/90">Demo video</p>
-                      <p className="text-xs text-white/50 mt-1">Watch the walkthrough</p>
+                      <p className="text-sm font-medium text-white/90">Your video goes here</p>
+                      <p className="text-xs text-white/50 mt-1">Embed or link when you have a recording</p>
                     </div>
                   </div>
                 </div>
@@ -599,16 +676,19 @@ export function MarketingLanding() {
         <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <div className="relative overflow-hidden rounded-2xl border border-white/[0.1] bg-gradient-to-br from-sky-500/10 via-wf-card/90 to-blue-500/5 p-8 text-center sm:p-12">
             <div className="relative">
-              <h2 className="text-2xl font-bold sm:text-3xl">Ready when you are</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">Start your free trial</h2>
+              <p className="mx-auto mt-2 max-w-lg text-sm font-medium text-emerald-200/90">
+                £15/month for life — 60-day launch · your price never increases with WORSHIPHIM15
+              </p>
               <p className="mx-auto mt-3 max-w-md text-wf-muted">
-                Create an account to sync with your team, or sign in to jump straight to your dashboard.
+                Create an account to plan setlists, use Present, and upgrade to Pro when you&apos;re ready.
               </p>
               <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row">
                 <Link
                   href="/register"
                   className="inline-flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 to-blue-500 px-7 text-sm font-bold text-white shadow-lg transition hover:scale-105"
                 >
-                  Create account
+                  Start free trial
                 </Link>
                 <Link
                   href="/login"

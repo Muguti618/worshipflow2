@@ -183,7 +183,13 @@ function BillingSettingsInner({ autoStartPlan = null }: BillingSettingsInnerProp
         return;
       }
       if (!res.ok) {
-        setActionError(typeof j.error === "string" ? j.error : "Could not open billing portal.");
+        setActionError(
+          typeof j.error === "string"
+            ? j.error
+            : text.trim().length > 0
+              ? `Could not open billing portal (${res.status}). ${text.slice(0, 200)}`
+              : `Could not open billing portal (${res.status}).`,
+        );
         return;
       }
       if (typeof j.url === "string") {
