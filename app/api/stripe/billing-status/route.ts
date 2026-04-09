@@ -4,6 +4,8 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export async function GET() {
+  const forcePro = process.env.WF_FORCE_PRO?.trim().toLowerCase() === "true";
+
   if (!isSupabaseConfigured()) {
     return NextResponse.json({ error: "Auth is not configured." }, { status: 503 });
   }
@@ -36,9 +38,10 @@ export async function GET() {
   const status = (data?.status as string) ?? "none";
   const hasActiveSubRow = Boolean(data?.stripe_subscription_id);
   /** Pro = Stripe subscription status grants access and we mirror an active subscription row (or known Pro tier). */
-  const isPro =
-    subscriptionStatusGrantsPro(status) &&
-    (tier === "pro_monthly" || tier === "pro_yearly" || hasActiveSubRow);
+  const isPro = forcePro
+    ? true
+    : subscriptionStatusGrantsPro(status) &&
+      (tier === "pro_monthly" || tier === "pro_yearly" || hasActiveSubRow);
 
   return NextResponse.json({
     tier,
