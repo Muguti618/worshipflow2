@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { subscriptionStatusGrantsPro } from "@/lib/billing-sync";
+import { billingSnapshotGrantsPro } from "@/lib/billing-sync";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -36,12 +36,8 @@ export async function GET() {
 
   const tier = (data?.tier as string) ?? "free";
   const status = (data?.status as string) ?? "none";
-  const hasActiveSubRow = Boolean(data?.stripe_subscription_id);
-  /** Pro = Stripe subscription status grants access and we mirror an active subscription row (or known Pro tier). */
-  const isPro = forcePro
-    ? true
-    : subscriptionStatusGrantsPro(status) &&
-      (tier === "pro_monthly" || tier === "pro_yearly" || hasActiveSubRow);
+  /** Pro = Stripe in good standing, or comped row (Pro tier + status none), etc. */
+  const isPro = forcePro ? true : billingSnapshotGrantsPro(data ?? null);
 
   return NextResponse.json({
     tier,

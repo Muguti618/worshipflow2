@@ -15,7 +15,31 @@ export function tierFromStripePriceId(priceId: string | undefined | null): Billi
 
 /** Pro features while subscription is in good standing (includes short past_due grace). */
 export function subscriptionStatusGrantsPro(status: string): boolean {
-  return status === "trialing" || status === "active" || status === "past_due";
+  const s = String(status ?? "").trim().toLowerCase();
+  return s === "trialing" || s === "active" || s === "past_due";
+}
+
+type BillingRowLike = {
+  tier?: string | null;
+  status?: string | null;
+  stripe_subscription_id?: string | null;
+};
+
+/**
+ * Whether the mirrored `billing_subscriptions` row should unlock Pro in the app.
+ * Supports manual / comped rows: Pro tier + `status = none` (no Stripe subscription id yet).
+ */
+export function billingSnapshotGrantsPro(data: BillingRowLike | null | undefined): boolean {
+  if (!data) return false;
+  const tier = String(data.tier ?? "free").trim().toLowerCase();
+  const status = String(data.status ?? "none").trim().toLowerCase();
+  const tierIsPro = tier === "pro_monthly" || tier === "pro_yearly";
+  const hasActiveSubRow = Boolean(String(data.stripe_subscription_id ?? "").trim());
+  const statusGrants = subscriptionStatusGrantsPro(status);
+
+  if (tierIsPro && status === "none") return true;
+
+  return statusGrants && (tierIsPro || hasActiveSubRow);
 }
 
 function firstSubscriptionPriceId(sub: Stripe.Subscription): string | null {

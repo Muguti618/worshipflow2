@@ -1,4 +1,4 @@
-import { subscriptionStatusGrantsPro } from "@/lib/billing-sync";
+import { billingSnapshotGrantsPro } from "@/lib/billing-sync";
 import { getStripePriceIds, isStripeConfigured } from "@/lib/stripe";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -24,14 +24,7 @@ function computeIsProFromRow(
 ): boolean {
   const forcePro = process.env.WF_FORCE_PRO?.trim().toLowerCase() === "true";
   if (forcePro) return true;
-  if (!data) return false;
-  const tier = (data.tier as string) ?? "free";
-  const status = (data.status as string) ?? "none";
-  const hasActiveSubRow = Boolean(data.stripe_subscription_id);
-  return (
-    subscriptionStatusGrantsPro(status) &&
-    (tier === "pro_monthly" || tier === "pro_yearly" || hasActiveSubRow)
-  );
+  return billingSnapshotGrantsPro(data);
 }
 
 /**
