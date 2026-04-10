@@ -205,30 +205,25 @@ html[data-theme="light"] .wf-spotlight-tour-btn:hover {
   animation: wf-demo-intro 2s ease-out both;
 }
 
-/* Marketing demo title — slow, readable on a raw screen recording */
+/* Shorter title card for social reel capture */
 @keyframes wf-demo-intro-reel {
   0% {
     opacity: 0;
-    transform: scale(0.9);
-    filter: blur(10px);
+    transform: scale(0.94);
+    filter: blur(6px);
   }
-  22% {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-  68% {
+  40% {
     opacity: 1;
     transform: scale(1);
     filter: blur(0);
   }
   100% {
     opacity: 0;
-    transform: scale(1.035);
-    filter: blur(8px);
+    transform: scale(1.02);
+    filter: blur(4px);
   }
 }
 
 .wf-demo-intro-title-reel {
-  animation: wf-demo-intro-reel 2.65s cubic-bezier(0.33, 1, 0.68, 1) both;
+  animation: wf-demo-intro-reel 0.95s ease-out both;
 }
