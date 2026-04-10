@@ -1,7 +1,7 @@
 import type { SlideTransitionId } from "@/lib/slide-transition";
 
-/** Footer strip on slides for logged-in Free plan (Present, Audience, previews). */
-export const FREE_TIER_SLIDE_BRANDING = "Powered by worshipflow2";
+/** Footer note on slides for logged-in Free plan (Present, Audience, previews). */
+export const FREE_TIER_SLIDE_BRANDING = "worshipflow2";
 
 export const FREE_MAX_SONGS = 3;
 export const FREE_MAX_SETLISTS = 1;
