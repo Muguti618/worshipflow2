@@ -13,5 +13,9 @@ type PageProps = {
 
 export default async function AudiencePage({ searchParams }: PageProps) {
   const sp = await searchParams;
-  return <AudienceView room={roomFromSearchParams(sp)} />;
+  const reelRaw = sp.reelFs;
+  const reelFs = reelRaw === "1" || (Array.isArray(reelRaw) && reelRaw[0] === "1");
+  return (
+    <AudienceView room={roomFromSearchParams(sp)} marketingAutoFullscreen={reelFs} />
+  );
 }

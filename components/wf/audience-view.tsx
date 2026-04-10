@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
 import { useActiveDeck } from "@/hooks/use-active-deck";
 import { useRoomSlide } from "@/hooks/use-room-slide";
-import { DEFAULT_PRESENT_ROOM } from "@/lib/active-deck";
 import type { DeckSlide } from "@/lib/setlists-catalog";
 import { SlideTransitionShell } from "@/components/wf/slide-transition-shell";
 import { SlideStage } from "@/components/wf/slide-stage";
@@ -48,7 +47,14 @@ function enterFullscreen() {
   return req ?? Promise.reject(new Error("Unsupported"));
 }
 
-export function AudienceView({ room }: { room: string }) {
+export function AudienceView({
+  room,
+  marketingAutoFullscreen = false,
+}: {
+  room: string;
+  /** Set via ?reelFs=1 (e.g. marketing reel) — attempts browser fullscreen shortly after load. */
+  marketingAutoFullscreen?: boolean;
+}) {
   const { limitsApply, ready } = usePlanEntitlements();
   const deck = useActiveDeck();
   const count = Math.max(1, deck.length);
@@ -78,6 +84,14 @@ export function AudienceView({ room }: { room: string }) {
     sync();
     return () => document.removeEventListener("fullscreenchange", sync);
   }, []);
+
+  useEffect(() => {
+    if (!marketingAutoFullscreen) return;
+    const t = window.setTimeout(() => {
+      void enterFullscreen().catch(() => {});
+    }, 380);
+    return () => window.clearTimeout(t);
+  }, [marketingAutoFullscreen]);
 
   const goFullscreen = useCallback(() => {
     void enterFullscreen().catch(() => {});

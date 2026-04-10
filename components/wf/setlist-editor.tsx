@@ -24,6 +24,10 @@ import { NewSongWizardModal } from "@/components/wf/new-song-wizard-modal";
 import { ScriptureSetlistWizardModal } from "@/components/wf/scripture-setlist-wizard-modal";
 import { SetlistItemStylePanel } from "@/components/wf/setlist-item-style-panel";
 import { resolveSlidesForItem } from "@/lib/setlist-flatten";
+import { WF_MARKETING_REEL_BOOTSTRAP_SESSION_KEY } from "@/lib/wf-marketing-demo";
+
+/** Dev Strict Mode can run the reel bootstrap effect twice in one frame; gate the storage read. */
+let wfMarketingReelBootstrapLock = false;
 
 function cloneDef(def: SetlistDefinition): SetlistDefinition {
   return JSON.parse(JSON.stringify(def)) as SetlistDefinition;
@@ -54,6 +58,76 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
     setDraft(cloneDef(def));
     setReady(true);
   }, [setlistId]);
+
+  useEffect(() => {
+    if (!ready || !draft) return;
+    if (draft.items.some((it) => it.id.includes("-wf-reel-"))) return;
+    let flagged = false;
+    try {
+      flagged = sessionStorage.getItem(WF_MARKETING_REEL_BOOTSTRAP_SESSION_KEY) === "1";
+    } catch {
+      return;
+    }
+    if (!flagged) return;
+    if (wfMarketingReelBootstrapLock) return;
+    wfMarketingReelBootstrapLock = true;
+    try {
+      sessionStorage.removeItem(WF_MARKETING_REEL_BOOTSTRAP_SESSION_KEY);
+    } catch {
+      /* ignore */
+    }
+
+    const song = librarySongs.find((s) => s.title.trim() === "Way Maker");
+    const ts = Date.now();
+    const extra: SetlistItem[] = [];
+    if (song) {
+      extra.push({
+        id: `${draft.id}-wf-reel-song-${ts}`,
+        kind: "song",
+        songId: song.id,
+        name: song.title,
+        slides: [],
+      });
+    }
+    extra.push(
+      {
+        id: `${draft.id}-wf-reel-sc-${ts}`,
+        kind: "scripture",
+        name: "Psalm 100:1–2 (NIV)",
+        slides: [
+          {
+            title: "Psalm 100:1–2",
+            lines: [
+              "Shout for joy to the Lord, all the earth.",
+              "Worship the Lord with gladness;",
+              "come before him with joyful songs.",
+            ],
+            audienceCitation: "Psalm 100:1–2 (NIV)",
+          },
+        ],
+      },
+      {
+        id: `${draft.id}-wf-reel-mo-${ts}`,
+        kind: "moment",
+        name: "Before we sing",
+        slides: [
+          {
+            title: "Gathering",
+            lines: [
+              "Coffee's still hot — hearts can settle for a moment.",
+              "Same God who met us last week is here again. Let's lean in.",
+            ],
+          },
+        ],
+      },
+    );
+    const next: SetlistDefinition = { ...draft, items: [...draft.items, ...extra] };
+    updateUserSetlist(next);
+    queueMicrotask(() => {
+      setDraft(next);
+      wfMarketingReelBootstrapLock = false;
+    });
+  }, [draft, librarySongs, ready]);
 
   const writeDraft = useCallback((d: SetlistDefinition) => {
     updateUserSetlist(d);
@@ -182,7 +256,6 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
   const [expandedItemIds, setExpandedItemIds] = useState<Set<string>>(() => new Set());
   const imageImportRef = useRef<HTMLInputElement>(null);
   const [imageImportNote, setImageImportNote] = useState<string | null>(null);
-
   const toggleItemExpanded = useCallback((id: string) => {
     setExpandedItemIds((prev) => {
       const next = new Set(prev);
@@ -506,7 +579,7 @@ export function SetlistEditor({ setlistId }: { setlistId: string }) {
         }}
       />
 
-      <div className="mt-8 space-y-6">
+      <div data-wf-demo="setlist-reel-order" className="mt-8 space-y-6">
         <p className="text-xs font-semibold uppercase tracking-wider text-wf-muted">Order of service</p>
         <p className="text-[11px] text-wf-muted/90">
           Drag the grip beside each item to change the order.           Use the <strong className="font-medium text-wf-text/90">arrow on the right</strong> of each row
