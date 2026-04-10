@@ -2,15 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FreeSetlistLimitBanner } from "@/components/wf/free-setlist-limit-banner";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
 import { useAllSetlists } from "@/hooks/use-all-setlists";
 import { FREE_MAX_SETLISTS } from "@/lib/plan-limits";
-import {
-  WF_MARKETING_REEL_BOOTSTRAP_SESSION_KEY,
-  WF_MARKETING_REEL_CREATE_SETLIST,
-} from "@/lib/wf-marketing-demo";
 import { addUserSetlistAsync, createBlankUserSetlist } from "@/lib/user-setlists-storage";
 
 export default function NewSetlistPage() {
@@ -20,28 +16,8 @@ export default function NewSetlistPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const bannerRef = useRef<HTMLDivElement>(null);
-  const reelCreatingRef = useRef(false);
 
   const atFreeSetlistLimit = planReady && limitsApply && setlists.length >= FREE_MAX_SETLISTS;
-
-  useEffect(() => {
-    const onReelCreate = () => {
-      if (atFreeSetlistLimit || reelCreatingRef.current) return;
-      reelCreatingRef.current = true;
-      void (async () => {
-        const def = createBlankUserSetlist("Sunday Gathering", "Reel demo — built in WorshipFlow2");
-        const saved = await addUserSetlistAsync(def);
-        try {
-          sessionStorage.setItem(WF_MARKETING_REEL_BOOTSTRAP_SESSION_KEY, "1");
-        } catch {
-          /* ignore */
-        }
-        router.push(`/setlists/${saved.id}/edit`);
-      })();
-    };
-    window.addEventListener(WF_MARKETING_REEL_CREATE_SETLIST, onReelCreate);
-    return () => window.removeEventListener(WF_MARKETING_REEL_CREATE_SETLIST, onReelCreate);
-  }, [atFreeSetlistLimit, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,7 +31,7 @@ export default function NewSetlistPage() {
   }
 
   return (
-    <div data-wf-demo="reel-new-setlist-root" className="flex min-h-[calc(100vh-3.5rem)] flex-col">
+    <div className="flex min-h-[calc(100vh-3.5rem)] flex-col">
       {atFreeSetlistLimit ? <FreeSetlistLimitBanner ref={bannerRef} /> : null}
       <div className="mx-auto w-full max-w-md flex-1 p-6 lg:p-8">
         <Link href="/setlists" className="text-xs font-medium text-wf-muted hover:text-wf-text">

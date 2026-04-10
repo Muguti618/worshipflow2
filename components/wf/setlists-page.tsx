@@ -77,7 +77,6 @@ export function SetlistsPage() {
           </Link>
           <Link
             href="/present?room=default"
-            data-wf-demo="setlists-open-presenter"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-white/[0.12] bg-wf-card/60 px-4 text-sm font-semibold text-wf-text hover:border-white/18"

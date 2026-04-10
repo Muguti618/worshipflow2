@@ -18,11 +18,6 @@ import { isDataUrlImage } from "@/lib/read-image-data-url";
 import type { LibrarySong } from "@/lib/songs-catalog";
 import { googleLyricsSearchUrl } from "@/lib/google-lyrics-search";
 import { MIN_LYRICS_CHARS_FOR_AI_SLIDES, LYRICS_REQUIRED_MESSAGE } from "@/lib/song-ai-policy";
-import {
-  WAY_MAKER_DEMO_LYRICS,
-  WF_MARKETING_FILL_WAY_MAKER,
-  WF_MARKETING_REEL_CONFIRM_MANUAL_SONG,
-} from "@/lib/wf-marketing-demo";
 import { addUserSongAsync, createNewUserSong } from "@/lib/user-songs-storage";
 import { SlideGenProgressHairline } from "@/components/wf/slide-gen-progress-hairline";
 import { flushPaint, useSlideGenStatus } from "@/hooks/use-slide-gen-status";
@@ -197,18 +192,6 @@ export function NewSongWizardModal(props: {
     }
   }, [open]);
 
-  useEffect(() => {
-    const onFill = () => {
-      setStep("manual");
-      setTitle("Way Maker");
-      setArtist("Sinach");
-      setTags("Worship, Opener");
-      setLyrics(WAY_MAKER_DEMO_LYRICS);
-    };
-    window.addEventListener(WF_MARKETING_FILL_WAY_MAKER, onFill);
-    return () => window.removeEventListener(WF_MARKETING_FILL_WAY_MAKER, onFill);
-  }, []);
-
   const showAiNewSongOption = !limitsApply || !freeAiSongUsed;
   const aiGenStatusLine = useSlideGenStatus(aiLoading);
 
@@ -343,14 +326,6 @@ export function NewSongWizardModal(props: {
     onSongCreated(saved);
   }, [lyrics, onSongCreated, reviewBackgroundColor, reviewBackgroundUrl, tags, title]);
 
-  useEffect(() => {
-    const onReelConfirm = () => {
-      void confirmManualAdd();
-    };
-    window.addEventListener(WF_MARKETING_REEL_CONFIRM_MANUAL_SONG, onReelConfirm);
-    return () => window.removeEventListener(WF_MARKETING_REEL_CONFIRM_MANUAL_SONG, onReelConfirm);
-  }, [confirmManualAdd]);
-
   if (!open) return null;
 
   const maxW =
@@ -359,7 +334,6 @@ export function NewSongWizardModal(props: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
       <div
-        data-wf-demo="wizard-shell"
         className={`max-h-[90vh] w-full ${maxW} overflow-y-auto rounded-[18px] border border-white/[0.1] bg-wf-card p-5 shadow-2xl`}
         role="dialog"
         aria-modal="true"
@@ -409,7 +383,6 @@ export function NewSongWizardModal(props: {
               ) : null}
               <button
                 type="button"
-                data-wf-demo="new-song-manual"
                 onClick={() => setStep("manual")}
                 className="rounded-xl border border-white/[0.12] bg-wf-bg/40 px-4 py-4 text-left transition hover:border-white/[0.2] hover:bg-wf-bg/55"
               >
@@ -645,7 +618,6 @@ export function NewSongWizardModal(props: {
               </button>
               <button
                 type="button"
-                data-wf-demo="wizard-add-library"
                 onClick={() => void confirmAiAdd()}
                 disabled={!title.trim() || aiLoading}
                 className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
@@ -687,7 +659,6 @@ export function NewSongWizardModal(props: {
             <label className="mt-3 block">
               <span className="text-[10px] text-wf-muted">Lyrics (blank lines between sections)</span>
               <textarea
-                data-wf-demo="wizard-manual-lyrics"
                 value={lyrics}
                 onChange={(e) => setLyrics(e.target.value)}
                 rows={8}
@@ -708,7 +679,6 @@ export function NewSongWizardModal(props: {
               </button>
               <button
                 type="button"
-                data-wf-demo="wizard-add-library"
                 onClick={() => void confirmManualAdd()}
                 disabled={!title.trim()}
                 className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
