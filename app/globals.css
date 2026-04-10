@@ -177,24 +177,3 @@ html[data-theme="light"] .wf-spotlight-tour-btn:hover {
 .wf-slide-gen-shimmer {
   animation: wf-slide-gen-shimmer 1.1s ease-in-out infinite;
 }
-
-@keyframes wf-reel-curtain-fade {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.wf-reel-curtain-kicker {
-  animation: wf-reel-curtain-fade 1s ease-out 0.15s both;
-}
-
-.wf-reel-curtain-title {
-  font-size: clamp(1.35rem, 4vw, 2rem);
-  line-height: 1.25;
-  animation: wf-reel-curtain-fade 1.1s ease-out 0.45s both;
-}
