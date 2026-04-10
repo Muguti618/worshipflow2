@@ -29,7 +29,7 @@ type SlideStageProps = {
    * Song section labels stay off; use this for scripture citations.
    */
   audienceFooter?: string;
-  /** Free tier: low-key label strip below footers. */
+  /** Free tier: small white label (+ 🔥) below content; no banner bar. */
   tierWatermark?: string;
 };
 
@@ -203,14 +203,13 @@ export function SlideStage({
         ) : null}
 
         {showTierWatermark ? (
-          <div
-            className="relative z-[2] shrink-0 border-t border-white/[0.05] bg-black/20 px-3 py-1.5 backdrop-blur-[1px] md:px-5 md:py-2"
+          <p
+            className="relative z-[2] shrink-0 px-3 pb-3 pt-1 text-center text-[10px] font-normal tracking-wide text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] md:px-5 md:pb-4 md:text-[11px]"
             aria-label="Plan branding"
           >
-            <p className="text-center text-[10px] font-normal tracking-wide text-white/32 md:text-[11px] md:text-white/36">
-              {watermarkText}
-            </p>
-          </div>
+            {watermarkText}
+            <span aria-hidden> 🔥</span>
+          </p>
         ) : null}
       </div>
     </div>
