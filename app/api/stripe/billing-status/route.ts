@@ -4,8 +4,6 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export async function GET() {
-  const forcePro = process.env.WF_FORCE_PRO?.trim().toLowerCase() === "true";
-
   if (!isSupabaseConfigured()) {
     return NextResponse.json({ error: "Auth is not configured." }, { status: 503 });
   }
@@ -37,7 +35,7 @@ export async function GET() {
   const tier = (data?.tier as string) ?? "free";
   const status = (data?.status as string) ?? "none";
   /** Pro = Stripe in good standing, or comped row (Pro tier + status none), etc. */
-  const isPro = forcePro ? true : billingSnapshotGrantsPro(data ?? null);
+  const isPro = billingSnapshotGrantsPro(data ?? null);
 
   return NextResponse.json({
     tier,

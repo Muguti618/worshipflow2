@@ -22,8 +22,6 @@ export function proRequiredForFeatureResponse(): Response {
 function computeIsProFromRow(
   data: { tier?: string; status?: string; stripe_subscription_id?: string | null } | null,
 ): boolean {
-  const forcePro = process.env.WF_FORCE_PRO?.trim().toLowerCase() === "true";
-  if (forcePro) return true;
   return billingSnapshotGrantsPro(data);
 }
 
@@ -32,7 +30,6 @@ function computeIsProFromRow(
  * When enforcement is on: anonymous → false; Free tier → false; Pro → true.
  */
 export async function sessionMayUseProAiApis(): Promise<boolean> {
-  if (process.env.WF_FORCE_PRO?.trim().toLowerCase() === "true") return true;
   if (!billingLimitsEnforcementEnabled()) return true;
   const supabase = await createServerSupabaseClient();
   if (!supabase) return true;
