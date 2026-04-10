@@ -343,7 +343,10 @@ export function DashboardHome() {
               className="pointer-events-none absolute left-1/2 top-[6%] z-0 h-[min(48%,400px)] w-[min(98%,960px)] -translate-x-1/2 rounded-[50%] bg-gradient-to-b from-sky-500/[0.12] via-slate-500/8 to-transparent blur-3xl"
               aria-hidden
             />
-            <div className="relative z-[1] flex min-h-0 flex-1 flex-col rounded-[22px] border border-white/[0.1] bg-gradient-to-b from-white/[0.07] via-white/[0.02] to-transparent p-[5px] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_32px_120px_-36px_rgba(99,102,241,0.42),0_16px_56px_-28px_rgba(167,139,250,0.2)]">
+            <div
+              data-wf-reel="dash-stage"
+              className="relative z-[1] flex min-h-0 flex-1 flex-col rounded-[22px] border border-white/[0.1] bg-gradient-to-b from-white/[0.07] via-white/[0.02] to-transparent p-[5px] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_32px_120px_-36px_rgba(99,102,241,0.42),0_16px_56px_-28px_rgba(167,139,250,0.2)]"
+            >
               <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[17px] bg-wf-bg/30 ring-1 ring-inset ring-white/[0.06]">
                 <SlideTransitionShell
                   transition={transition}

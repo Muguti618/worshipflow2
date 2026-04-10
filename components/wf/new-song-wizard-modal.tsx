@@ -21,6 +21,13 @@ import { MIN_LYRICS_CHARS_FOR_AI_SLIDES, LYRICS_REQUIRED_MESSAGE } from "@/lib/s
 import { addUserSongAsync, createNewUserSong } from "@/lib/user-songs-storage";
 import { SlideGenProgressHairline } from "@/components/wf/slide-gen-progress-hairline";
 import { flushPaint, useSlideGenStatus } from "@/hooks/use-slide-gen-status";
+import {
+  REEL_SAMPLE_LYRICS,
+  REEL_SAMPLE_SONG_TAGS,
+  REEL_SAMPLE_SONG_TITLE,
+  WF_REEL_WIZARD_CONFIRM_SONG,
+  WF_REEL_WIZARD_SAMPLE_LYRICS,
+} from "@/lib/wf-reel-director";
 
 type Step = "choose" | "ai-meta" | "ai-review" | "manual";
 
@@ -326,6 +333,27 @@ export function NewSongWizardModal(props: {
     onSongCreated(saved);
   }, [lyrics, onSongCreated, reviewBackgroundColor, reviewBackgroundUrl, tags, title]);
 
+  useEffect(() => {
+    const onSample = () => {
+      if (!open) return;
+      setStep("manual");
+      setTitle(REEL_SAMPLE_SONG_TITLE);
+      setTags(REEL_SAMPLE_SONG_TAGS);
+      setLyrics(REEL_SAMPLE_LYRICS);
+      setArtist("");
+    };
+    const onConfirm = () => {
+      if (!open) return;
+      void confirmManualAdd();
+    };
+    window.addEventListener(WF_REEL_WIZARD_SAMPLE_LYRICS, onSample);
+    window.addEventListener(WF_REEL_WIZARD_CONFIRM_SONG, onConfirm);
+    return () => {
+      window.removeEventListener(WF_REEL_WIZARD_SAMPLE_LYRICS, onSample);
+      window.removeEventListener(WF_REEL_WIZARD_CONFIRM_SONG, onConfirm);
+    };
+  }, [open, confirmManualAdd]);
+
   if (!open) return null;
 
   const maxW =
@@ -334,6 +362,7 @@ export function NewSongWizardModal(props: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
       <div
+        data-wf-reel="song-wizard-root"
         className={`max-h-[90vh] w-full ${maxW} overflow-y-auto rounded-[18px] border border-white/[0.1] bg-wf-card p-5 shadow-2xl`}
         role="dialog"
         aria-modal="true"

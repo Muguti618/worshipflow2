@@ -6,6 +6,7 @@ import { TopBar } from "@/components/wf/top-bar";
 import { AuthAntiAbuseProvider } from "@/components/wf/auth-anti-abuse-context";
 import { PlanEntitlementsProvider } from "@/components/wf/plan-entitlements-context";
 import { RegisterDeviceSession } from "@/components/wf/register-device-session";
+import { ReelDirector } from "@/components/wf/reel-director";
 import { WorshipLibraryProvider } from "@/components/wf/worship-library-provider";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -21,6 +22,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 <TopBar />
                 <div className="flex-1 overflow-auto">{children}</div>
               </div>
+              <ReelDirector />
             </div>
           </AuthAntiAbuseProvider>
         </PlanEntitlementsProvider>
