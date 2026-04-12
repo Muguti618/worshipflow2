@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/wf/sidebar";
 import { TopBar } from "@/components/wf/top-bar";
 import { AuthAntiAbuseProvider } from "@/components/wf/auth-anti-abuse-context";
 import { PlanEntitlementsProvider } from "@/components/wf/plan-entitlements-context";
+import { MarketingReelTour } from "@/components/wf/marketing-reel-tour";
 import { RegisterDeviceSession } from "@/components/wf/register-device-session";
 import { WorshipLibraryProvider } from "@/components/wf/worship-library-provider";
 
@@ -21,6 +22,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 <TopBar />
                 <div className="flex-1 overflow-auto">{children}</div>
               </div>
+              <MarketingReelTour />
             </div>
           </AuthAntiAbuseProvider>
         </PlanEntitlementsProvider>

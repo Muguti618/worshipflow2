@@ -20,6 +20,7 @@ import {
 } from "@/lib/plan-limits";
 import { isDataUrlImage } from "@/lib/read-image-data-url";
 import { SlideStage } from "@/components/wf/slide-stage";
+import { WF_MARKETING_OPEN_NEW_SONG } from "@/lib/wf-marketing-reel";
 
 function cloneSong(s: LibrarySong): LibrarySong {
   return JSON.parse(JSON.stringify(s)) as LibrarySong;
@@ -91,6 +92,14 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
     }
     setNewOpen(true);
   }, [planLimited, planReady, songs.length]);
+
+  useEffect(() => {
+    const onMarketing = () => {
+      openNewSongModal();
+    };
+    window.addEventListener(WF_MARKETING_OPEN_NEW_SONG, onMarketing);
+    return () => window.removeEventListener(WF_MARKETING_OPEN_NEW_SONG, onMarketing);
+  }, [openNewSongModal]);
 
   const deleteSong = useCallback(() => {
     if (!active) return;

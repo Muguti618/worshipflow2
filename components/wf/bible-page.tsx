@@ -100,7 +100,10 @@ export function BiblePage() {
         </p>
       </div>
 
-      <div className="rounded-[18px] border border-white/[0.08] bg-wf-card/50 p-4 backdrop-blur-xl">
+      <div
+        data-wf-reel="reel-bible-panel"
+        className="rounded-[18px] border border-white/[0.08] bg-wf-card/50 p-4 backdrop-blur-xl"
+      >
         <label htmlFor="bible-search" className="sr-only">
           Bible search
         </label>
@@ -203,7 +206,10 @@ export function BiblePage() {
       ) : null}
 
       {result ? (
-        <article className="mt-8 rounded-[20px] border border-white/[0.06] bg-wf-card/40 p-8 backdrop-blur-md transition hover:border-white/12">
+        <article
+          data-wf-reel="reel-bible-passage"
+          className="mt-8 rounded-[20px] border border-white/[0.06] bg-wf-card/40 p-8 backdrop-blur-md transition hover:border-white/12"
+        >
           <p className="text-center text-xs font-semibold uppercase tracking-[0.25em] text-wf-muted">
             {result.ref}
           </p>
@@ -242,7 +248,7 @@ export function BiblePage() {
         </div>
       )}
 
-      <section className="mt-8">
+      <section data-wf-reel="reel-bible-slides" className="mt-8">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-wf-muted">
           Slide preview (2–4 lines each)
         </p>
