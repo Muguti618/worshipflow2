@@ -8,7 +8,7 @@ const APP_VERSION = "0.1.0";
 
 export function SettingsPage() {
   return (
-    <div className="mx-auto max-w-2xl p-6 lg:p-8">
+    <div className="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8">
       <h1 className="text-2xl font-bold tracking-tight text-wf-text">Settings</h1>
       <p className="mt-1 text-sm text-wf-muted">
         Appearance, your library, and presentation preferences.{" "}

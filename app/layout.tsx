@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { FirstVisitLegalGate } from "@/components/wf/first-visit-legal-gate";
 import { RootTutorialTour } from "@/components/wf/root-tutorial-tour";
@@ -14,6 +14,12 @@ export const metadata: Metadata = {
   title: "worshipflow2 — Worship presentation, reimagined",
   description:
     "Browser-based worship pilot: AI slide formatting, scripture search, remote control, and offline-friendly caching.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0b0f14",
 };
 
 export default function RootLayout({

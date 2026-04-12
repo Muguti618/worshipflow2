@@ -47,7 +47,7 @@ export function SetlistsPage() {
   return (
     <div className="flex min-h-[calc(100vh-3.5rem)] flex-col">
       {atFreeSetlistLimit ? <FreeSetlistLimitBanner ref={setlistLimitBannerRef} /> : null}
-      <div className="flex-1 p-6 lg:p-8">
+      <div className="flex-1 p-4 sm:p-6 lg:p-8">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Setlists</h1>

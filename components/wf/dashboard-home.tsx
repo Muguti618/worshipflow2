@@ -153,13 +153,13 @@ export function DashboardHome() {
   return (
     <div className="flex min-h-[calc(100vh-3.5rem)] flex-col">
       {atFreeSetlistLimit ? <FreeSetlistLimitBanner ref={setlistLimitBannerRef} /> : null}
-      <header className="shrink-0 border-b border-white/[0.06] px-6 py-5">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-end justify-between gap-6">
+      <header className="shrink-0 border-b border-white/[0.06] px-4 py-4 sm:px-6 sm:py-5">
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-end justify-between gap-4 sm:gap-6">
           <div className="min-w-0 max-w-[min(100%,40rem)]">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-wf-muted/75">
               Dashboard
             </p>
-            <h1 className="mt-2 text-3xl font-semibold leading-[1.15] tracking-tight md:text-[2.125rem]">
+            <h1 className="mt-2 text-2xl font-semibold leading-[1.15] tracking-tight sm:text-3xl md:text-[2.125rem]">
               <span className="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-500 bg-clip-text text-transparent">
                 {titleParts.text || greeting.title}
               </span>
@@ -207,7 +207,7 @@ export function DashboardHome() {
               </select>
             )}
           </div>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="flex w-full flex-wrap items-stretch gap-2 sm:w-auto sm:items-center sm:gap-3">
             <Link
               href="/setlists/new"
               data-wf-tour="tour-dash-new-setlist"
@@ -218,7 +218,7 @@ export function DashboardHome() {
                 }
               }}
               title={atFreeSetlistLimit ? "Setlist limit — upgrade for more" : "New setlist"}
-              className={`inline-flex h-8 items-center rounded-lg border px-2.5 text-xs font-medium transition ${
+              className={`inline-flex h-9 shrink-0 items-center justify-center rounded-lg border px-2.5 text-xs font-medium transition sm:h-8 ${
                 atFreeSetlistLimit
                   ? "border-amber-500/40 bg-amber-500/10 text-amber-100/90 hover:bg-amber-500/15"
                   : "border-dashed border-white/[0.12] text-wf-muted hover:border-white/18 hover:text-wf-text"
@@ -231,21 +231,22 @@ export function DashboardHome() {
               data-wf-tour="tour-dash-present"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-2 rounded-[12px] bg-blue-600 hover:bg-blue-500 px-4 text-sm font-semibold text-white shadow-lg shadow-black/30"
+              className="inline-flex min-h-10 min-w-[44px] flex-1 items-center justify-center gap-2 rounded-[12px] bg-blue-600 px-3 text-sm font-semibold text-white shadow-lg shadow-black/30 hover:bg-blue-500 sm:flex-initial sm:px-4"
             >
-              Open Presenter
+              <span className="sm:hidden">Presenter</span>
+              <span className="hidden sm:inline">Open Presenter</span>
             </Link>
             <Link
               href={audienceHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-white/[0.12] bg-wf-card/60 px-4 text-sm font-semibold text-wf-text hover:border-white/18"
+              className="inline-flex min-h-10 min-w-[44px] flex-1 items-center justify-center gap-2 rounded-[12px] border border-white/[0.12] bg-wf-card/60 px-3 text-sm font-semibold text-wf-text hover:border-white/18 sm:flex-initial sm:px-4"
             >
               Audience
             </Link>
             <Link
               href="/setlists"
-              className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-white/[0.08] px-4 text-sm font-medium text-wf-muted hover:text-wf-text"
+              className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white/[0.08] px-3 text-sm font-medium text-wf-muted hover:text-wf-text sm:w-auto sm:px-4"
             >
               Edit setlists
             </Link>
@@ -253,7 +254,7 @@ export function DashboardHome() {
         </div>
       </header>
 
-      <div className="mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-8 p-6 lg:flex-row lg:items-stretch lg:gap-8">
+      <div className="mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-6 p-4 sm:gap-8 sm:p-6 lg:flex-row lg:items-stretch lg:gap-8">
         <aside className="order-2 flex w-full shrink-0 flex-col gap-4 lg:order-1 lg:w-[220px] lg:max-w-[220px]">
           {limitsApply ? (
             <div className="rounded-[14px] border border-amber-500/25 bg-amber-500/[0.08] p-3 backdrop-blur-xl">

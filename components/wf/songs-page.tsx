@@ -347,7 +347,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
         </ul>
       </div>
 
-      <div className="flex flex-1 flex-col gap-4 p-6">
+      <div className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-bold">{editDraft.title}</h2>
