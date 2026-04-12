@@ -18,7 +18,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <RegisterDeviceSession />
             <div className="flex min-h-screen">
               <Sidebar />
-              <div className="flex min-w-0 flex-1 flex-col">
+              <div
+                data-wf-reel-tour-main
+                className="flex min-h-0 min-w-0 flex-1 flex-col transition-[transform] duration-300 ease-out"
+              >
                 <TopBar />
                 <div className="flex-1 overflow-auto">{children}</div>
               </div>

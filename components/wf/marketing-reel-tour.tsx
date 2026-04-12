@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   MARKETING_REEL_HOTKEY_HINT,
   marketingReelHotkeySafeTarget,
@@ -47,11 +47,85 @@ function padRect(el: HTMLElement, pad: number): Hole {
   return { top, left, width, height, r: 16 };
 }
 
-function pillarWidthPx(): number {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const col = Math.min(vw, (vh * 9) / 16);
-  return Math.max(0, (vw - col) / 2);
+type ReelFrame = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  cx: number;
+  cy: number;
+};
+
+/**
+ * Portrait 9:16 box (width/height = 9/16), centered on the highlight or viewport.
+ */
+function computeReelFrame(hole: Hole | null, vw: number, vh: number): ReelFrame {
+  const margin = 32;
+  if (vw < 1 || vh < 1) {
+    return { left: 0, top: 0, width: 1, height: 1, cx: 0, cy: 0 };
+  }
+
+  if (!hole) {
+    let fh = Math.min(vh * 0.92, (vw * 16) / 9);
+    let fw = (fh * 9) / 16;
+    if (fw > vw * 0.94) {
+      fw = vw * 0.94;
+      fh = (fw * 16) / 9;
+    }
+    const cx = vw / 2;
+    const cy = vh / 2;
+    let left = cx - fw / 2;
+    let top = cy - fh / 2;
+    left = Math.max(0, Math.min(vw - fw, left));
+    top = Math.max(0, Math.min(vh - fh, top));
+    return { left, top, width: fw, height: fh, cx, cy };
+  }
+
+  const cx = hole.left + hole.width / 2;
+  const cy = hole.top + hole.height / 2;
+  const iw = hole.width + margin * 2;
+  const ih = hole.height + margin * 2;
+
+  let fw = Math.max(iw, (ih * 9) / 16);
+  let fh = (fw * 16) / 9;
+  if (fh < ih) {
+    fh = ih;
+    fw = (fh * 9) / 16;
+  }
+
+  const maxW = vw * 0.96;
+  const maxH = vh * 0.96;
+  if (fw > maxW) {
+    fw = maxW;
+    fh = (fw * 16) / 9;
+  }
+  if (fh > maxH) {
+    fh = maxH;
+    fw = (fh * 9) / 16;
+  }
+
+  let left = cx - fw / 2;
+  let top = cy - fh / 2;
+  left = Math.max(0, Math.min(vw - fw, left));
+  top = Math.max(0, Math.min(vh - fh, top));
+
+  return {
+    left,
+    top,
+    width: fw,
+    height: fh,
+    cx,
+    cy,
+  };
+}
+
+function applyReelTourDom(active: boolean) {
+  const root = document.documentElement;
+  if (!active) {
+    root.removeAttribute("data-wf-reel-tour");
+    return;
+  }
+  root.setAttribute("data-wf-reel-tour", "1");
 }
 
 export function MarketingReelTour() {
@@ -61,31 +135,61 @@ export function MarketingReelTour() {
   const [touring, setTouring] = useState(false);
   const [intro, setIntro] = useState(false);
   const [outro, setOutro] = useState(false);
-  const [sidePad, setSidePad] = useState(0);
   const [caption, setCaption] = useState("");
   const [hole, setHole] = useState<Hole | null>(null);
+  const [reelFrame, setReelFrame] = useState<ReelFrame | null>(null);
+  const [win, setWin] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const r = () => setWin({ w: window.innerWidth, h: window.innerHeight });
+    r();
+    window.addEventListener("resize", r);
+    return () => window.removeEventListener("resize", r);
+  }, []);
+
+  const refreshFrame = useCallback(
+    (h: Hole | null) => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const next = computeReelFrame(h, vw, vh);
+      setReelFrame(next);
+      return next;
+    },
+    [],
+  );
+
+  useLayoutEffect(() => {
+    if (!touring) {
+      setReelFrame(null);
+      applyReelTourDom(false);
+      return;
+    }
+    refreshFrame(hole);
+    applyReelTourDom(true);
+  }, [touring, hole, refreshFrame]);
+
+  useEffect(() => {
+    if (!touring) return;
+    const onResize = () => {
+      refreshFrame(hole);
+      applyReelTourDom(true);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [touring, hole, refreshFrame]);
 
   const clearHole = useCallback(() => {
     setHole(null);
     setCaption("");
   }, []);
 
-  useEffect(() => {
-    if (!touring) {
-      setSidePad(0);
-      return;
-    }
-    const sync = () => setSidePad(pillarWidthPx());
-    sync();
-    window.addEventListener("resize", sync);
-    return () => window.removeEventListener("resize", sync);
-  }, [touring]);
-
   const frameEl = useCallback(
     async (el: HTMLElement, text: string, holdMs: number, reduced: boolean) => {
       el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
-      await sleep(reduced ? 60 : 440);
-      setHole(padRect(el, 12));
+      await sleep(reduced ? 60 : 480);
+      await new Promise(requestAnimationFrame);
+      const h = padRect(el, 14);
+      setHole(h);
       setCaption(text);
       await sleep(Math.max(520, reduced ? holdMs * 0.55 : holdMs));
       clearHole();
@@ -214,23 +318,23 @@ export function MarketingReelTour() {
     return () => window.removeEventListener("keydown", onKey);
   }, [run]);
 
+  const vw = win.w || (typeof window !== "undefined" ? window.innerWidth : 0);
+  const vh = win.h || (typeof window !== "undefined" ? window.innerHeight : 0);
+
+  const frame =
+    touring && !intro && !outro && reelFrame && reelFrame.width > 2
+      ? reelFrame
+      : touring && !intro && !outro && vw > 0
+        ? computeReelFrame(null, vw, vh)
+        : null;
+
+  const holeRight = hole ? hole.left + hole.width : 0;
+  const holeBottom = hole ? hole.top + hole.height : 0;
+  const captionBottom =
+    frame && vh > 0 ? Math.max(12, vh - frame.top - frame.height + 14) : 12;
+
   return (
     <>
-      {touring && sidePad > 6 ? (
-        <>
-          <div
-            className="pointer-events-none fixed inset-y-0 left-0 z-[55] bg-black/[0.82] backdrop-blur-[1px]"
-            style={{ width: sidePad }}
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none fixed inset-y-0 right-0 z-[55] bg-black/[0.82] backdrop-blur-[1px]"
-            style={{ width: sidePad }}
-            aria-hidden
-          />
-        </>
-      ) : null}
-
       {!touring ? (
         <button
           type="button"
@@ -258,7 +362,8 @@ export function MarketingReelTour() {
             <span className="mt-2 block text-sky-100/95">Present with calm.</span>
           </h1>
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-white/50">
-            Side bars show a 9:16 crop — resize or record the center for TikTok, Reels, and Shorts.
+            The bright 9:16 window tracks each highlight — crop that area for TikTok, Reels, and Shorts. The
+            app scales slightly so more fits in frame.
           </p>
         </div>
       ) : null}
@@ -267,56 +372,115 @@ export function MarketingReelTour() {
         <div className="fixed inset-0 z-[62] flex flex-col items-center justify-center bg-gradient-to-t from-sky-950/90 via-[#070b12] to-black/95 px-5 text-center">
           <p className="text-base font-semibold text-white sm:text-lg">Export vertical</p>
           <p className="mt-2 max-w-xs text-sm text-sky-100/80">
-            Crop to the bright center column — ready for TikTok, Instagram Reels, and Facebook Reels.
+            Use the moving bright frame from your recording — ready for TikTok, Instagram Reels, and
+            Facebook Reels.
           </p>
           <p className="mt-10 text-[10px] uppercase tracking-[0.28em] text-white/35">worshipflow2</p>
         </div>
       ) : null}
 
-      {hole ? (
-        <div className="pointer-events-none fixed inset-0 z-[56]" aria-hidden>
+      {touring && frame && !intro && !outro ? (
+        <div className="pointer-events-none fixed inset-0 z-[55]" aria-hidden>
           <div
-            className="absolute bg-[rgba(3,5,12,0.9)]"
-            style={{ top: 0, left: 0, right: 0, height: hole.top }}
+            className="absolute bg-[rgba(2,4,10,0.88)] backdrop-blur-[0.5px]"
+            style={{ top: 0, left: 0, right: 0, height: frame.top }}
           />
           <div
-            className="absolute bg-[rgba(3,5,12,0.9)]"
+            className="absolute bg-[rgba(2,4,10,0.88)] backdrop-blur-[0.5px]"
             style={{
-              top: hole.top + hole.height,
+              top: frame.top + frame.height,
               left: 0,
               right: 0,
               bottom: 0,
             }}
           />
           <div
-            className="absolute bg-[rgba(3,5,12,0.9)]"
-            style={{ top: hole.top, left: 0, width: hole.left, height: hole.height }}
+            className="absolute bg-[rgba(2,4,10,0.88)] backdrop-blur-[0.5px]"
+            style={{ top: frame.top, left: 0, width: frame.left, height: frame.height }}
           />
           <div
-            className="absolute bg-[rgba(3,5,12,0.9)]"
+            className="absolute bg-[rgba(2,4,10,0.88)] backdrop-blur-[0.5px]"
             style={{
-              top: hole.top,
-              left: hole.left + hole.width,
+              top: frame.top,
+              left: frame.left + frame.width,
               right: 0,
-              height: hole.height,
+              height: frame.height,
             }}
           />
           <div
-            className="pointer-events-none absolute box-border border-2 border-sky-400/50 shadow-[0_0_0_1px_rgba(56,189,248,0.15),0_0_42px_rgba(56,189,248,0.2)] transition-all duration-[0.95s] ease-out"
+            className="absolute box-border border border-white/20 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
             style={{
-              top: hole.top,
-              left: hole.left,
-              width: hole.width,
-              height: hole.height,
-              borderRadius: hole.r,
+              top: frame.top,
+              left: frame.left,
+              width: frame.width,
+              height: frame.height,
+              borderRadius: 12,
             }}
           />
+
+          {hole ? (
+            <>
+              <div
+                className="absolute bg-[rgba(3,5,12,0.72)]"
+                style={{
+                  top: frame.top,
+                  left: frame.left,
+                  width: frame.width,
+                  height: Math.max(0, hole.top - frame.top),
+                }}
+              />
+              <div
+                className="absolute bg-[rgba(3,5,12,0.72)]"
+                style={{
+                  top: holeBottom,
+                  left: frame.left,
+                  width: frame.width,
+                  height: Math.max(0, frame.top + frame.height - holeBottom),
+                }}
+              />
+              <div
+                className="absolute bg-[rgba(3,5,12,0.72)]"
+                style={{
+                  top: hole.top,
+                  left: frame.left,
+                  width: Math.max(0, hole.left - frame.left),
+                  height: hole.height,
+                }}
+              />
+              <div
+                className="absolute bg-[rgba(3,5,12,0.72)]"
+                style={{
+                  top: hole.top,
+                  left: holeRight,
+                  width: Math.max(0, frame.left + frame.width - holeRight),
+                  height: hole.height,
+                }}
+              />
+              <div
+                className="pointer-events-none absolute box-border border-2 border-sky-400/55 shadow-[0_0_0_1px_rgba(56,189,248,0.12),0_0_36px_rgba(56,189,248,0.18)] transition-all duration-[0.85s] ease-out"
+                style={{
+                  top: hole.top,
+                  left: hole.left,
+                  width: hole.width,
+                  height: hole.height,
+                  borderRadius: hole.r,
+                }}
+              />
+            </>
+          ) : null}
         </div>
       ) : null}
 
-      {caption ? (
-        <div className="pointer-events-none fixed bottom-[max(1rem,12vh)] left-1/2 z-[59] w-[min(90vw,min(100vw,calc(100dvh*9/16))-1rem)] -translate-x-1/2 px-2 sm:bottom-[max(1.25rem,14vh)]">
-          <p className="rounded-2xl border border-white/12 bg-zinc-950/88 px-3 py-2.5 text-center text-[13px] font-medium leading-snug text-white/95 shadow-lg shadow-black/45 backdrop-blur-md sm:px-4 sm:text-sm">
+      {caption && frame && touring && !intro && !outro ? (
+        <div
+          className="pointer-events-none fixed z-[59] px-2"
+          style={{
+            left: frame.left + 10,
+            width: frame.width - 20,
+            bottom: captionBottom,
+          }}
+        >
+          <p className="rounded-2xl border border-white/14 bg-zinc-950/90 px-3 py-2.5 text-center text-[12px] font-medium leading-snug text-white/95 shadow-lg shadow-black/50 backdrop-blur-md sm:text-[13px]">
             {caption}
           </p>
         </div>

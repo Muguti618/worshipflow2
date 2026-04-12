@@ -206,3 +206,17 @@ html[data-theme="light"] .wf-spotlight-tour-btn:hover {
     transform: none;
   }
 }
+
+/* Marketing reel tour: slight zoom-out so highlights fit the 9:16 crop */
+html[data-wf-reel-tour="1"] [data-wf-reel-tour-main] {
+  transform: scale(0.88);
+  transform-origin: 52% 44%;
+  transition: transform 0.35s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-wf-reel-tour="1"] [data-wf-reel-tour-main] {
+    transform: scale(0.94);
+    transition: none;
+  }
+}
