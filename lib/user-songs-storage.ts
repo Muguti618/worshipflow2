@@ -1,5 +1,4 @@
 import type { LibrarySong } from "@/lib/songs-catalog";
-import { withLeadingSongTitleSlide } from "@/lib/slide-engine";
 import { getLibraryMode } from "@/lib/library-mode";
 import { getSnapshotSongs, notifyLibraryChanged } from "@/lib/library-snapshot";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
@@ -152,9 +151,8 @@ export function createNewUserSong(input: {
     title: songTitle,
     tags: input.tags?.length ? input.tags : ["Custom"],
     structure: input.structure?.trim() || "Custom",
-    slides: input.slides.length
-      ? withLeadingSongTitleSlide(baseSlides, songTitle)
-      : baseSlides,
+    /** Lyric slides only — the bold title card is added at present time (`prependSongTitleCard`). */
+    slides: baseSlides,
   };
   if (input.backgroundUrl?.trim()) song.backgroundUrl = input.backgroundUrl.trim();
   if (input.backgroundColor?.trim()) song.backgroundColor = input.backgroundColor.trim();

@@ -111,8 +111,8 @@ export function lyricsToSlideCards(raw: string, maxLinesPerSlide = 3): SlideCard
 }
 
 /**
- * New songs start with a title slide: the song name as the primary line (visible on audience view).
- * If the first slide is already a single line matching the title, it is replaced (no duplicate).
+ * Quick beam / spontaneous: prepend one `song-title` layout slide so the name is big and bold.
+ * Setlist songs use `prependSongTitleCard` at present time instead — do not duplicate in library slides.
  */
 export function withLeadingSongTitleSlide<T extends { title: string; lines: string[] }>(
   slides: T[],
@@ -128,10 +128,13 @@ export function withLeadingSongTitleSlide<T extends { title: string; lines: stri
   if (first) {
     const body = first.lines.map((l) => l.trimEnd()).filter((l) => l.length > 0);
     if (body.length === 1 && body[0]!.toLowerCase() === t.toLowerCase()) {
-      return [{ ...first, title: "", lines: [t] }, ...mapped.slice(1)] as T[];
+      return [
+        { ...first, title: "", lines: [t], layout: "song-title" as const },
+        ...mapped.slice(1),
+      ] as unknown as T[];
     }
   }
-  const lead = { title: "", lines: [t] } as T;
+  const lead = { title: "", lines: [t], layout: "song-title" as const } as unknown as T;
   return [lead, ...mapped];
 }
 

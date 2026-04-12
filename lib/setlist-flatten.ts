@@ -80,7 +80,22 @@ function songTitleCardSlide(label: string, from: DeckSlide): DeckSlide {
 
 function prependSongTitleCard(name: string, slides: DeckSlide[]): DeckSlide[] {
   if (slides.length === 0) return slides;
-  return [songTitleCardSlide(name, slides[0]!), ...slides];
+  const label = name.trim() || "Song";
+  let deck = slides;
+  const head = deck[0]!;
+  // Library already starts with a title card — don't stack a second.
+  if (head.layout === "song-title") {
+    return deck;
+  }
+  // Legacy: first slide was only the song name as body text (duplicate of the bold title card).
+  const body = head.lines.map((l) => l.trimEnd()).filter((l) => l.length > 0);
+  if (body.length === 1 && body[0]!.toLowerCase() === label.toLowerCase()) {
+    deck = deck.slice(1);
+  }
+  if (deck.length === 0) {
+    return [songTitleCardSlide(label, slides[0]!)];
+  }
+  return [songTitleCardSlide(label, deck[0]!), ...deck];
 }
 
 /** Slides used in presenter for one setlist row (library song or inline). */
