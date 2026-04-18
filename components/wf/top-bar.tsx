@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useOptionalAuthAntiAbuse } from "@/components/wf/auth-anti-abuse-context";
 import { useTutorialTour } from "@/components/wf/tutorial-tour-context";
 import { googleLyricsSearchUrl } from "@/lib/google-lyrics-search";
+import { presentRoomKeyFromActiveSetlist } from "@/lib/present-room-key";
 
 type TopBarProps = {
   onMenuClick?: () => void;
@@ -96,7 +97,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
             <span className="hidden sm:inline">Spotlight tour</span>
           </button>
           <Link
-            href="/present?room=default"
+            href={`/present?room=${encodeURIComponent(presentRoomKeyFromActiveSetlist())}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[10px] bg-blue-600 px-2.5 text-xs font-semibold text-white shadow-lg shadow-black/35 transition hover:bg-blue-500 sm:px-3"

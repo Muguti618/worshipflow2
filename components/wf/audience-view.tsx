@@ -49,12 +49,11 @@ function enterFullscreen() {
 
 export function AudienceView({ room }: { room: string }) {
   const { limitsApply, ready } = usePlanEntitlements();
-  const deck = useActiveDeck();
-  const count = Math.max(1, deck.length);
-  const { index: i, beam } = useRoomSlide({
+  const localDeck = useActiveDeck();
+  const { index: i, beam, deck } = useRoomSlide({
     room,
     role: "viewer",
-    slideCount: count,
+    localDeck,
   });
 
   const [fs, setFs] = useState(false);

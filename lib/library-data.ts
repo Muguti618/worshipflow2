@@ -3,11 +3,11 @@ import {
   ACTIVE_SETLIST_ID_KEY,
   broadcastDeckUpdated,
   broadcastSlideReset,
-  DEFAULT_PRESENT_ROOM,
   EMPTY_PRESENTER_PLACEHOLDER,
   postPresenterSlide,
   writeActiveDeck,
 } from "@/lib/active-deck";
+import { presentRoomKeyFromActiveSetlist } from "@/lib/present-room-key";
 import { getLibraryMode } from "@/lib/library-mode";
 import type { SetlistDefinition } from "@/lib/setlists-catalog";
 import type { LibrarySong } from "@/lib/songs-catalog";
@@ -114,21 +114,22 @@ export async function applyLibraryBackupJson(
     writeUserSetlistsAll(setlists);
   }
 
+  const presentRoom = presentRoomKeyFromActiveSetlist();
   writeActiveDeck(EMPTY_PRESENTER_PLACEHOLDER, "");
   broadcastDeckUpdated();
-  broadcastSlideReset(DEFAULT_PRESENT_ROOM);
-  void postPresenterSlide(DEFAULT_PRESENT_ROOM, 0);
-  void clearPresenterBeamServerSide();
+  broadcastSlideReset(presentRoom);
+  void postPresenterSlide(presentRoom, 0);
+  void clearPresenterBeamServerSide(presentRoom);
   return { songs: songs.length, setlists: setlists.length };
 }
 
-async function clearPresenterBeamServerSide(): Promise<void> {
+async function clearPresenterBeamServerSide(room: string): Promise<void> {
   try {
     await fetch("/api/present/state", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        room: DEFAULT_PRESENT_ROOM,
+        room,
         slideIndex: 0,
         beam: null,
       }),
@@ -150,11 +151,12 @@ export async function clearAllSongsSetlistsAndDeck(): Promise<void> {
   }
   writeUserSongsAll([]);
   writeUserSetlistsAll([]);
+  const presentRoom = presentRoomKeyFromActiveSetlist();
   writeActiveDeck(EMPTY_PRESENTER_PLACEHOLDER, "");
   broadcastDeckUpdated();
-  broadcastSlideReset(DEFAULT_PRESENT_ROOM);
-  void postPresenterSlide(DEFAULT_PRESENT_ROOM, 0);
-  await clearPresenterBeamServerSide();
+  broadcastSlideReset(presentRoom);
+  void postPresenterSlide(presentRoom, 0);
+  await clearPresenterBeamServerSide(presentRoom);
 }
 
 /** Rough size of app library keys in localStorage (UTF-16 string length × 2). */

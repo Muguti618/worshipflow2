@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { PresentBeamState } from "@/lib/present-beam";
 import { parsePresentBeamState } from "@/lib/present-beam";
+import { parseDeckSlidesJson } from "@/lib/present-deck-json";
+import type { DeckSlide } from "@/lib/setlists-catalog";
 import {
   readPersistedBeam,
   readPersistedSlideIndex,
@@ -20,26 +22,32 @@ type Options = {
   room: string;
   /** master = can POST (presenter, phone control); viewer = audience */
   role: "master" | "viewer";
-  slideCount: number;
+  /** This device’s deck (usually localStorage); merged with server mirror for phones / audience. */
+  localDeck: DeckSlide[];
 };
 
-export function useRoomSlide({ room, role, slideCount }: Options) {
+export function useRoomSlide({ room, role, localDeck }: Options) {
   const [index, setIndex] = useState(0);
   const [beam, setBeam] = useState<PresentBeamState | null>(null);
+  const [serverDeck, setServerDeck] = useState<DeckSlide[] | null>(null);
   const [netOnline, setNetOnline] = useState(true);
   const indexRef = useRef(0);
   const beamRef = useRef<PresentBeamState | null>(null);
   const bcRef = useRef<BroadcastChannel | null>(null);
   const lastRemoteUpdateAtRef = useRef<number>(0);
-  /** While a deck slide POST is in flight, ignore polled slideIndex that still shows the old server value (avoids flicker). */
   const pendingMasterSlideRef = useRef<number | null>(null);
-  /** While a Bible beam POST is in flight, ignore polled `beam` so stale server `null` does not wipe the optimistic verse. */
   const beamPostInFlightRef = useRef(false);
-  /**
-   * After the server accepts a slide POST, ignore poll responses that started before that bump — they often
-   * carry the previous slideIndex with the same or older updatedAt (straggler GETs).
-   */
   const presentPollGenerationRef = useRef(0);
+
+  const workingDeck = useMemo(() => {
+    if (serverDeck && serverDeck.length > 0) {
+      if (role === "viewer") return serverDeck;
+      if (serverDeck.length >= localDeck.length) return serverDeck;
+    }
+    return localDeck;
+  }, [role, serverDeck, localDeck]);
+
+  const slideCount = Math.max(1, workingDeck.length);
   const slideCountRef = useRef(slideCount);
   slideCountRef.current = slideCount;
 
@@ -139,7 +147,6 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
         presentPollGenerationRef.current += 1;
         return true;
       } catch {
-        /* offline — keep optimistic beam; localStorage + BC still work */
         return true;
       } finally {
         beamPostInFlightRef.current = false;
@@ -156,7 +163,24 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
     beamRef.current = beam;
   }, [beam]);
 
-  /* Hydrate from storage when the room changes only — avoid re-reading on deck length changes (races BC / slide reset). */
+  useEffect(() => {
+    setServerDeck(null);
+  }, [room]);
+
+  const localDeckSig = useMemo(() => JSON.stringify(localDeck), [localDeck]);
+
+  useEffect(() => {
+    if (role !== "master") return;
+    const t = window.setTimeout(() => {
+      void fetch("/api/present/state", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ room, deck: localDeck }),
+      }).catch(() => {});
+    }, 450);
+    return () => window.clearTimeout(t);
+  }, [room, role, localDeckSig, localDeck]);
+
   useLayoutEffect(() => {
     const maxIdx = Math.max(0, slideCountRef.current - 1);
     const si = readPersistedSlideIndex(room);
@@ -227,9 +251,13 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
           cache: "no-store",
         });
         if (!r.ok || cancelled) return;
-        const j = (await r.json()) as { slideIndex?: number; beam?: unknown; updatedAt?: number };
+        const j = (await r.json()) as {
+          slideIndex?: number;
+          beam?: unknown;
+          updatedAt?: number;
+          deck?: unknown;
+        };
         if (role === "master" && genAtPullStart < presentPollGenerationRef.current) {
-          /* Straggler from before last successful slide POST — discard whole payload (slide + timestamps + beam). */
           return;
         }
         const remoteUpdatedAt =
@@ -237,11 +265,16 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
         if (remoteUpdatedAt !== null && remoteUpdatedAt < lastRemoteUpdateAtRef.current) return;
         if (remoteUpdatedAt !== null) lastRemoteUpdateAtRef.current = remoteUpdatedAt;
 
+        const parsedDeck = parseDeckSlidesJson(j.deck);
+        if (parsedDeck && parsedDeck.length > 0) {
+          setServerDeck(parsedDeck);
+        }
+
         if (typeof j.slideIndex === "number") {
           const c = clamp(j.slideIndex);
           const pend = pendingMasterSlideRef.current;
           if (role === "master" && pend !== null && c !== pend) {
-            /* Stale read while our slide POST is still in flight or racing GET */
+            /* stale */
           } else if (c !== indexRef.current) {
             setIndex(c);
             indexRef.current = c;
@@ -306,5 +339,15 @@ export function useRoomSlide({ room, role, slideCount }: Options) {
     void publishBeam(null);
   }, [role, publishBeam]);
 
-  return { index, beam, publish, publishBeam, clearBeam, go, jump, setIndexView: setIndex };
+  return {
+    index,
+    beam,
+    deck: workingDeck,
+    publish,
+    publishBeam,
+    clearBeam,
+    go,
+    jump,
+    setIndexView: setIndex,
+  };
 }

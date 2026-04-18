@@ -20,6 +20,7 @@ import {
 } from "@/lib/plan-limits";
 import { isDataUrlImage } from "@/lib/read-image-data-url";
 import { SlideStage } from "@/components/wf/slide-stage";
+import { presentRoomKeyFromActiveSetlist } from "@/lib/present-room-key";
 
 function cloneSong(s: LibrarySong): LibrarySong {
   return JSON.parse(JSON.stringify(s)) as LibrarySong;
@@ -374,7 +375,7 @@ export function SongsPage({ initialSongId }: { initialSongId?: string }) {
               Delete
             </button>
             <Link
-              href="/present?room=default"
+              href={`/present?room=${encodeURIComponent(presentRoomKeyFromActiveSetlist())}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-white/[0.1] px-4 text-sm font-medium text-wf-muted hover:text-wf-text"

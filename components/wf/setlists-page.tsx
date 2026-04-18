@@ -5,13 +5,8 @@ import { useCallback, useRef } from "react";
 import { FreeSetlistLimitBanner } from "@/components/wf/free-setlist-limit-banner";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
 import { useAllSetlists } from "@/hooks/use-all-setlists";
-import {
-  broadcastDeckUpdated,
-  broadcastSlideReset,
-  DEFAULT_PRESENT_ROOM,
-  postPresenterSlide,
-  writeActiveDeck,
-} from "@/lib/active-deck";
+import { broadcastDeckUpdated, broadcastSlideReset, postPresenterSlide, writeActiveDeck } from "@/lib/active-deck";
+import { presentRoomKeyForSetlist, presentRoomKeyFromActiveSetlist } from "@/lib/present-room-key";
 import { flattenSetlistToDeck } from "@/lib/setlist-flatten";
 import { FREE_MAX_SETLISTS } from "@/lib/plan-limits";
 import { getSetlistById } from "@/lib/setlists-resolve";
@@ -29,8 +24,9 @@ export function SetlistsPage() {
     if (!def) return;
     writeActiveDeck(flattenSetlistToDeck(def.items), id);
     broadcastDeckUpdated();
-    broadcastSlideReset(DEFAULT_PRESENT_ROOM);
-    void postPresenterSlide(DEFAULT_PRESENT_ROOM, 0);
+    const room = presentRoomKeyForSetlist(id);
+    broadcastSlideReset(room);
+    void postPresenterSlide(room, 0);
   }, []);
 
   const deleteYours = useCallback((id: string, name: string) => {
@@ -76,7 +72,7 @@ export function SetlistsPage() {
             New setlist
           </Link>
           <Link
-            href="/present?room=default"
+            href={`/present?room=${encodeURIComponent(presentRoomKeyFromActiveSetlist())}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-white/[0.12] bg-wf-card/60 px-4 text-sm font-semibold text-wf-text hover:border-white/18"

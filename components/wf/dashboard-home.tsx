@@ -9,12 +9,12 @@ import { useAllSetlists } from "@/hooks/use-all-setlists";
 import {
   broadcastDeckUpdated,
   broadcastSlideReset,
-  DEFAULT_PRESENT_ROOM,
   EMPTY_PRESENTER_PLACEHOLDER,
   postPresenterSlide,
   readActiveSetlistId,
   writeActiveDeck,
 } from "@/lib/active-deck";
+import { presentRoomKeyForSetlist } from "@/lib/present-room-key";
 import { kindLabel } from "@/lib/setlists-catalog";
 import { getDashboardGreeting } from "@/lib/dashboard-greeting";
 import { flattenSetlistToDeck, itemRangesInDeck } from "@/lib/setlist-flatten";
@@ -93,6 +93,8 @@ export function DashboardHome() {
     [activeListId, listVersion],
   );
 
+  const presentRoom = useMemo(() => presentRoomKeyForSetlist(activeListId), [activeListId]);
+
   const setlistRanges = useMemo(
     () => (activeSetlist ? itemRangesInDeck(activeSetlist.items) : []),
     [activeSetlist],
@@ -104,8 +106,9 @@ export function DashboardHome() {
     if (!def) return;
     writeActiveDeck(flattenSetlistToDeck(def.items), id);
     broadcastDeckUpdated();
-    broadcastSlideReset(DEFAULT_PRESENT_ROOM);
-    void postPresenterSlide(DEFAULT_PRESENT_ROOM, 0);
+    const room = presentRoomKeyForSetlist(id);
+    broadcastSlideReset(room);
+    void postPresenterSlide(room, 0);
     setActiveListId(id);
     setPreviewIdx(0);
   }, []);
@@ -132,9 +135,9 @@ export function DashboardHome() {
     stageBackground.backgroundUrl ??
     (!stageBackground.backgroundColor?.trim() ? PREVIEW_FALLBACK_BG : undefined);
 
-  const presentHref = `/present?room=${encodeURIComponent(DEFAULT_PRESENT_ROOM)}`;
-  const audienceHref = `/present/audience?room=${encodeURIComponent(DEFAULT_PRESENT_ROOM)}`;
-  const controlHref = `/present/control?room=${encodeURIComponent(DEFAULT_PRESENT_ROOM)}`;
+  const presentHref = `/present?room=${encodeURIComponent(presentRoom)}`;
+  const audienceHref = `/present/audience?room=${encodeURIComponent(presentRoom)}`;
+  const controlHref = `/present/control?room=${encodeURIComponent(presentRoom)}`;
 
   const previewSongContext = useMemo(() => {
     for (const { item, startIndex, count } of setlistRanges) {
@@ -274,11 +277,11 @@ export function DashboardHome() {
               <p className="text-xs font-medium text-wf-muted">Phone / tablet remote</p>
               <p className="mt-1 text-[11px] leading-snug text-wf-muted">
                 Scan with your camera to open the controller for room{" "}
-                <span className="font-mono text-wf-text/90">{DEFAULT_PRESENT_ROOM}</span> on this Wi‑Fi
+                <span className="font-mono text-wf-text/90">{presentRoom}</span> on this Wi‑Fi
                 (same address as this browser).
               </p>
               <div className="mt-3 flex justify-center">
-                <RemoteControlQr room={DEFAULT_PRESENT_ROOM} size={160} />
+                <RemoteControlQr room={presentRoom} size={160} />
               </div>
               <Link
                 href={controlHref}

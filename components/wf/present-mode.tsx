@@ -20,12 +20,11 @@ function keyTargetIsFormField(target: EventTarget | null): boolean {
 
 export function PresentMode({ room }: { room: string }) {
   const { limitsApply, ready } = usePlanEntitlements();
-  const deck = useActiveDeck();
-  const count = Math.max(1, deck.length);
-  const { index: i, go, jump, beam, publishBeam, clearBeam } = useRoomSlide({
+  const localDeck = useActiveDeck();
+  const { index: i, go, jump, beam, deck, publishBeam, clearBeam } = useRoomSlide({
     room,
     role: "master",
-    slideCount: count,
+    localDeck,
   });
 
   const [quickBeamOpen, setQuickBeamOpen] = useState(false);

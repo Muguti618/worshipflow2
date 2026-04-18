@@ -9,12 +9,11 @@ import { useRoomSlide } from "@/hooks/use-room-slide";
 
 export function RemoteControl({ room }: { room: string }) {
   const { limitsApply, remotePolicyReady } = usePlanEntitlements();
-  const deck = useActiveDeck();
-  const count = Math.max(1, deck.length);
-  const { index: i, go, jump, beam, clearBeam } = useRoomSlide({
+  const localDeck = useActiveDeck();
+  const { index: i, go, jump, beam, deck, clearBeam } = useRoomSlide({
     room,
     role: "master",
-    slideCount: count,
+    localDeck,
   });
 
   const [copied, setCopied] = useState(false);

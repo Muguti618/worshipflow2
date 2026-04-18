@@ -1,15 +1,22 @@
 import type { PresentBeamState } from "@/lib/present-beam";
 import { parsePresentBeamState } from "@/lib/present-beam";
+import { parseDeckSlidesJson } from "@/lib/present-deck-json";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import type { DeckSlide } from "@/lib/setlists-catalog";
 
 export type PresentStatePayload = {
   room: string;
   slideIndex: number;
   beam: PresentBeamState | null;
   updatedAt: number;
+  deck: DeckSlide[] | null;
 };
 
-/** Signed-in users: shared DB row so verse beams work across serverless instances. */
+function deckFromRow(raw: unknown): DeckSlide[] | null {
+  return parseDeckSlidesJson(raw);
+}
+
+/** Signed-in users: shared DB row so verse beams and deck sync work across devices. */
 export async function getPresentStateFromSupabase(room: string): Promise<PresentStatePayload | null> {
   const sb = await createServerSupabaseClient();
   if (!sb) return null;
@@ -20,7 +27,7 @@ export async function getPresentStateFromSupabase(room: string): Promise<Present
 
   const { data, error } = await sb
     .from("present_states")
-    .select("slide_index, beam, updated_at")
+    .select("slide_index, beam, updated_at, deck_slides")
     .eq("user_id", user.id)
     .eq("room_key", room)
     .maybeSingle();
@@ -28,7 +35,7 @@ export async function getPresentStateFromSupabase(room: string): Promise<Present
   if (error) return null;
 
   if (!data) {
-    return { room, slideIndex: 0, beam: null, updatedAt: Date.now() };
+    return { room, slideIndex: 0, beam: null, updatedAt: Date.now(), deck: null };
   }
 
   const beamParsed =
@@ -39,13 +46,18 @@ export async function getPresentStateFromSupabase(room: string): Promise<Present
     slideIndex: typeof data.slide_index === "number" ? Math.max(0, data.slide_index) : 0,
     beam: beamParsed,
     updatedAt: data.updated_at ? new Date(data.updated_at as string).getTime() : Date.now(),
+    deck: deckFromRow((data as { deck_slides?: unknown }).deck_slides),
   };
 }
 
-function rowToPayload(
-  room: string,
-  row: { slide_index: unknown; beam: unknown; updated_at: unknown },
-): PresentStatePayload {
+type PresentStateRow = {
+  slide_index: unknown;
+  beam: unknown;
+  updated_at: unknown;
+  deck_slides?: unknown;
+};
+
+function rowToPayload(room: string, row: PresentStateRow): PresentStatePayload {
   const beamParsed =
     row.beam === null || row.beam === undefined ? null : parsePresentBeamState(row.beam);
   return {
@@ -53,17 +65,23 @@ function rowToPayload(
     slideIndex: typeof row.slide_index === "number" ? Math.max(0, row.slide_index) : 0,
     beam: beamParsed,
     updatedAt: row.updated_at ? new Date(row.updated_at as string).getTime() : Date.now(),
+    deck: deckFromRow(row.deck_slides),
   };
 }
 
+export type PresentStatePatch = {
+  slideIndex?: number;
+  beam?: PresentBeamState | null;
+  /** Replace mirrored deck; null clears. */
+  deck?: DeckSlide[] | null;
+};
+
 /**
- * Apply slide / beam patches without read–modify–write on the full row.
- * Otherwise a beam-only POST can race with a slide advance and write back a stale `slide_index`
- * (presenter + audience briefly jump to old slides).
+ * Apply slide / beam / deck patches without read–modify–write on the full row.
  */
 export async function patchPresentStateInSupabase(
   room: string,
-  patch: { slideIndex?: number; beam?: PresentBeamState | null },
+  patch: PresentStatePatch,
 ): Promise<PresentStatePayload | null> {
   const sb = await createServerSupabaseClient();
   if (!sb) return null;
@@ -75,14 +93,22 @@ export async function patchPresentStateInSupabase(
   const userId = user.id;
   const hasSlide = typeof patch.slideIndex === "number" && Number.isFinite(patch.slideIndex);
   const hasBeam = "beam" in patch;
-  if (!hasSlide && !hasBeam) return null;
+  const hasDeck = "deck" in patch;
+  if (!hasSlide && !hasBeam && !hasDeck) return null;
 
-  const updatePayload: { slide_index?: number; beam?: PresentBeamState | null } = {};
+  const updatePayload: {
+    slide_index?: number;
+    beam?: PresentBeamState | null;
+    deck_slides?: DeckSlide[] | null;
+  } = {};
   if (hasSlide) {
     updatePayload.slide_index = Math.max(0, Math.floor(patch.slideIndex as number));
   }
   if (hasBeam) {
     updatePayload.beam = patch.beam ?? null;
+  }
+  if (hasDeck) {
+    updatePayload.deck_slides = patch.deck ?? null;
   }
 
   const { data: updated, error: updateErr } = await sb
@@ -90,16 +116,17 @@ export async function patchPresentStateInSupabase(
     .update(updatePayload)
     .eq("user_id", userId)
     .eq("room_key", room)
-    .select("slide_index, beam, updated_at");
+    .select("slide_index, beam, updated_at, deck_slides");
 
   if (updateErr) return null;
 
   if (updated && updated.length > 0) {
-    return rowToPayload(room, updated[0] as { slide_index: unknown; beam: unknown; updated_at: unknown });
+    return rowToPayload(room, updated[0] as PresentStateRow);
   }
 
   const insertSlide = hasSlide ? Math.max(0, Math.floor(patch.slideIndex as number)) : 0;
   const insertBeam = hasBeam ? patch.beam ?? null : null;
+  const insertDeck = hasDeck ? patch.deck ?? null : null;
 
   const { data: inserted, error: insertErr } = await sb
     .from("present_states")
@@ -108,22 +135,22 @@ export async function patchPresentStateInSupabase(
       room_key: room,
       slide_index: insertSlide,
       beam: insertBeam,
+      deck_slides: insertDeck,
     })
-    .select("slide_index, beam, updated_at")
+    .select("slide_index, beam, updated_at, deck_slides")
     .maybeSingle();
 
   if (!insertErr && inserted) {
-    return rowToPayload(room, inserted as { slide_index: unknown; beam: unknown; updated_at: unknown });
+    return rowToPayload(room, inserted as PresentStateRow);
   }
 
-  /* Row may have been created between update and insert (unique conflict). */
   const { data: retry, error: retryErr } = await sb
     .from("present_states")
     .update(updatePayload)
     .eq("user_id", userId)
     .eq("room_key", room)
-    .select("slide_index, beam, updated_at");
+    .select("slide_index, beam, updated_at, deck_slides");
 
   if (retryErr || !retry?.length) return null;
-  return rowToPayload(room, retry[0] as { slide_index: unknown; beam: unknown; updated_at: unknown });
+  return rowToPayload(room, retry[0] as PresentStateRow);
 }
