@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
+import { PresentSlidePicker } from "@/components/wf/present-slide-picker";
 import { QuickBeamModal } from "@/components/wf/quick-beam-modal";
 import { SlideTransitionShell } from "@/components/wf/slide-transition-shell";
 import { SlideStage } from "@/components/wf/slide-stage";
@@ -28,6 +29,7 @@ export function PresentMode({ room }: { room: string }) {
   });
 
   const [quickBeamOpen, setQuickBeamOpen] = useState(false);
+  const [slidePickerOpen, setSlidePickerOpen] = useState(false);
   const [slideTransition] = useSlideTransition();
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export function PresentMode({ room }: { room: string }) {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
       if (keyTargetIsFormField(e.target)) return;
-      if (quickBeamOpen) return;
+      if (quickBeamOpen || slidePickerOpen) return;
       if (e.shiftKey && (e.key === "b" || e.key === "B")) {
         e.preventDefault();
         setQuickBeamOpen(true);
@@ -72,7 +74,7 @@ export function PresentMode({ room }: { room: string }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go, quickBeamOpen]);
+  }, [go, quickBeamOpen, slidePickerOpen]);
 
   useEffect(() => {
     if (!quickBeamOpen) return;
@@ -214,22 +216,13 @@ export function PresentMode({ room }: { room: string }) {
               Back to setlist
             </button>
           ) : null}
-          <select
-            className="rounded-[12px] border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none"
-            value={i}
-            onChange={(e) => jump(Number(e.target.value))}
-            aria-label="Jump to section"
+          <button
+            type="button"
+            onClick={() => setSlidePickerOpen(true)}
+            className="rounded-[12px] border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10"
           >
-            {deck.map((s, idx) => (
-              <option
-                key={`${idx}-${s.title}`}
-                value={idx}
-                className="bg-zinc-950 text-white"
-              >
-                {idx + 1}. {s.title}
-              </option>
-            ))}
-          </select>
+            All slides…
+          </button>
           <button
             type="button"
             data-wf-tour="tour-present-quick-verse"
@@ -241,10 +234,10 @@ export function PresentMode({ room }: { room: string }) {
           </button>
         </div>
         <p className="mt-2 text-center text-[11px] text-white/35">
-          Deck comes from the <strong className="text-white/50">Dashboard</strong> setlist.{" "}
-          <strong className="text-white/50">Quick beam</strong> sends scripture or a spontaneous song to
-          Audience (and Remote on Pro) without editing the setlist.{" "}
-          <span className="text-white/40">Shift+B</span> opens this panel. Open{" "}
+          Use <strong className="text-white/50">All slides</strong> to preview lyric lines and jump anywhere
+          in the setlist. Deck comes from the <strong className="text-white/50">Dashboard</strong>.{" "}
+          <strong className="text-white/50">Quick beam</strong> ( <span className="text-white/40">Shift+B</span> )
+          sends scripture or a spontaneous song without editing the setlist. Open{" "}
           <strong className="text-white/50">Audience</strong> on the projector.
         </p>
       </footer>
@@ -254,6 +247,17 @@ export function PresentMode({ room }: { room: string }) {
         onClose={() => setQuickBeamOpen(false)}
         publishBeam={publishBeam}
         limitsApply={limitsApply}
+      />
+
+      <PresentSlidePicker
+        open={slidePickerOpen}
+        onClose={() => setSlidePickerOpen(false)}
+        deck={deck}
+        activeIndex={i}
+        onJump={(idx) => {
+          jump(idx);
+          if (beamSlides && beamSlides.length > 0) void clearBeam();
+        }}
       />
     </div>
   );

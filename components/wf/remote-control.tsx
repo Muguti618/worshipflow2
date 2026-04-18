@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { PresentSlidePicker } from "@/components/wf/present-slide-picker";
 import { usePlanEntitlements } from "@/components/wf/plan-entitlements-context";
 import { useActiveDeck } from "@/hooks/use-active-deck";
 import { useRoomSlide } from "@/hooks/use-room-slide";
@@ -17,6 +18,7 @@ export function RemoteControl({ room }: { room: string }) {
   });
 
   const [copied, setCopied] = useState(false);
+  const [slidePickerOpen, setSlidePickerOpen] = useState(false);
   const deckSlide = deck[Math.min(i, deck.length - 1)]!;
   const beamSlides = beam?.slides;
   const beamIdx = beam?.index ?? 0;
@@ -39,6 +41,7 @@ export function RemoteControl({ room }: { room: string }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
+      if (slidePickerOpen) return;
       if (e.key === "ArrowRight") {
         e.preventDefault();
         go(1);
@@ -50,7 +53,7 @@ export function RemoteControl({ room }: { room: string }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go]);
+  }, [go, slidePickerOpen]);
 
   if (!remotePolicyReady) {
     return (
@@ -146,27 +149,31 @@ export function RemoteControl({ room }: { room: string }) {
         </div>
 
         <div>
-          <label htmlFor="wf-remote-jump" className="text-xs text-white/45">
-            Jump
-          </label>
-          <select
-            id="wf-remote-jump"
-            className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 py-3 text-sm outline-none"
-            value={i}
-            onChange={(e) => jump(Number(e.target.value))}
+          <p className="text-xs text-white/45">Jump to slide</p>
+          <button
+            type="button"
+            onClick={() => setSlidePickerOpen(true)}
+            className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 py-3 text-sm font-medium text-white outline-none hover:bg-white/[0.08]"
           >
-            {deck.map((s, idx) => (
-              <option key={`${idx}-${s.title}`} value={idx}>
-                {idx + 1}. {s.title}
-              </option>
-            ))}
-          </select>
+            Browse all slides…
+          </button>
         </div>
       </div>
 
       <p className="mt-8 text-center text-[11px] text-white/35">
         Deck syncs from the dashboard setlist. Same room id as Present and Audience.
       </p>
+
+      <PresentSlidePicker
+        open={slidePickerOpen}
+        onClose={() => setSlidePickerOpen(false)}
+        deck={deck}
+        activeIndex={i}
+        onJump={(idx) => {
+          jump(idx);
+          if (beamSlides && beamSlides.length > 0) void clearBeam();
+        }}
+      />
     </div>
   );
 }
