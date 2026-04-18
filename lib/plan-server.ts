@@ -1,4 +1,5 @@
 import { billingSnapshotGrantsPro } from "@/lib/billing-sync";
+import { isUserIdProAllowlisted } from "@/lib/pro-allowlist";
 import { getStripePriceIds, isStripeConfigured } from "@/lib/stripe";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -37,6 +38,7 @@ export async function sessionMayUseProAiApis(): Promise<boolean> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return false;
+  if (isUserIdProAllowlisted(user.id)) return true;
   const { data, error } = await supabase
     .from("billing_subscriptions")
     .select("tier, status, stripe_subscription_id")

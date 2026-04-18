@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { readSlideTransition, writeSlideTransition } from "@/lib/slide-transition";
 import { isFreePlanTransition } from "@/lib/plan-limits";
+import { isUserIdProAllowlisted } from "@/lib/pro-allowlist";
 
 export type PlanEntitlements = {
   ready: boolean;
@@ -45,14 +46,19 @@ export function PlanEntitlementsProvider({ children }: { children: React.ReactNo
       return;
     }
     setBillingAvailable(true);
-    const st = await fetch("/api/stripe/billing-status", { credentials: "same-origin" });
+    const st = await fetch("/api/stripe/billing-status", {
+      credentials: "same-origin",
+      cache: "no-store",
+    });
     if (st.status === 401 || !st.ok) {
+      // Preserve prior behaviour: do not strand signed-in users on Free when billing fetch fails.
       setIsPro(true);
       setBillingReady(true);
       return;
     }
     const j = (await st.json()) as { isPro?: boolean };
-    setIsPro(Boolean(j.isPro));
+    const apiPro = Boolean(j.isPro);
+    setIsPro(apiPro || isUserIdProAllowlisted(session.userId));
     setBillingReady(true);
   }, [authHydrated, session]);
 

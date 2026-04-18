@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useAuthSession } from "@/hooks/use-auth-session";
 import { createStripeCheckoutSession, type CheckoutPlan } from "@/lib/stripe-checkout-client";
+import { isUserIdProAllowlisted } from "@/lib/pro-allowlist";
 
 async function postStripeSync(payload: Record<string, unknown>): Promise<string | null> {
   const res = await fetch("/api/stripe/sync-billing", {
@@ -71,6 +73,7 @@ type BillingSettingsInnerProps = {
 
 function BillingSettingsInner({ autoStartPlan = null }: BillingSettingsInnerProps) {
   const searchParams = useSearchParams();
+  const { session } = useAuthSession();
   const billingFlash = searchParams.get("billing");
 
   const [checkoutLoading, setCheckoutLoading] = useState<null | CheckoutPlan>(null);
@@ -84,7 +87,10 @@ function BillingSettingsInner({ autoStartPlan = null }: BillingSettingsInnerProp
 
   const loadStatus = useCallback(async () => {
     setStatusError(null);
-    const res = await fetch("/api/stripe/billing-status", { credentials: "same-origin" });
+    const res = await fetch("/api/stripe/billing-status", {
+      credentials: "same-origin",
+      cache: "no-store",
+    });
     if (res.status === 401) {
       setStatus(null);
       return;
@@ -95,8 +101,12 @@ function BillingSettingsInner({ autoStartPlan = null }: BillingSettingsInnerProp
       return;
     }
     const j = (await res.json()) as BillingStatus;
-    setStatus(j);
-  }, []);
+    const allowlisted = isUserIdProAllowlisted(session?.userId);
+    setStatus({
+      ...j,
+      isPro: Boolean(j.isPro) || allowlisted,
+    });
+  }, [session?.userId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -112,7 +122,7 @@ function BillingSettingsInner({ autoStartPlan = null }: BillingSettingsInnerProp
 
   useEffect(() => {
     if (availability) void loadStatus();
-  }, [availability, loadStatus]);
+  }, [availability, loadStatus, session?.userId]);
 
   useEffect(() => {
     if (!availability || billingFlash !== "success" || checkoutSuccessSynced.current) return;

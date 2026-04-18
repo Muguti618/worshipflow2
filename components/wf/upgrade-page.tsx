@@ -4,10 +4,13 @@ import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { BillingSettings } from "@/components/wf/billing-settings";
+import { useAuthSession } from "@/hooks/use-auth-session";
+import { isUserIdProAllowlisted } from "@/lib/pro-allowlist";
 import type { CheckoutPlan } from "@/lib/stripe-checkout-client";
 
 function UpgradePageBody() {
   const searchParams = useSearchParams();
+  const { session } = useAuthSession();
   const raw = searchParams.get("checkout");
   const autoStartPlan: CheckoutPlan | null =
     raw === "yearly" ? "yearly" : raw === "monthly" ? "monthly" : null;
@@ -17,7 +20,10 @@ function UpgradePageBody() {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const res = await fetch("/api/stripe/billing-status", { credentials: "same-origin" });
+      const res = await fetch("/api/stripe/billing-status", {
+        credentials: "same-origin",
+        cache: "no-store",
+      });
       if (cancelled) return;
       if (res.status === 401) {
         setIsPro(false);
@@ -28,12 +34,13 @@ function UpgradePageBody() {
         return;
       }
       const j = (await res.json()) as { isPro?: boolean };
-      setIsPro(Boolean(j.isPro));
+      const uid = session?.userId;
+      setIsPro(Boolean(j.isPro) || isUserIdProAllowlisted(uid));
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [session?.userId]);
 
   return (
     <div className="mx-auto max-w-2xl p-6 lg:p-8">

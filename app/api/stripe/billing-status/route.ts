@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { billingSnapshotGrantsPro } from "@/lib/billing-sync";
+import { isUserIdProAllowlisted } from "@/lib/pro-allowlist";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   if (!isSupabaseConfigured()) {
@@ -34,16 +37,24 @@ export async function GET() {
 
   const tier = (data?.tier as string) ?? "free";
   const status = (data?.status as string) ?? "none";
-  /** Pro = Stripe in good standing, or comped row (Pro tier + status none), etc. */
-  const isPro = billingSnapshotGrantsPro(data ?? null);
+  /** Pro = Stripe in good standing, comped row, or WF_PRO_USER_IDS allowlist. */
+  const isPro =
+    billingSnapshotGrantsPro(data ?? null) || isUserIdProAllowlisted(user.id);
 
-  return NextResponse.json({
-    tier,
-    status,
-    isPro,
-    hasStripeCustomer: Boolean(data?.stripe_customer_id),
-    current_period_end: data?.current_period_end ?? null,
-    trial_end: data?.trial_end ?? null,
-    cancel_at_period_end: data?.cancel_at_period_end ?? false,
-  });
+  return NextResponse.json(
+    {
+      tier,
+      status,
+      isPro,
+      hasStripeCustomer: Boolean(data?.stripe_customer_id),
+      current_period_end: data?.current_period_end ?? null,
+      trial_end: data?.trial_end ?? null,
+      cancel_at_period_end: data?.cancel_at_period_end ?? false,
+    },
+    {
+      headers: {
+        "Cache-Control": "private, no-store, max-age=0",
+      },
+    },
+  );
 }
