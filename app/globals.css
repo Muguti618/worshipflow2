@@ -67,7 +67,7 @@ body {
 }
 
 .wf-slide-enter-fade {
-  animation: wf-slide-enter-fade 0.38s ease-out both;
+  animation: wf-slide-enter-fade 0.22s ease-out both;
 }
 
 @keyframes wf-slide-enter-push {
@@ -82,7 +82,7 @@ body {
 }
 
 .wf-slide-enter-push {
-  animation: wf-slide-enter-push 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: wf-slide-enter-push 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes wf-slide-enter-blur {
@@ -97,7 +97,7 @@ body {
 }
 
 .wf-slide-enter-blur {
-  animation: wf-slide-enter-blur 0.45s ease-out both;
+  animation: wf-slide-enter-blur 0.3s ease-out both;
 }
 
 @keyframes wf-tour-pulse {

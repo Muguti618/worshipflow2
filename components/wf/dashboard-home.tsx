@@ -276,9 +276,10 @@ export function DashboardHome() {
             <div className="rounded-[14px] border border-white/[0.08] bg-wf-card/50 p-3 backdrop-blur-xl">
               <p className="text-xs font-medium text-wf-muted">Phone / tablet remote</p>
               <p className="mt-1 text-[11px] leading-snug text-wf-muted">
-                Scan with your camera to open the controller for room{" "}
-                <span className="font-mono text-wf-text/90">{presentRoom}</span> on this Wi‑Fi
-                (same address as this browser).
+                Scan to open the controller for room{" "}
+                <span className="font-mono text-wf-text/90">{presentRoom}</span>. Use the same
+                worshipflow2 site and sign in as this account — phone can be on Wi‑Fi or cellular;
+                both devices need internet (not the same network).
               </p>
               <div className="mt-3 flex justify-center">
                 <RemoteControlQr room={presentRoom} size={160} />

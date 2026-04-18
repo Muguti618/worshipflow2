@@ -14,6 +14,13 @@ import {
 
 export const PRESENT_BC_PREFIX = "worshipflow2-present";
 
+/** Audience / projector: tight poll so another device’s slide advances feel instant. */
+const POLL_MS_VIEWER = 200;
+/** Presenter + phone remote (both use master): follow the other device’s POSTs quickly. */
+const POLL_MS_MASTER = 320;
+/** Deck JSON can be large — short debounce still cuts burst edits on dashboard. */
+const DECK_POST_DEBOUNCE_MS = 100;
+
 function channelName(room: string) {
   return `${PRESENT_BC_PREFIX}:${room}`;
 }
@@ -177,7 +184,7 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ room, deck: localDeck }),
       }).catch(() => {});
-    }, 450);
+    }, DECK_POST_DEBOUNCE_MS);
     return () => window.clearTimeout(t);
   }, [room, role, localDeckSig, localDeck]);
 
@@ -304,7 +311,7 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
         cancelled = true;
       };
     }
-    const pollMs = role === "master" ? 1100 : 700;
+    const pollMs = role === "master" ? POLL_MS_MASTER : POLL_MS_VIEWER;
     const id = window.setInterval(pull, pollMs);
     return () => {
       cancelled = true;
