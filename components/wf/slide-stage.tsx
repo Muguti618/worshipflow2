@@ -20,6 +20,8 @@ type SlideStageProps = {
   className?: string;
   /** Room / projector: edge-to-edge, larger type. `preview`: dashboard hero, larger type, no outer chrome. */
   variant?: "default" | "audience" | "preview";
+  /** With `variant="preview"`: extra-large type for phone remote “Live on screen”. */
+  previewSize?: "default" | "large";
   /** Subtle slow zoom/pan on background (image only). */
   motion?: boolean;
   /** Minimal / high-contrast vs softer editorial */
@@ -42,6 +44,7 @@ export function SlideStage({
   backgroundFullBleed = false,
   className = "",
   variant = "default",
+  previewSize = "default",
   motion = false,
   typography = "default",
   audienceFooter,
@@ -49,6 +52,7 @@ export function SlideStage({
 }: SlideStageProps) {
   const isAudience = variant === "audience";
   const isPreview = variant === "preview";
+  const previewLarge = isPreview && previewSize === "large";
   const editorial = typography === "editorial";
   const isSongTitle = layout === "song-title";
   const title = (_title ?? "").trim();
@@ -134,8 +138,10 @@ export function SlideStage({
         }`}
       >
         <div
-          className={`flex flex-col items-center justify-center px-6 py-8 text-center md:px-12 md:py-12 ${
-            isAudience ? "min-h-0 flex-1" : ""
+          className={`flex flex-col items-center justify-center text-center ${
+            previewLarge
+              ? "min-h-0 flex-1 px-5 py-10 sm:px-8 sm:py-12 md:px-10 md:py-14"
+              : `px-6 py-8 md:px-12 md:py-12 ${isAudience ? "min-h-0 flex-1" : ""}`
           }`}
         >
           {isSongTitle && songTitleText ? (
@@ -143,9 +149,11 @@ export function SlideStage({
               className={`max-w-[95%] text-balance font-extrabold leading-[1.05] tracking-tight text-white drop-shadow-lg ${
                 isAudience
                   ? "text-[clamp(2.25rem,8vw,5.5rem)]"
-                  : isPreview
-                    ? "text-[clamp(1.75rem,5vw,3.75rem)]"
-                    : "text-[clamp(1.5rem,4.5vw,2.75rem)]"
+                  : previewLarge
+                    ? "text-[clamp(2rem,6.5vw,4.25rem)]"
+                    : isPreview
+                      ? "text-[clamp(1.75rem,5vw,3.75rem)]"
+                      : "text-[clamp(1.5rem,4.5vw,2.75rem)]"
               }`}
             >
               {songTitleText}
@@ -162,7 +170,9 @@ export function SlideStage({
                   </div>
                 </div>
               ) : null}
-              <div className={`space-y-3 md:space-y-4 ${isAudience ? "max-w-5xl" : ""}`}>
+              <div
+                className={`${previewLarge ? "max-w-4xl space-y-4 md:space-y-5" : `space-y-3 md:space-y-4 ${isAudience ? "max-w-5xl" : ""}`}`}
+              >
                 {lines.map((line, i) => (
                   <p
                     key={`${i}-${line.slice(0, 12)}`}
@@ -170,14 +180,18 @@ export function SlideStage({
                       editorial
                         ? isAudience
                           ? "text-3xl font-light sm:text-4xl md:text-5xl lg:text-6xl"
-                          : isPreview
-                            ? "text-[1.35rem] font-light leading-tight sm:text-2xl md:text-3xl lg:text-[2rem]"
-                            : "text-xl font-light md:text-2xl"
+                          : previewLarge
+                            ? "text-[1.65rem] font-light leading-tight sm:text-[1.85rem] md:text-3xl lg:text-4xl"
+                            : isPreview
+                              ? "text-[1.35rem] font-light leading-tight sm:text-2xl md:text-3xl lg:text-[2rem]"
+                              : "text-xl font-light md:text-2xl"
                         : isAudience
                           ? "text-3xl font-semibold sm:text-4xl md:text-5xl lg:text-6xl"
-                          : isPreview
-                            ? "text-[1.35rem] font-semibold leading-tight sm:text-2xl md:text-3xl lg:text-[2rem]"
-                            : "text-2xl font-semibold md:text-3xl"
+                          : previewLarge
+                            ? "text-[1.65rem] font-semibold leading-tight sm:text-[1.85rem] md:text-3xl lg:text-4xl"
+                            : isPreview
+                              ? "text-[1.35rem] font-semibold leading-tight sm:text-2xl md:text-3xl lg:text-[2rem]"
+                              : "text-2xl font-semibold md:text-3xl"
                     }`}
                   >
                     {line}

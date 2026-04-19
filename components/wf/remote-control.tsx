@@ -51,7 +51,7 @@ function RemoteSlideStripCard({
           : "border-white/[0.08] hover:border-white/20 hover:bg-white/[0.02]"
       }`}
     >
-      <div className="relative aspect-[16/10] w-full">
+      <div className="relative h-[15.5rem] w-full sm:h-[17.5rem]">
         {color ? (
           <div className="absolute inset-0" style={{ backgroundColor: color }} aria-hidden />
         ) : (
@@ -64,19 +64,19 @@ function RemoteSlideStripCard({
         <div
           className={
             fullBleed
-              ? "absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/70"
-              : "absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-900/55 to-slate-950/90"
+              ? "absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-black/75"
+              : "absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-900/65 to-slate-950/92"
           }
           aria-hidden
         />
-        <div className="absolute inset-0 z-[1] flex flex-col justify-end p-3 sm:p-4">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+        <div className="absolute inset-0 z-[1] flex flex-col items-center justify-center px-4 py-5 text-center sm:px-6 sm:py-6">
+          <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/50 sm:text-xs">
             Slide {index + 1}
           </span>
-          <p className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-white drop-shadow-md">
+          <p className="mt-2 line-clamp-3 text-base font-bold leading-snug text-white drop-shadow-md sm:text-lg md:text-xl">
             {thumbPrimaryLabel(slide)}
           </p>
-          <p className="mt-1 line-clamp-3 text-[11px] leading-snug text-white/70 drop-shadow">
+          <p className="mt-2 line-clamp-4 max-w-[96%] text-sm leading-relaxed text-white/85 drop-shadow sm:text-base md:text-[1.05rem]">
             {thumbLyricPreview(slide)}
           </p>
         </div>
@@ -102,7 +102,7 @@ function BeamSlideChip({
     <button
       type="button"
       onClick={onPick}
-      className={`relative h-28 w-[7.25rem] shrink-0 overflow-hidden rounded-xl border text-left transition ${
+      className={`relative h-36 w-[8.75rem] shrink-0 overflow-hidden rounded-xl border text-left transition sm:h-40 sm:w-[9.5rem] ${
         active
           ? "border-amber-400/80 ring-2 ring-amber-400/30"
           : "border-white/10 hover:border-white/25"
@@ -117,10 +117,12 @@ function BeamSlideChip({
           aria-hidden
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" aria-hidden />
-      <div className="absolute inset-x-0 bottom-0 z-[1] p-2">
-        <p className="text-[9px] font-bold text-amber-200/90">#{index + 1}</p>
-        <p className="line-clamp-2 text-[10px] font-medium leading-tight text-white">{slide.title}</p>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/80" aria-hidden />
+      <div className="absolute inset-0 z-[1] flex flex-col items-center justify-center px-2 text-center">
+        <p className="text-[10px] font-bold text-amber-200/95 sm:text-[11px]">#{index + 1}</p>
+        <p className="mt-1 line-clamp-3 text-xs font-semibold leading-snug text-white drop-shadow sm:text-sm">
+          {slide.title}
+        </p>
       </div>
     </button>
   );
@@ -218,7 +220,7 @@ export function RemoteControl({ room }: { room: string }) {
     <div className="relative flex min-h-[100dvh] flex-col bg-gradient-to-b from-zinc-950 via-zinc-950 to-black text-white">
       <PresentationSupersededOverlay open={sessionSuperseded} variant="remote" />
       <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-zinc-950/90 px-4 py-3 backdrop-blur-md">
-        <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
+        <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/35">
               Remote
@@ -243,7 +245,7 @@ export function RemoteControl({ room }: { room: string }) {
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 pb-4 pt-4">
+      <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 px-4 pb-4 pt-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
             Live on screen
@@ -256,7 +258,8 @@ export function RemoteControl({ room }: { room: string }) {
           <div className="mt-2 overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/50">
             <SlideStage
               variant="preview"
-              className="min-h-[min(40vh,20rem)] w-full rounded-2xl border-0 shadow-none"
+              previewSize="large"
+              className="min-h-[min(48vh,26rem)] w-full rounded-2xl border-0 shadow-none sm:min-h-[min(50vh,28rem)]"
               title={onScreen.title}
               lines={onScreen.lines}
               layout={onScreen.layout}
@@ -325,7 +328,7 @@ export function RemoteControl({ room }: { room: string }) {
           <p className="mt-0.5 text-[11px] text-white/45">
             Background and lyrics match each step. Tap to jump the room to that slide.
           </p>
-          <div className="mt-3 flex max-h-[min(48vh,26rem)] min-h-[10rem] flex-col gap-3 overflow-y-auto overscroll-contain pr-1 [-webkit-overflow-scrolling:touch]">
+          <div className="mt-3 flex max-h-[min(54vh,34rem)] min-h-[12rem] flex-col gap-4 overflow-y-auto overscroll-contain pr-1 [-webkit-overflow-scrolling:touch]">
             {deck.map((slide, idx) => (
               <div
                 key={`${idx}-${slide.title.slice(0, 24)}`}
@@ -349,7 +352,7 @@ export function RemoteControl({ room }: { room: string }) {
         </div>
       </div>
 
-      <p className="mx-auto max-w-lg px-4 pb-6 text-center text-[10px] text-white/30">
+      <p className="mx-auto max-w-xl px-4 pb-6 text-center text-[10px] text-white/30">
         Same room as Present &amp; Audience. Sign in on both devices; internet required (not same
         Wi‑Fi).
       </p>
