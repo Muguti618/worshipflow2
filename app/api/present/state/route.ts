@@ -6,6 +6,7 @@ import type { PresentBeamState } from "@/lib/present-beam";
 import { parsePresentBeamState } from "@/lib/present-beam";
 import { parseDeckSlidesJson } from "@/lib/present-deck-json";
 import {
+  clearPresentStatesExceptRoom,
   getPresentStateFromSupabase,
   patchPresentStateInSupabase,
 } from "@/lib/present-state-supabase";
@@ -21,6 +22,7 @@ export async function GET(req: Request) {
       beam: cloud.beam,
       updatedAt: cloud.updatedAt,
       deck: cloud.deck,
+      ...(cloud.superseded ? { superseded: true } : {}),
     });
   }
   const e = getEntry(room);
@@ -88,6 +90,7 @@ export async function POST(req: Request) {
 
   const cloud = await patchPresentStateInSupabase(room, patch);
   if (cloud) {
+    await clearPresentStatesExceptRoom(room);
     return Response.json({
       ok: true,
       room: cloud.room,

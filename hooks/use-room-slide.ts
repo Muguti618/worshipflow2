@@ -11,6 +11,7 @@ import {
   writePersistedBeam,
   writePersistedSlideIndex,
 } from "@/lib/present-local-state";
+import { PRESENT_ACTIVE_ROOM_BC } from "@/lib/present-active-room-broadcast";
 
 export const PRESENT_BC_PREFIX = "worshipflow2-present";
 
@@ -37,6 +38,7 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
   const [index, setIndex] = useState(0);
   const [beam, setBeam] = useState<PresentBeamState | null>(null);
   const [serverDeck, setServerDeck] = useState<DeckSlide[] | null>(null);
+  const [sessionSuperseded, setSessionSuperseded] = useState(false);
   const [netOnline, setNetOnline] = useState(true);
   const indexRef = useRef(0);
   const beamRef = useRef<PresentBeamState | null>(null);
@@ -45,6 +47,8 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
   const pendingMasterSlideRef = useRef<number | null>(null);
   const beamPostInFlightRef = useRef(false);
   const presentPollGenerationRef = useRef(0);
+  /** Last server `updatedAt` seen from a successful `publishBeam` response (for stale poll guard). */
+  const lastRemoteBeamAtRef = useRef(0);
 
   const workingDeck = useMemo(() => {
     if (serverDeck && serverDeck.length > 0) {
@@ -139,17 +143,16 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
               lastRemoteUpdateAtRef.current,
               j.updatedAt,
             );
+            lastRemoteBeamAtRef.current = Math.max(lastRemoteBeamAtRef.current, j.updatedAt);
           } else {
-            lastRemoteUpdateAtRef.current = Math.max(
-              lastRemoteUpdateAtRef.current,
-              Date.now(),
-            );
+            const t = Date.now();
+            lastRemoteUpdateAtRef.current = Math.max(lastRemoteUpdateAtRef.current, t);
+            lastRemoteBeamAtRef.current = Math.max(lastRemoteBeamAtRef.current, t);
           }
         } catch {
-          lastRemoteUpdateAtRef.current = Math.max(
-            lastRemoteUpdateAtRef.current,
-            Date.now(),
-          );
+          const t = Date.now();
+          lastRemoteUpdateAtRef.current = Math.max(lastRemoteUpdateAtRef.current, t);
+          lastRemoteBeamAtRef.current = Math.max(lastRemoteBeamAtRef.current, t);
         }
         presentPollGenerationRef.current += 1;
         return true;
@@ -172,6 +175,25 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
 
   useEffect(() => {
     setServerDeck(null);
+    setSessionSuperseded(false);
+    lastRemoteBeamAtRef.current = 0;
+  }, [room]);
+
+  useEffect(() => {
+    let ch: BroadcastChannel | null = null;
+    try {
+      ch = new BroadcastChannel(PRESENT_ACTIVE_ROOM_BC);
+      ch.onmessage = (e: MessageEvent<{ type?: string; room?: string }>) => {
+        if (e.data?.type !== "active-present-room") return;
+        const next = typeof e.data.room === "string" ? e.data.room.trim() : "";
+        if (next && next !== room) setSessionSuperseded(true);
+      };
+    } catch {
+      /* ignore */
+    }
+    return () => {
+      ch?.close();
+    };
   }, [room]);
 
   const localDeckSig = useMemo(() => JSON.stringify(localDeck), [localDeck]);
@@ -263,22 +285,41 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
           beam?: unknown;
           updatedAt?: number;
           deck?: unknown;
+          superseded?: boolean;
         };
-        if (role === "master" && genAtPullStart < presentPollGenerationRef.current) {
+        if (j.superseded === true) {
+          setSessionSuperseded(true);
+          setServerDeck(null);
+          if (typeof j.updatedAt === "number" && Number.isFinite(j.updatedAt)) {
+            lastRemoteUpdateAtRef.current = Math.max(lastRemoteUpdateAtRef.current, j.updatedAt);
+          }
           return;
         }
+        const staleSlidePoll =
+          role === "master" && genAtPullStart < presentPollGenerationRef.current;
         const remoteUpdatedAt =
           typeof j.updatedAt === "number" && Number.isFinite(j.updatedAt) ? j.updatedAt : null;
         if (remoteUpdatedAt !== null && remoteUpdatedAt < lastRemoteUpdateAtRef.current) return;
         if (remoteUpdatedAt !== null) lastRemoteUpdateAtRef.current = remoteUpdatedAt;
 
-        const parsedDeck = parseDeckSlidesJson(j.deck);
-        if (parsedDeck && parsedDeck.length > 0) {
-          setServerDeck(parsedDeck);
+        let parsedDeck: DeckSlide[] | null = null;
+        if ("deck" in j && j.deck === null) {
+          setServerDeck(null);
+        } else {
+          parsedDeck = parseDeckSlidesJson(j.deck);
+          if (parsedDeck && parsedDeck.length > 0) {
+            setServerDeck(parsedDeck);
+          }
         }
 
-        if (typeof j.slideIndex === "number") {
-          const c = clamp(j.slideIndex);
+        if (typeof j.slideIndex === "number" && !staleSlidePoll) {
+          // Clamp against the deck length *in this response*, not the pre-fetch workingDeck.
+          // Otherwise a stale closure can cap slideIndex to an old shorter deck; React only
+          // clamps index down on deck shrink, never back up when the deck grows — wrong slide.
+          const deckLenForSlide =
+            parsedDeck && parsedDeck.length > 0 ? parsedDeck.length : slideCountRef.current;
+          const safeMax = Math.max(0, deckLenForSlide - 1);
+          const c = Math.max(0, Math.min(safeMax, Math.floor(j.slideIndex)));
           const pend = pendingMasterSlideRef.current;
           if (role === "master" && pend !== null && c !== pend) {
             /* stale */
@@ -293,13 +334,25 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
         if ("beam" in j && !(role === "master" && beamPostInFlightRef.current)) {
           const parsed =
             j.beam === null ? null : parsePresentBeamState(j.beam);
-          const nextSig = parsed ? JSON.stringify(parsed) : "";
-          const prevSig = beamRef.current ? JSON.stringify(beamRef.current) : "";
-          if (nextSig !== prevSig) {
-            setBeam(parsed);
-            beamRef.current = parsed;
+          if (
+            parsed === null &&
+            beamRef.current &&
+            remoteUpdatedAt !== null &&
+            remoteUpdatedAt <= lastRemoteBeamAtRef.current
+          ) {
+            /* Out-of-order poll: `updated_at` older than last beam write — ignore obsolete null. */
+          } else {
+            const nextSig = parsed ? JSON.stringify(parsed) : "";
+            const prevSig = beamRef.current ? JSON.stringify(beamRef.current) : "";
+            if (nextSig !== prevSig) {
+              setBeam(parsed);
+              beamRef.current = parsed;
+            }
+            writePersistedBeam(room, parsed);
+            if (remoteUpdatedAt !== null) {
+              lastRemoteBeamAtRef.current = Math.max(lastRemoteBeamAtRef.current, remoteUpdatedAt);
+            }
           }
-          writePersistedBeam(room, parsed);
         }
       } catch {
         /* network */
@@ -350,6 +403,7 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
     index,
     beam,
     deck: workingDeck,
+    sessionSuperseded,
     publish,
     publishBeam,
     clearBeam,

@@ -10,6 +10,11 @@ export type PresentStatePayload = {
   beam: PresentBeamState | null;
   updatedAt: number;
   deck: DeckSlide[] | null;
+  /**
+   * True when this `room` has no DB row but another `present_states` row exists for the user —
+   * presenting switched to a different setlist / room, so this URL is no longer live.
+   */
+  superseded?: boolean;
 };
 
 function deckFromRow(raw: unknown): DeckSlide[] | null {
@@ -35,7 +40,22 @@ export async function getPresentStateFromSupabase(room: string): Promise<Present
   if (error) return null;
 
   if (!data) {
-    return { room, slideIndex: 0, beam: null, updatedAt: Date.now(), deck: null };
+    const { data: other } = await sb
+      .from("present_states")
+      .select("room_key")
+      .eq("user_id", user.id)
+      .neq("room_key", room)
+      .limit(1)
+      .maybeSingle();
+    const superseded = Boolean(other);
+    return {
+      room,
+      slideIndex: 0,
+      beam: null,
+      updatedAt: Date.now(),
+      deck: null,
+      ...(superseded ? { superseded: true as const } : {}),
+    };
   }
 
   const beamParsed =
@@ -153,4 +173,16 @@ export async function patchPresentStateInSupabase(
 
   if (retryErr || !retry?.length) return null;
   return rowToPayload(room, retry[0] as PresentStateRow);
+}
+
+/** After updating one room, remove all other mirrored presenter rows so only one setlist stays live. */
+export async function clearPresentStatesExceptRoom(room: string): Promise<void> {
+  const sb = await createServerSupabaseClient();
+  if (!sb) return;
+  const {
+    data: { user },
+  } = await sb.auth.getUser();
+  if (!user?.id) return;
+
+  await sb.from("present_states").delete().eq("user_id", user.id).neq("room_key", room);
 }

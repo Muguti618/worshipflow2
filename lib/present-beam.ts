@@ -14,8 +14,21 @@ function isDeckSlideLoose(x: unknown): x is DeckSlide {
 
 /** Parse and clamp beam payload from API or BroadcastChannel. */
 export function parsePresentBeamState(raw: unknown): PresentBeamState | null {
-  if (!raw || typeof raw !== "object") return null;
-  const o = raw as Record<string, unknown>;
+  if (raw == null) return null;
+  let o: Record<string, unknown>;
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (!parsed || typeof parsed !== "object") return null;
+      o = parsed as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  } else if (typeof raw === "object") {
+    o = raw as Record<string, unknown>;
+  } else {
+    return null;
+  }
   if (!Array.isArray(o.slides)) return null;
   const slides: DeckSlide[] = [];
   for (const s of o.slides.slice(0, 80)) {

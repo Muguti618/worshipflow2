@@ -12,6 +12,7 @@ import { useRoomSlide } from "@/hooks/use-room-slide";
 import { useSlideTransition } from "@/hooks/use-slide-transition";
 import { FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
 import type { DeckSlide } from "@/lib/setlists-catalog";
+import { PresentationSupersededOverlay } from "@/components/wf/presentation-superseded-overlay";
 
 function keyTargetIsFormField(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -21,7 +22,7 @@ function keyTargetIsFormField(target: EventTarget | null): boolean {
 export function PresentMode({ room }: { room: string }) {
   const { limitsApply, ready } = usePlanEntitlements();
   const localDeck = useActiveDeck();
-  const { index: i, go, jump, beam, deck, publishBeam, clearBeam } = useRoomSlide({
+  const { index: i, go, jump, beam, deck, publishBeam, clearBeam, sessionSuperseded } = useRoomSlide({
     room,
     role: "master",
     localDeck,
@@ -92,7 +93,8 @@ export function PresentMode({ room }: { room: string }) {
   }, [room]);
 
   return (
-    <div className="flex min-h-screen min-h-[100dvh] flex-col bg-black text-white">
+    <div className="relative flex min-h-screen min-h-[100dvh] flex-col bg-black text-white">
+      <PresentationSupersededOverlay open={sessionSuperseded} variant="presenter" />
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-4 py-2 text-xs text-white/60">
         <Link
           href="/dashboard"

@@ -14,6 +14,7 @@ import {
   readActiveSetlistId,
   writeActiveDeck,
 } from "@/lib/active-deck";
+import { broadcastActivePresentRoom } from "@/lib/present-active-room-broadcast";
 import { presentRoomKeyForSetlist } from "@/lib/present-room-key";
 import { kindLabel } from "@/lib/setlists-catalog";
 import { getDashboardGreeting } from "@/lib/dashboard-greeting";
@@ -107,6 +108,7 @@ export function DashboardHome() {
     writeActiveDeck(flattenSetlistToDeck(def.items), id);
     broadcastDeckUpdated();
     const room = presentRoomKeyForSetlist(id);
+    broadcastActivePresentRoom(room);
     broadcastSlideReset(room);
     void postPresenterSlide(room, 0);
     setActiveListId(id);
@@ -234,6 +236,7 @@ export function DashboardHome() {
               data-wf-tour="tour-dash-present"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => broadcastActivePresentRoom(presentRoom)}
               className="inline-flex min-h-10 min-w-[44px] flex-1 items-center justify-center gap-2 rounded-[12px] bg-blue-600 px-3 text-sm font-semibold text-white shadow-lg shadow-black/30 hover:bg-blue-500 sm:flex-initial sm:px-4"
             >
               <span className="sm:hidden">Presenter</span>
@@ -243,6 +246,7 @@ export function DashboardHome() {
               href={audienceHref}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => broadcastActivePresentRoom(presentRoom)}
               className="inline-flex min-h-10 min-w-[44px] flex-1 items-center justify-center gap-2 rounded-[12px] border border-white/[0.12] bg-wf-card/60 px-3 text-sm font-semibold text-wf-text hover:border-white/18 sm:flex-initial sm:px-4"
             >
               Audience
@@ -288,6 +292,7 @@ export function DashboardHome() {
                 href={controlHref}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => broadcastActivePresentRoom(presentRoom)}
                 className="mt-3 flex w-full items-center justify-center rounded-lg border border-white/[0.1] py-2 text-xs font-medium text-wf-text transition hover:border-emerald-500/35 hover:text-emerald-200/90"
               >
                 Open remote in browser →

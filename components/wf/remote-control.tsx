@@ -7,6 +7,7 @@ import { SlideStage } from "@/components/wf/slide-stage";
 import { useActiveDeck } from "@/hooks/use-active-deck";
 import { useRoomSlide } from "@/hooks/use-room-slide";
 import type { DeckSlide } from "@/lib/setlists-catalog";
+import { PresentationSupersededOverlay } from "@/components/wf/presentation-superseded-overlay";
 
 const THUMB_FALLBACK_BG =
   "https://images.unsplash.com/photo-1507692049960-83aac4fc9040?w=1200&q=70";
@@ -128,7 +129,7 @@ function BeamSlideChip({
 export function RemoteControl({ room }: { room: string }) {
   const { limitsApply, remotePolicyReady } = usePlanEntitlements();
   const localDeck = useActiveDeck();
-  const { index: i, go, jump, beam, deck, clearBeam, publishBeam } = useRoomSlide({
+  const { index: i, go, jump, beam, deck, clearBeam, publishBeam, sessionSuperseded } = useRoomSlide({
     room,
     role: "master",
     localDeck,
@@ -212,7 +213,8 @@ export function RemoteControl({ room }: { room: string }) {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-gradient-to-b from-zinc-950 via-zinc-950 to-black text-white">
+    <div className="relative flex min-h-[100dvh] flex-col bg-gradient-to-b from-zinc-950 via-zinc-950 to-black text-white">
+      <PresentationSupersededOverlay open={sessionSuperseded} variant="remote" />
       <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-zinc-950/90 px-4 py-3 backdrop-blur-md">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
           <div className="min-w-0">

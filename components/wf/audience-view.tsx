@@ -9,6 +9,7 @@ import { SlideTransitionShell } from "@/components/wf/slide-transition-shell";
 import { SlideStage } from "@/components/wf/slide-stage";
 import { useSlideTransition } from "@/hooks/use-slide-transition";
 import { FREE_TIER_SLIDE_BRANDING } from "@/lib/plan-limits";
+import { PresentationSupersededOverlay } from "@/components/wf/presentation-superseded-overlay";
 
 /** Lyric slide section labels (must not use the amber “Scripture” footer). */
 const SONG_SECTION_TITLE_RE =
@@ -50,7 +51,7 @@ function enterFullscreen() {
 export function AudienceView({ room }: { room: string }) {
   const { limitsApply, ready } = usePlanEntitlements();
   const localDeck = useActiveDeck();
-  const { index: i, beam, deck } = useRoomSlide({
+  const { index: i, beam, deck, sessionSuperseded } = useRoomSlide({
     room,
     role: "viewer",
     localDeck,
@@ -83,6 +84,7 @@ export function AudienceView({ room }: { room: string }) {
 
   return (
     <div className="relative flex h-dvh w-full flex-col bg-black">
+      <PresentationSupersededOverlay open={sessionSuperseded} variant="audience" />
       {!fs ? (
         <div className="absolute right-3 top-3 z-10">
           <button
