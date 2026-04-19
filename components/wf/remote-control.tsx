@@ -147,7 +147,9 @@ export function RemoteControl({ room }: { room: string }) {
     : deckSlide;
 
   useEffect(() => {
-    if (i > deck.length - 1) jump(0);
+    if (deck.length < 1) return;
+    const max = deck.length - 1;
+    if (i > max) jump(max);
   }, [deck.length, i, jump]);
 
   useEffect(() => {

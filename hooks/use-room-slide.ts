@@ -332,15 +332,27 @@ export function useRoomSlide({ room, role, localDeck }: Options) {
           }
         }
         if ("beam" in j && !(role === "master" && beamPostInFlightRef.current)) {
+          const rawBeam = j.beam;
           const parsed =
-            j.beam === null ? null : parsePresentBeamState(j.beam);
-          if (
-            parsed === null &&
-            beamRef.current &&
-            remoteUpdatedAt !== null &&
-            remoteUpdatedAt <= lastRemoteBeamAtRef.current
-          ) {
-            /* Out-of-order poll: `updated_at` older than last beam write — ignore obsolete null. */
+            rawBeam === null ? null : parsePresentBeamState(rawBeam);
+
+          if (rawBeam != null && parsed === null && beamRef.current) {
+            /* Server sent a beam blob we could not parse — do not treat as "clear beam". */
+          } else if (parsed === null && beamRef.current) {
+            // Only accept `beam: null` when the row's `updated_at` is strictly newer than our last
+            // confirmed beam snapshot (avoids deck/slide polls with stale null wiping scripture).
+            if (
+              remoteUpdatedAt !== null &&
+              remoteUpdatedAt > lastRemoteBeamAtRef.current
+            ) {
+              setBeam(null);
+              beamRef.current = null;
+              writePersistedBeam(room, null);
+              lastRemoteBeamAtRef.current = Math.max(
+                lastRemoteBeamAtRef.current,
+                remoteUpdatedAt,
+              );
+            }
           } else {
             const nextSig = parsed ? JSON.stringify(parsed) : "";
             const prevSig = beamRef.current ? JSON.stringify(beamRef.current) : "";

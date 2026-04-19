@@ -20,7 +20,7 @@ function store(): Map<string, PresentRoomEntry> {
 }
 
 function defaultEntry(): PresentRoomEntry {
-  return { slideIndex: 0, updatedAt: Date.now(), beam: null, deckSlides: null };
+  return { slideIndex: 0, updatedAt: 0, beam: null, deckSlides: null };
 }
 
 export function getEntry(room: string): PresentRoomEntry {

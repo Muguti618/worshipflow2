@@ -33,7 +33,9 @@ export function PresentMode({ room }: { room: string }) {
   const [slideTransition] = useSlideTransition();
 
   useEffect(() => {
-    if (i > deck.length - 1) jump(0);
+    if (deck.length < 1) return;
+    const max = deck.length - 1;
+    if (i > max) jump(max);
   }, [deck.length, i, jump]);
 
   const current = deck[Math.min(i, deck.length - 1)]!;

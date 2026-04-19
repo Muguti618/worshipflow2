@@ -52,7 +52,9 @@ export async function getPresentStateFromSupabase(room: string): Promise<Present
       room,
       slideIndex: 0,
       beam: null,
-      updatedAt: Date.now(),
+      // Use 0 when not superseded so clients treat this as older than any real row and ignore
+      // it after sync (Date.now() here always "won" stale checks and reset slide → title).
+      updatedAt: superseded ? Date.now() : 0,
       deck: null,
       ...(superseded ? { superseded: true as const } : {}),
     };
